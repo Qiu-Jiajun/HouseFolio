@@ -1,5 +1,4 @@
-﻿import { ListingCard } from "@/components/listing-card";
-import { mockListings } from "@/lib/db/mock-listings";
+﻿import { PortfolioList } from "@/components/portfolio-list";
 
 export default function PortfolioPage() {
   return (
@@ -14,44 +13,28 @@ export default function PortfolioPage() {
             HouseFolio · Portfolio
           </p>
 
-          <h1 className="mt-3 text-4xl font-bold tracking-tight">
-            我的候选房源
-          </h1>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight">
+                我的候选房源
+              </h1>
 
-          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
-            这里展示用户主动添加的候选房源。当前阶段使用假数据验证页面结构，
-            暂不接入数据库、地图 API 或 AI 服务。
-          </p>
-        </div>
+              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+                这里展示用户主动添加的候选房源。当前阶段使用 mock 数据 + 浏览器本地数据，
+                暂不接入数据库、地图 API 或 AI 服务。
+              </p>
+            </div>
 
-        <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-sm text-slate-500">候选房源</p>
-            <p className="mt-2 text-3xl font-bold">{mockListings.length}</p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-sm text-slate-500">平均租金</p>
-            <p className="mt-2 text-3xl font-bold">
-              ¥
-              {Math.round(
-                mockListings.reduce((sum, item) => sum + item.rent, 0) /
-                  mockListings.length
-              )}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-sm text-slate-500">当前阶段</p>
-            <p className="mt-2 text-3xl font-bold">Phase 1C</p>
+            <a
+              href="/portfolio/new"
+              className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
+            >
+              添加房源
+            </a>
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {mockListings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        <PortfolioList />
       </section>
     </main>
   );
