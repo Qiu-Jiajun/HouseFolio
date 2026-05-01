@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ListingNotesPanel } from "@/components/listing-notes-panel";
+import { ListingStatusPanel } from "@/components/listing-status-panel";
 import { findClientListingById } from "@/lib/local-store/listing-lookup";
 import type { Listing } from "@/types/listing";
 
@@ -106,6 +107,17 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           ) : null}
         </div>
 
+        <ListingStatusPanel
+          listingId={listing.id}
+          status={listing.status}
+          onStatusChange={(nextStatus) =>
+            setListing({
+              ...listing,
+              status: nextStatus,
+            })
+          }
+        />
+
         <ListingNotesPanel listingId={listing.id} />
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
@@ -147,7 +159,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           <h2 className="text-2xl font-semibold text-white">L2 算法评分</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
             后续这里会展示综合评分、相对性价比、排序权重和异常标记。
-            用户主观评分会成为 L2 权重计算的重要输入。
+            房源状态会影响后续对比池和筛选逻辑。
           </p>
 
           <div className="mt-5 rounded-xl bg-slate-950 p-4">
@@ -166,7 +178,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
             后续这里会在用户点击确认并完成脱敏后，结合基础信息、L1/L2 结果、
-            用户笔记和主观评分生成看房 checklist、风险解释和决策建议。
+            用户笔记、主观评分和房源状态生成看房 checklist、风险解释和决策建议。
           </p>
 
           <button
@@ -191,6 +203,13 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             <div>
               <dt className="text-slate-500">添加日期</dt>
               <dd className="mt-1 text-slate-200">{listing.createdAt}</dd>
+            </div>
+
+            <div>
+              <dt className="text-slate-500">当前状态</dt>
+              <dd className="mt-1 text-slate-200">
+                {statusText[listing.status]}
+              </dd>
             </div>
 
             <div>
