@@ -1,10 +1,31 @@
-﻿export type ListingStatus = "draft" | "watching" | "visited" | "shortlisted" | "rejected";
+﻿export type ListingStatus =
+  | "draft"
+  | "watching"
+  | "visited"
+  | "shortlisted"
+  | "rejected";
+
+export type ListingSourcePlatform =
+  | "manual"
+  | "beike"
+  | "58"
+  | "douban"
+  | "xiaohongshu"
+  | "other";
 
 export type Listing = {
   id: string;
   title: string;
-  rent?: number;
-  area?: number;
+  sourcePlatform: ListingSourcePlatform;
   sourceUrl?: string;
+  rent: number;
+  area: number;
+  layout: string;
+  addressHint: string;
+  district: string;
   status: ListingStatus;
+  commuteMinutes?: number;
+  lifeCircleScore?: number;
+  compositeScore?: number;
+  createdAt: string;
 };

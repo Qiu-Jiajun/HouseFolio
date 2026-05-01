@@ -30,10 +30,26 @@ export default function Home() {
           辅助租客做出更清晰的找房决策。
         </h1>
 
-        <p className="mb-10 max-w-3xl text-lg leading-8 text-slate-300">
+        <p className="mb-8 max-w-3xl text-lg leading-8 text-slate-300">
           HouseFolio 不是房源平台，也不是中介服务。它帮助用户管理自己主动收集的候选房源，
           并通过三层决策引擎完成通勤分析、评分对比和 AI 决策建议。
         </p>
+
+        <div className="mb-10 flex flex-wrap gap-3">
+          <a
+            href="/portfolio"
+            className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
+          >
+            查看候选房源
+          </a>
+
+          <a
+            href="/portfolio"
+            className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-900"
+          >
+            进入 Portfolio
+          </a>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           {engines.map((engine) => (
@@ -57,7 +73,7 @@ export default function Home() {
         <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="mb-3 text-xl font-semibold">当前开发阶段</h2>
           <p className="text-sm leading-6 text-slate-400">
-            Phase 1A：Next.js 项目骨架初始化。当前目标是先跑通页面和工程结构，
+            Phase 1C：最小房源数据模型与 Portfolio 页面。当前使用假数据验证产品结构，
             暂不接入数据库、地图 API 或 AI 服务。
           </p>
         </div>
