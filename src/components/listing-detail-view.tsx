@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { findClientListingById } from "@/lib/local-store/listing-lookup";
 import type { Listing } from "@/types/listing";
 
@@ -105,6 +106,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           ) : null}
         </div>
 
+        <ListingNotesPanel listingId={listing.id} />
+
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
             L1 LBS 空间分析
@@ -141,11 +144,10 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold text-white">
-            L2 算法评分
-          </h2>
+          <h2 className="text-2xl font-semibold text-white">L2 算法评分</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
             后续这里会展示综合评分、相对性价比、排序权重和异常标记。
+            用户主观评分会成为 L2 权重计算的重要输入。
           </p>
 
           <div className="mt-5 rounded-xl bg-slate-950 p-4">
@@ -163,7 +165,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             L3 AI 决策建议
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            后续这里会在用户点击确认并完成脱敏后，生成看房 checklist、风险解释和决策建议。
+            后续这里会在用户点击确认并完成脱敏后，结合基础信息、L1/L2 结果、
+            用户笔记和主观评分生成看房 checklist、风险解释和决策建议。
           </p>
 
           <button
