@@ -1,4 +1,4 @@
-﻿import { PortfolioList } from "@/components/portfolio-list";
+import { PortfolioList } from "@/components/portfolio-list";
 
 export default function PortfolioPage() {
   return (
@@ -21,7 +21,7 @@ export default function PortfolioPage() {
 
               <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
                 这里展示用户主动添加的候选房源。当前阶段使用 mock 数据 + 浏览器本地数据，
-                暂不接入数据库、地图 API 或 AI 服务。
+                并加入状态筛选与基础排序，为后续 L2 算法评分和多房源对比做准备。
               </p>
             </div>
 
