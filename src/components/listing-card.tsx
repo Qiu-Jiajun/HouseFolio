@@ -1,4 +1,4 @@
-﻿import type { Listing } from "@/types/listing";
+import type { Listing } from "@/types/listing";
 
 type ListingCardProps = {
   listing: Listing;
@@ -45,7 +45,7 @@ export function ListingCard({ listing }: ListingCardProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 text-sm">
+      <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div>
           <p className="text-slate-500">L1 通勤</p>
           <p className="mt-1 text-slate-200">
@@ -67,6 +67,13 @@ export function ListingCard({ listing }: ListingCardProps) {
           </p>
         </div>
       </div>
+
+      <a
+        href={`/portfolio/${listing.id}`}
+        className="inline-flex rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
+      >
+        查看详情
+      </a>
     </article>
   );
 }
