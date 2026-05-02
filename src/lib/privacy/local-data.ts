@@ -31,6 +31,10 @@ export const HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
     key: "housefolio:listing-status-overrides",
     label: "Listing status overrides",
   },
+  {
+    key: "housefolio:work-locations",
+    label: "Work locations",
+  },
 ] as const;
 
 function safeParseJson(raw: string): unknown {
