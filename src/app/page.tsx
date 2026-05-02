@@ -1,18 +1,21 @@
-﻿const engines = [
+const engines = [
   {
     level: "L1",
-    title: "LBS 智能层",
-    description: "通勤、生活圈、地图，把房源位置转化为空间决策数据。",
+    title: "LBS Layer",
+    description:
+      "Commute, life circle, and map context. Turn listing location into spatial decision data.",
   },
   {
     level: "L2",
-    title: "算法评分层",
-    description: "评分、排序、对比，把多套房源组织成可量化的决策结构。",
+    title: "Algorithm Layer",
+    description:
+      "Reference score, sorting, and comparison. Turn multiple listings into structured decision inputs.",
   },
   {
     level: "L3",
-    title: "AI 决策层",
-    description: "总结、建议、解释，把结构化数据转化为人能理解的决策建议。",
+    title: "AI Layer",
+    description:
+      "Summaries, advice, and explanations. Turn structured data into human-readable decision support.",
   },
 ];
 
@@ -21,18 +24,20 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
       <section className="mx-auto max-w-5xl">
         <p className="mb-4 text-sm font-medium text-slate-400">
-          HouseFolio · 私人找房决策管理工具
+          HouseFolio · Private rental decision workspace
         </p>
 
         <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
-          用 LBS、算法和 AI，
+          Use LBS, algorithms, and AI
           <br />
-          辅助租客做出更清晰的找房决策。
+          to make rental decisions clearer.
         </h1>
 
         <p className="mb-8 max-w-3xl text-lg leading-8 text-slate-300">
-          HouseFolio 不是房源平台，也不是中介服务。它帮助用户管理自己主动收集的候选房源，
-          并通过三层决策引擎完成通勤分析、评分对比和 AI 决策建议。
+          HouseFolio is not a listing platform or brokerage service. It helps
+          users manage candidate listings they collected themselves, then uses
+          a three-layer decision engine to support spatial analysis, structured
+          comparison, and AI-assisted explanations.
         </p>
 
         <div className="mb-10 flex flex-wrap gap-3">
@@ -40,14 +45,21 @@ export default function Home() {
             href="/portfolio"
             className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
           >
-            查看候选房源
+            Open Portfolio
           </a>
 
           <a
-            href="/portfolio"
+            href="/portfolio/new"
             className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-900"
           >
-            进入 Portfolio
+            Add Listing
+          </a>
+
+          <a
+            href="/settings"
+            className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-900"
+          >
+            Settings
           </a>
         </div>
 
@@ -71,10 +83,11 @@ export default function Home() {
         </div>
 
         <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="mb-3 text-xl font-semibold">当前开发阶段</h2>
+          <h2 className="mb-3 text-xl font-semibold">Current Phase</h2>
           <p className="text-sm leading-6 text-slate-400">
-            Phase 1C：最小房源数据模型与 Portfolio 页面。当前使用假数据验证产品结构，
-            暂不接入数据库、地图 API 或 AI 服务。
+            Phase 1K: local data export and clearing controls. The demo still
+            uses mock data and browser localStorage. Supabase, map APIs, and AI
+            services are intentionally not connected yet.
           </p>
         </div>
       </section>
