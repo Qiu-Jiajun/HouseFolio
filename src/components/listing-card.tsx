@@ -1,19 +1,16 @@
+import { zhCN } from "@/content/zh-cn";
 import type { Listing } from "@/types/listing";
 
 type ListingCardProps = {
   listing: Listing;
 };
 
-const statusText: Record<Listing["status"], string> = {
-  draft: "Draft",
-  watching: "Watching",
-  visited: "Visited",
-  shortlisted: "Shortlisted",
-  rejected: "Rejected",
-};
+const statusText = zhCN.common.listingStatus;
 
 function formatOptionalNumber(value: number | undefined, suffix = "") {
-  return typeof value === "number" ? `${value.toFixed(1)}${suffix}` : "Pending";
+  return typeof value === "number"
+    ? `${value.toFixed(1)}${suffix}`
+    : zhCN.common.pending;
 }
 
 export function ListingCard({ listing }: ListingCardProps) {
@@ -34,40 +31,50 @@ export function ListingCard({ listing }: ListingCardProps) {
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">Rent</p>
-          <p className="mt-1 font-medium text-white">CNY {listing.rent}/mo</p>
+          <p className="text-slate-500">{zhCN.listingCard.fields.rent}</p>
+          <p className="mt-1 font-medium text-white">
+            {zhCN.common.currencyCny}
+            {listing.rent}/{zhCN.common.month}
+          </p>
         </div>
 
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">Area</p>
-          <p className="mt-1 font-medium text-white">{listing.area} sqm</p>
+          <p className="text-slate-500">{zhCN.listingCard.fields.area}</p>
+          <p className="mt-1 font-medium text-white">
+            {listing.area}
+            {zhCN.common.sqm}
+          </p>
         </div>
 
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">Layout</p>
+          <p className="text-slate-500">{zhCN.listingCard.fields.layout}</p>
           <p className="mt-1 font-medium text-white">{listing.layout}</p>
         </div>
       </div>
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div>
-          <p className="text-slate-500">L1 Commute</p>
+          <p className="text-slate-500">{zhCN.listingCard.fields.commute}</p>
           <p className="mt-1 text-slate-200">
             {typeof listing.commuteMinutes === "number"
-              ? `${listing.commuteMinutes} min`
-              : "Pending"}
+              ? `${listing.commuteMinutes}${zhCN.common.minute}`
+              : zhCN.common.pending}
           </p>
         </div>
 
         <div>
-          <p className="text-slate-500">L1 Life Circle</p>
+          <p className="text-slate-500">
+            {zhCN.listingCard.fields.lifeCircle}
+          </p>
           <p className="mt-1 text-slate-200">
             {formatOptionalNumber(listing.lifeCircleScore)}
           </p>
         </div>
 
         <div>
-          <p className="text-slate-500">L2 Reference Score</p>
+          <p className="text-slate-500">
+            {zhCN.listingCard.fields.referenceScore}
+          </p>
           <p className="mt-1 text-slate-200">
             {formatOptionalNumber(listing.compositeScore)}
           </p>
@@ -75,14 +82,14 @@ export function ListingCard({ listing }: ListingCardProps) {
       </div>
 
       <p className="mb-5 text-xs leading-5 text-slate-500">
-        Reference score is only for auxiliary comparison. It is not a final recommendation.
+        {zhCN.listingCard.referenceScoreNote}
       </p>
 
       <a
         href={`/portfolio/${listing.id}`}
         className="inline-flex rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
       >
-        View details
+        {zhCN.listingCard.actions.viewDetails}
       </a>
     </article>
   );

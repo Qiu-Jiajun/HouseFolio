@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ListingCard } from "@/components/listing-card";
+import { zhCN } from "@/content/zh-cn";
 import {
   filterListingsByStatus,
   sortListings,
@@ -15,32 +16,29 @@ const statusOptions: {
   value: ListingStatusFilter;
   label: string;
 }[] = [
-  { value: "all", label: "All" },
-  { value: "draft", label: "Draft" },
-  { value: "watching", label: "Watching" },
-  { value: "visited", label: "Visited" },
-  { value: "shortlisted", label: "Shortlisted" },
-  { value: "rejected", label: "Rejected" },
+  { value: "all", label: zhCN.portfolioList.statusOptions.all },
+  { value: "draft", label: zhCN.portfolioList.statusOptions.draft },
+  { value: "watching", label: zhCN.portfolioList.statusOptions.watching },
+  { value: "visited", label: zhCN.portfolioList.statusOptions.visited },
+  { value: "shortlisted", label: zhCN.portfolioList.statusOptions.shortlisted },
+  { value: "rejected", label: zhCN.portfolioList.statusOptions.rejected },
 ];
 
 const sortOptions: {
   value: ListingSortKey;
   label: string;
 }[] = [
-  { value: "createdAtDesc", label: "Recently added" },
-  { value: "rentAsc", label: "Rent: low to high" },
-  { value: "rentDesc", label: "Rent: high to low" },
-  { value: "commuteAsc", label: "Shortest commute" },
-  { value: "scoreDesc", label: "Reference score: high to low" },
+  {
+    value: "createdAtDesc",
+    label: zhCN.portfolioList.sortOptions.createdAtDesc,
+  },
+  { value: "rentAsc", label: zhCN.portfolioList.sortOptions.rentAsc },
+  { value: "rentDesc", label: zhCN.portfolioList.sortOptions.rentDesc },
+  { value: "commuteAsc", label: zhCN.portfolioList.sortOptions.commuteAsc },
+  { value: "scoreDesc", label: zhCN.portfolioList.sortOptions.scoreDesc },
 ];
 
-const statusText: Record<ListingStatus, string> = {
-  draft: "Draft",
-  watching: "Watching",
-  visited: "Visited",
-  shortlisted: "Shortlisted",
-  rejected: "Rejected",
-};
+const statusText: Record<ListingStatus, string> = zhCN.common.listingStatus;
 
 export function PortfolioList() {
   const [listings, setListings] = useState<Listing[]>([]);
@@ -77,18 +75,27 @@ export function PortfolioList() {
     <>
       <div className="mb-8 grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">Total Listings</p>
+          <p className="text-sm text-slate-500">
+            {zhCN.portfolioList.stats.totalListings}
+          </p>
           <p className="mt-2 text-3xl font-bold">{listings.length}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">Currently Visible</p>
+          <p className="text-sm text-slate-500">
+            {zhCN.portfolioList.stats.currentlyVisible}
+          </p>
           <p className="mt-2 text-3xl font-bold">{visibleListings.length}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">Average Visible Rent</p>
-          <p className="mt-2 text-3xl font-bold">CNY {averageVisibleRent}</p>
+          <p className="text-sm text-slate-500">
+            {zhCN.portfolioList.stats.averageVisibleRent}
+          </p>
+          <p className="mt-2 text-3xl font-bold">
+            {zhCN.common.currencyCny}
+            {averageVisibleRent}
+          </p>
         </div>
       </div>
 
@@ -96,23 +103,23 @@ export function PortfolioList() {
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-white">
-              Portfolio Filters and Sorting
+              {zhCN.portfolioList.controls.title}
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              This is the current L2 algorithm entry point. Sorting uses simple
-              rules and reference scores. The score is only an auxiliary signal,
-              not a final recommendation or a product promise.
+              {zhCN.portfolioList.controls.description}
             </p>
           </div>
 
           <div className="rounded-full bg-slate-950 px-4 py-2 text-sm text-slate-300">
-            Shortlisted: {shortlistedCount}
+            {zhCN.portfolioList.controls.shortlisted}: {shortlistedCount}
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
-            <span className="text-sm text-slate-300">Filter by status</span>
+            <span className="text-sm text-slate-300">
+              {zhCN.portfolioList.controls.filterByStatus}
+            </span>
             <select
               value={statusFilter}
               onChange={(event) =>
@@ -129,7 +136,9 @@ export function PortfolioList() {
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-300">Sort by</span>
+            <span className="text-sm text-slate-300">
+              {zhCN.portfolioList.controls.sortBy}
+            </span>
             <select
               value={sortKey}
               onChange={(event) =>
@@ -148,20 +157,24 @@ export function PortfolioList() {
 
         {statusFilter !== "all" ? (
           <p className="mt-4 text-sm text-slate-500">
-            Showing listings with status: {statusText[statusFilter]}.
+            {zhCN.portfolioList.controls.showingStatusPrefix}
+            “{statusText[statusFilter]}”
+            {zhCN.portfolioList.controls.showingStatusSuffix}
           </p>
         ) : (
           <p className="mt-4 text-sm text-slate-500">
-            Showing all listings.
+            {zhCN.portfolioList.controls.showingAll}
           </p>
         )}
       </div>
 
       {visibleListings.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <h2 className="text-2xl font-semibold text-white">No matching listings</h2>
+          <h2 className="text-2xl font-semibold text-white">
+            {zhCN.portfolioList.empty.title}
+          </h2>
           <p className="mt-3 text-sm text-slate-400">
-            Try changing the filter, or update listing status on the detail page.
+            {zhCN.portfolioList.empty.description}
           </p>
         </div>
       ) : (
