@@ -5,7 +5,7 @@ export type LbsProviderFallbackReason =
   | "not_configured"
   | "unsupported_provider"
   | "amap_missing_key"
-  | "amap_not_implemented";
+  | "amap_enabled";
 
 export interface LbsRuntimeConfig {
   configuredProvider: string;
@@ -56,10 +56,10 @@ export function getLbsRuntimeConfig(): LbsRuntimeConfig {
   if (configuredProvider === "amap") {
     return {
       configuredProvider,
-      activeProvider: "mock",
-      isMock: true,
+      activeProvider: "amap",
+      isMock: false,
       amapApiKeyConfigured,
-      fallbackReason: "amap_not_implemented",
+      fallbackReason: "amap_enabled",
     };
   }
 
