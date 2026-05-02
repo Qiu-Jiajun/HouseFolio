@@ -1,20 +1,50 @@
 import type { Listing } from "@/types/listing";
 import type { ListingSubjectiveRatings } from "@/types/listing-note";
-import { calculatePortfolioScores } from "@/lib/algorithm/score";
+import type { ScoreInput } from "@/lib/algorithm/score";
+import {
+  calculatePortfolioScores,
+  getScoreByListingId,
+} from "@/lib/algorithm/score";
 import { mockListings } from "@/lib/db/mock-listings";
 import { loadLocalListings } from "@/lib/local-store/listings";
 import { loadListingRatings } from "@/lib/local-store/listing-notes";
 import { applyListingStatusOverrides } from "@/lib/local-store/listing-status";
 
-function buildRatingsMap(listings: Listing[]) {
-  const ratingsByListingId: Record<string, ListingSubjectiveRatings | null> =
-    {};
+function getSubjectiveAverageScore(
+  ratings: ListingSubjectiveRatings | null
+): number | null {
+  if (!ratings) {
+    return null;
+  }
 
-  listings.forEach((listing) => {
-    ratingsByListingId[listing.id] = loadListingRatings(listing.id);
+  return (ratings.light + ratings.quiet + ratings.decoration) / 3;
+}
+
+function toScoreInput(listing: Listing): ScoreInput {
+  const ratings = loadListingRatings(listing.id);
+
+  return {
+    id: listing.id,
+    rent: listing.rent,
+    area: listing.area,
+    commuteMinutes: listing.commuteMinutes ?? null,
+    lifeCircleScore: listing.lifeCircleScore ?? null,
+    subjectiveAverageScore: getSubjectiveAverageScore(ratings),
+  };
+}
+
+function attachReferenceScores(listings: Listing[]): Listing[] {
+  const scoreInputs = listings.map(toScoreInput);
+  const scores = calculatePortfolioScores(scoreInputs);
+
+  return listings.map((listing) => {
+    const score = getScoreByListingId(scores, listing.id);
+
+    return {
+      ...listing,
+      compositeScore: score?.totalScore ?? listing.compositeScore,
+    };
   });
-
-  return ratingsByListingId;
 }
 
 export function getAllClientListings(): Listing[] {
@@ -23,7 +53,7 @@ export function getAllClientListings(): Listing[] {
     ...mockListings,
   ]);
 
-  return calculatePortfolioScores(listings, buildRatingsMap(listings));
+  return attachReferenceScores(listings);
 }
 
 export function findClientListingById(id: string): Listing | undefined {

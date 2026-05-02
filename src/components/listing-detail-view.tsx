@@ -11,12 +11,16 @@ type ListingDetailViewProps = {
 };
 
 const statusText: Record<Listing["status"], string> = {
-  draft: "草稿",
-  watching: "关注中",
-  visited: "已看房",
-  shortlisted: "候选",
-  rejected: "已排除",
+  draft: "Draft",
+  watching: "Watching",
+  visited: "Visited",
+  shortlisted: "Shortlisted",
+  rejected: "Rejected",
 };
+
+function formatOptionalNumber(value: number | undefined, suffix = "") {
+  return typeof value === "number" ? `${value.toFixed(1)}${suffix}` : "Pending";
+}
 
 export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const [listing, setListing] = useState<Listing | null>(null);
@@ -31,7 +35,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (!isLoaded) {
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 text-slate-300">
-        正在加载房源信息...
+        Loading listing information...
       </div>
     );
   }
@@ -39,15 +43,15 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (!listing) {
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="text-2xl font-semibold text-white">未找到房源</h2>
+        <h2 className="text-2xl font-semibold text-white">Listing not found</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          该房源可能不存在，或本地浏览器数据已被清除。
+          This listing may not exist, or local browser data may have been cleared.
         </p>
         <a
           href="/portfolio"
           className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
         >
-          返回 Portfolio
+          Back to Portfolio
         </a>
       </div>
     );
@@ -60,7 +64,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="mb-2 text-sm text-slate-500">
-                {listing.district} · {listing.addressHint}
+                {listing.district} / {listing.addressHint}
               </p>
               <h1 className="text-4xl font-bold tracking-tight text-white">
                 {listing.title}
@@ -74,21 +78,21 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">月租金</p>
+              <p className="text-sm text-slate-500">Monthly Rent</p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                ¥{listing.rent}
+                CNY {listing.rent}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">面积</p>
+              <p className="text-sm text-slate-500">Area</p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                {listing.area}㎡
+                {listing.area} sqm
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">户型</p>
+              <p className="text-sm text-slate-500">Layout</p>
               <p className="mt-2 text-2xl font-semibold text-white">
                 {listing.layout}
               </p>
@@ -102,7 +106,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
               rel="noreferrer"
               className="mt-5 inline-flex text-sm text-slate-300 underline decoration-slate-600 underline-offset-4 hover:text-white"
             >
-              查看原始链接
+              View original link
             </a>
           ) : null}
         </div>
@@ -118,114 +122,122 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           }
         />
 
-        <ListingNotesPanel listingId={listing.id} />
+        <ListingNotesPanel
+          listingId={listing.id}
+          onRatingsSaved={() => {
+            const updatedListing = findClientListingById(listing.id);
+            setListing(updatedListing ?? listing);
+          }}
+        />
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
-            L1 LBS 空间分析
+            L1 LBS Spatial Analysis
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            后续这里会展示通勤时间、生活圈评分、地图位置和周边 POI 统计。
-            当前阶段只展示占位结构。
+            This area will later show commute time, life-circle score, map position,
+            and nearby POI statistics. Current values are placeholder or mock outputs.
           </p>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">通勤时间</p>
+              <p className="text-sm text-slate-500">Commute Time</p>
               <p className="mt-2 text-lg text-white">
-                {listing.commuteMinutes
-                  ? `${listing.commuteMinutes} 分钟`
-                  : "待计算"}
+                {typeof listing.commuteMinutes === "number"
+                  ? `${listing.commuteMinutes} min`
+                  : "Pending"}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">生活圈评分</p>
+              <p className="text-sm text-slate-500">Life Circle Score</p>
               <p className="mt-2 text-lg text-white">
-                {listing.lifeCircleScore
-                  ? listing.lifeCircleScore.toFixed(1)
-                  : "待计算"}
+                {formatOptionalNumber(listing.lifeCircleScore)}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">地图状态</p>
-              <p className="mt-2 text-lg text-white">未接入</p>
+              <p className="text-sm text-slate-500">Map Status</p>
+              <p className="mt-2 text-lg text-white">Not connected</p>
             </div>
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-semibold text-white">L2 算法评分</h2>
+          <h2 className="text-2xl font-semibold text-white">
+            L2 Reference Scoring
+          </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            后续这里会展示综合评分、相对性价比、排序权重和异常标记。
-            房源状态会影响后续对比池和筛选逻辑。
+            This score is a lightweight auxiliary comparison signal based on rent,
+            area, commute, life-circle score, and subjective ratings. It is not a
+            final recommendation. Users can still veto a listing based on any hard
+            requirement.
           </p>
 
           <div className="mt-5 rounded-xl bg-slate-950 p-4">
-            <p className="text-sm text-slate-500">综合评分</p>
+            <p className="text-sm text-slate-500">Reference Score</p>
             <p className="mt-2 text-lg text-white">
-              {listing.compositeScore
-                ? listing.compositeScore.toFixed(1)
-                : "待计算"}
+              {formatOptionalNumber(listing.compositeScore)}
             </p>
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
-            L3 AI 决策建议
+            L3 AI Decision Advice
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            后续这里会在用户点击确认并完成脱敏后，结合基础信息、L1/L2 结果、
-            用户笔记、主观评分和房源状态生成看房 checklist、风险解释和决策建议。
+            Later, after explicit user confirmation and data redaction, this area
+            will generate checklist items, risk explanations, and decision advice
+            based on basic information, L1/L2 outputs, notes, ratings, and status.
           </p>
 
           <button
             disabled
             className="mt-5 rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-500"
           >
-            AI 分析暂未接入
+            AI analysis not connected
           </button>
         </div>
       </section>
 
       <aside className="space-y-6">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold text-white">基础信息</h2>
+          <h2 className="text-xl font-semibold text-white">Basic Information</h2>
 
           <dl className="mt-5 space-y-4 text-sm">
             <div>
-              <dt className="text-slate-500">来源平台</dt>
+              <dt className="text-slate-500">Source Platform</dt>
               <dd className="mt-1 text-slate-200">{listing.sourcePlatform}</dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">添加日期</dt>
+              <dt className="text-slate-500">Created At</dt>
               <dd className="mt-1 text-slate-200">{listing.createdAt}</dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">当前状态</dt>
+              <dt className="text-slate-500">Current Status</dt>
               <dd className="mt-1 text-slate-200">
                 {statusText[listing.status]}
               </dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">数据状态</dt>
+              <dt className="text-slate-500">Data Scope</dt>
               <dd className="mt-1 text-slate-200">
-                本地 / mock 数据，未上传云端
+                Local or mock data. Not uploaded to cloud.
               </dd>
             </div>
           </dl>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold text-white">合规边界</h2>
+          <h2 className="text-xl font-semibold text-white">Compliance Boundary</h2>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            当前仅展示用户主动添加或 mock 的房源信息。不抓取第三方页面，
-            不公开展示房源库，不撮合交易，不认证房源真实性。
+            The current demo only shows user-added or mock listing information. It
+            does not crawl third-party pages, does not publish a listing database,
+            does not broker transactions, and does not certify listing authenticity.
           </p>
         </div>
       </aside>

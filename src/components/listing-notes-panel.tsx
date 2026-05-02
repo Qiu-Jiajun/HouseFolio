@@ -14,6 +14,7 @@ import type {
 
 type ListingNotesPanelProps = {
   listingId: string;
+  onRatingsSaved?: () => void;
 };
 
 function RatingSelect({
@@ -33,17 +34,20 @@ function RatingSelect({
         onChange={(event) => onChange(Number(event.target.value))}
         className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
       >
-        <option value={1}>1 分 · 很差</option>
-        <option value={2}>2 分 · 偏弱</option>
-        <option value={3}>3 分 · 一般</option>
-        <option value={4}>4 分 · 较好</option>
-        <option value={5}>5 分 · 很好</option>
+        <option value={1}>1 - Very poor</option>
+        <option value={2}>2 - Weak</option>
+        <option value={3}>3 - Average</option>
+        <option value={4}>4 - Good</option>
+        <option value={5}>5 - Very good</option>
       </select>
     </label>
   );
 }
 
-export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
+export function ListingNotesPanel({
+  listingId,
+  onRatingsSaved,
+}: ListingNotesPanelProps) {
   const [notes, setNotes] = useState<ListingNote[]>([]);
   const [noteContent, setNoteContent] = useState("");
   const [light, setLight] = useState(3);
@@ -83,7 +87,7 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
     saveListingNote(nextNote);
     setNotes(loadListingNotes(listingId));
     setNoteContent("");
-    setSavedMessage("笔记已保存到本地。");
+    setSavedMessage("Note saved locally.");
   }
 
   function handleSaveRatings() {
@@ -96,18 +100,23 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
     };
 
     saveListingRatings(nextRatings);
-    setSavedMessage("主观评分已保存到本地。");
+    setSavedMessage("Subjective ratings saved locally.");
+    onRatingsSaved?.();
   }
 
   const averageRating = ((light + quiet + decoration) / 3).toFixed(1);
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <h2 className="text-2xl font-semibold text-white">用户笔记与主观评分</h2>
+      <h2 className="text-2xl font-semibold text-white">
+        Notes and Subjective Ratings
+      </h2>
 
       <p className="mt-2 text-sm leading-6 text-slate-400">
-        这里记录用户自己的看房判断。当前阶段数据仅保存在浏览器本地，不上传云端。
-        请不要填写手机号、微信号、身份证号、具体门牌号或合同原文。
+        Record your own viewing notes and subjective impressions. Current data is
+        stored locally in the browser and is not uploaded to the cloud. Do not
+        enter phone numbers, WeChat IDs, ID numbers, exact doorplate numbers, or
+        contract text.
       </p>
 
       {savedMessage ? (
@@ -117,10 +126,10 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
       ) : null}
 
       <div className="mt-6 grid gap-5 md:grid-cols-3">
-        <RatingSelect label="采光评分" value={light} onChange={setLight} />
-        <RatingSelect label="安静评分" value={quiet} onChange={setQuiet} />
+        <RatingSelect label="Light" value={light} onChange={setLight} />
+        <RatingSelect label="Quietness" value={quiet} onChange={setQuiet} />
         <RatingSelect
-          label="装修评分"
+          label="Decoration"
           value={decoration}
           onChange={setDecoration}
         />
@@ -128,7 +137,7 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-950 p-4">
         <p className="text-sm text-slate-400">
-          当前主观均分：
+          Current subjective average:
           <span className="ml-2 text-lg font-semibold text-white">
             {averageRating}
           </span>
@@ -139,18 +148,18 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
           onClick={handleSaveRatings}
           className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
         >
-          保存主观评分
+          Save subjective ratings
         </button>
       </div>
 
       <form onSubmit={handleSaveNote} className="mt-8">
         <label className="block">
-          <span className="text-sm text-slate-300">看房笔记</span>
+          <span className="text-sm text-slate-300">Viewing note</span>
           <textarea
             value={noteContent}
             onChange={(event) => setNoteContent(event.target.value)}
             rows={5}
-            placeholder="例如：采光不错，但临街有些吵；厨房偏小；房东要求押一付三。不要填写手机号、微信号、具体门牌号等敏感信息。"
+            placeholder="Example: good light, but a little noisy; kitchen is small; landlord asks for one month deposit and three months rent. Do not enter sensitive information."
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm leading-6 text-white outline-none focus:border-slate-400"
           />
         </label>
@@ -159,15 +168,15 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
           type="submit"
           className="mt-4 rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
         >
-          保存笔记
+          Save note
         </button>
       </form>
 
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-white">历史笔记</h3>
+        <h3 className="text-lg font-semibold text-white">Saved notes</h3>
 
         {notes.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">暂无笔记。</p>
+          <p className="mt-3 text-sm text-slate-500">No notes yet.</p>
         ) : (
           <div className="mt-4 space-y-3">
             {notes.map((note) => (
@@ -179,7 +188,7 @@ export function ListingNotesPanel({ listingId }: ListingNotesPanelProps) {
                   {note.content}
                 </p>
                 <p className="mt-3 text-xs text-slate-600">
-                  {new Date(note.createdAt).toLocaleString("zh-CN")}
+                  {new Date(note.createdAt).toLocaleString()}
                 </p>
               </article>
             ))}

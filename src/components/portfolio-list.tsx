@@ -15,31 +15,31 @@ const statusOptions: {
   value: ListingStatusFilter;
   label: string;
 }[] = [
-  { value: "all", label: "全部" },
-  { value: "draft", label: "草稿" },
-  { value: "watching", label: "关注中" },
-  { value: "visited", label: "已看房" },
-  { value: "shortlisted", label: "候选" },
-  { value: "rejected", label: "已排除" },
+  { value: "all", label: "All" },
+  { value: "draft", label: "Draft" },
+  { value: "watching", label: "Watching" },
+  { value: "visited", label: "Visited" },
+  { value: "shortlisted", label: "Shortlisted" },
+  { value: "rejected", label: "Rejected" },
 ];
 
 const sortOptions: {
   value: ListingSortKey;
   label: string;
 }[] = [
-  { value: "createdAtDesc", label: "最近添加优先" },
-  { value: "rentAsc", label: "租金从低到高" },
-  { value: "rentDesc", label: "租金从高到低" },
-  { value: "commuteAsc", label: "通勤时间最短" },
-  { value: "scoreDesc", label: "综合分最高" },
+  { value: "createdAtDesc", label: "Recently added" },
+  { value: "rentAsc", label: "Rent: low to high" },
+  { value: "rentDesc", label: "Rent: high to low" },
+  { value: "commuteAsc", label: "Shortest commute" },
+  { value: "scoreDesc", label: "Reference score: high to low" },
 ];
 
 const statusText: Record<ListingStatus, string> = {
-  draft: "草稿",
-  watching: "关注中",
-  visited: "已看房",
-  shortlisted: "候选",
-  rejected: "已排除",
+  draft: "Draft",
+  watching: "Watching",
+  visited: "Visited",
+  shortlisted: "Shortlisted",
+  rejected: "Rejected",
 };
 
 export function PortfolioList() {
@@ -77,18 +77,18 @@ export function PortfolioList() {
     <>
       <div className="mb-8 grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">全部房源</p>
+          <p className="text-sm text-slate-500">Total Listings</p>
           <p className="mt-2 text-3xl font-bold">{listings.length}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">当前显示</p>
+          <p className="text-sm text-slate-500">Currently Visible</p>
           <p className="mt-2 text-3xl font-bold">{visibleListings.length}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">当前平均租金</p>
-          <p className="mt-2 text-3xl font-bold">¥{averageVisibleRent}</p>
+          <p className="text-sm text-slate-500">Average Visible Rent</p>
+          <p className="mt-2 text-3xl font-bold">CNY {averageVisibleRent}</p>
         </div>
       </div>
 
@@ -96,22 +96,23 @@ export function PortfolioList() {
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-white">
-              Portfolio 筛选与排序
+              Portfolio Filters and Sorting
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              这里是 L2 算法层的入口。当前先用规则完成状态筛选和基础排序，
-              后续会扩展为综合评分、权重排序和多房源对比。
+              This is the current L2 algorithm entry point. Sorting uses simple
+              rules and reference scores. The score is only an auxiliary signal,
+              not a final recommendation or a product promise.
             </p>
           </div>
 
           <div className="rounded-full bg-slate-950 px-4 py-2 text-sm text-slate-300">
-            候选池：{shortlistedCount} 套
+            Shortlisted: {shortlistedCount}
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
-            <span className="text-sm text-slate-300">按状态筛选</span>
+            <span className="text-sm text-slate-300">Filter by status</span>
             <select
               value={statusFilter}
               onChange={(event) =>
@@ -128,7 +129,7 @@ export function PortfolioList() {
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-300">排序方式</span>
+            <span className="text-sm text-slate-300">Sort by</span>
             <select
               value={sortKey}
               onChange={(event) =>
@@ -147,20 +148,20 @@ export function PortfolioList() {
 
         {statusFilter !== "all" ? (
           <p className="mt-4 text-sm text-slate-500">
-            当前仅展示状态为「{statusText[statusFilter]}」的房源。
+            Showing listings with status: {statusText[statusFilter]}.
           </p>
         ) : (
           <p className="mt-4 text-sm text-slate-500">
-            当前展示全部房源。
+            Showing all listings.
           </p>
         )}
       </div>
 
       {visibleListings.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <h2 className="text-2xl font-semibold text-white">暂无匹配房源</h2>
+          <h2 className="text-2xl font-semibold text-white">No matching listings</h2>
           <p className="mt-3 text-sm text-slate-400">
-            可以切换筛选条件，或返回详情页调整房源状态。
+            Try changing the filter, or update listing status on the detail page.
           </p>
         </div>
       ) : (

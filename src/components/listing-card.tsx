@@ -5,12 +5,16 @@ type ListingCardProps = {
 };
 
 const statusText: Record<Listing["status"], string> = {
-  draft: "草稿",
-  watching: "关注中",
-  visited: "已看房",
-  shortlisted: "候选",
-  rejected: "已排除",
+  draft: "Draft",
+  watching: "Watching",
+  visited: "Visited",
+  shortlisted: "Shortlisted",
+  rejected: "Rejected",
 };
+
+function formatOptionalNumber(value: number | undefined, suffix = "") {
+  return typeof value === "number" ? `${value.toFixed(1)}${suffix}` : "Pending";
+}
 
 export function ListingCard({ listing }: ListingCardProps) {
   return (
@@ -18,7 +22,7 @@ export function ListingCard({ listing }: ListingCardProps) {
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
           <p className="mb-2 text-xs text-slate-500">
-            {listing.district} · {listing.addressHint}
+            {listing.district} / {listing.addressHint}
           </p>
           <h2 className="text-xl font-semibold text-white">{listing.title}</h2>
         </div>
@@ -30,49 +34,55 @@ export function ListingCard({ listing }: ListingCardProps) {
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">租金</p>
-          <p className="mt-1 font-medium text-white">¥{listing.rent}/月</p>
+          <p className="text-slate-500">Rent</p>
+          <p className="mt-1 font-medium text-white">CNY {listing.rent}/mo</p>
         </div>
 
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">面积</p>
-          <p className="mt-1 font-medium text-white">{listing.area}㎡</p>
+          <p className="text-slate-500">Area</p>
+          <p className="mt-1 font-medium text-white">{listing.area} sqm</p>
         </div>
 
         <div className="rounded-xl bg-slate-950 p-3">
-          <p className="text-slate-500">户型</p>
+          <p className="text-slate-500">Layout</p>
           <p className="mt-1 font-medium text-white">{listing.layout}</p>
         </div>
       </div>
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div>
-          <p className="text-slate-500">L1 通勤</p>
+          <p className="text-slate-500">L1 Commute</p>
           <p className="mt-1 text-slate-200">
-            {listing.commuteMinutes ? `${listing.commuteMinutes} 分钟` : "待计算"}
+            {typeof listing.commuteMinutes === "number"
+              ? `${listing.commuteMinutes} min`
+              : "Pending"}
           </p>
         </div>
 
         <div>
-          <p className="text-slate-500">L1 生活圈</p>
+          <p className="text-slate-500">L1 Life Circle</p>
           <p className="mt-1 text-slate-200">
-            {listing.lifeCircleScore ? listing.lifeCircleScore.toFixed(1) : "待计算"}
+            {formatOptionalNumber(listing.lifeCircleScore)}
           </p>
         </div>
 
         <div>
-          <p className="text-slate-500">L2 综合分</p>
+          <p className="text-slate-500">L2 Reference Score</p>
           <p className="mt-1 text-slate-200">
-            {listing.compositeScore ? listing.compositeScore.toFixed(1) : "待计算"}
+            {formatOptionalNumber(listing.compositeScore)}
           </p>
         </div>
       </div>
+
+      <p className="mb-5 text-xs leading-5 text-slate-500">
+        Reference score is only for auxiliary comparison. It is not a final recommendation.
+      </p>
 
       <a
         href={`/portfolio/${listing.id}`}
         className="inline-flex rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
       >
-        查看详情
+        View details
       </a>
     </article>
   );
