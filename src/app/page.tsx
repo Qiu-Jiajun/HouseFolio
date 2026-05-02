@@ -1,26 +1,8 @@
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
+import { zhCN } from "@/content/zh-cn";
 
-const engines = [
-  {
-    level: "L1",
-    title: "LBS Layer",
-    description:
-      "Commute, life circle, and map context. Turn listing location into spatial decision data.",
-  },
-  {
-    level: "L2",
-    title: "Algorithm Layer",
-    description:
-      "Reference score, sorting, and comparison. Turn multiple listings into structured decision inputs.",
-  },
-  {
-    level: "L3",
-    title: "AI Layer",
-    description:
-      "Summaries, advice, and explanations. Turn structured data into human-readable decision support.",
-  },
-];
+const engines = zhCN.home.engines;
 
 export default function Home() {
   return (
@@ -29,20 +11,17 @@ export default function Home() {
         <AppNav />
 
         <p className="mb-4 text-sm font-medium text-slate-400">
-          HouseFolio · Private rental decision workspace
+          {zhCN.home.eyebrow}
         </p>
 
         <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl">
-          Use LBS, algorithms, and AI
+          {zhCN.home.titleLine1}
           <br />
-          to make rental decisions clearer.
+          {zhCN.home.titleLine2}
         </h1>
 
         <p className="mb-8 max-w-3xl text-lg leading-8 text-slate-300">
-          HouseFolio is not a listing platform or brokerage service. It helps
-          users manage candidate listings they collected themselves, then uses
-          a three-layer decision engine to support spatial analysis, structured
-          comparison, and AI-assisted explanations.
+          {zhCN.home.description}
         </p>
 
         <div className="mb-10 flex flex-wrap gap-3">
@@ -50,21 +29,21 @@ export default function Home() {
             href="/portfolio"
             className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
           >
-            Open Portfolio
+            {zhCN.home.actions.openPortfolio}
           </a>
 
           <a
             href="/portfolio/new"
             className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-900"
           >
-            Add Listing
+            {zhCN.home.actions.addListing}
           </a>
 
           <a
             href="/settings"
             className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-900"
           >
-            Settings
+            {zhCN.home.actions.settings}
           </a>
         </div>
 
@@ -88,11 +67,11 @@ export default function Home() {
         </div>
 
         <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="mb-3 text-xl font-semibold">Current Phase</h2>
+          <h2 className="mb-3 text-xl font-semibold">
+            {zhCN.home.currentPhase.title}
+          </h2>
           <p className="text-sm leading-6 text-slate-400">
-            Phase 1L: global navigation and compliance footer. The demo still
-            uses mock data and browser localStorage. Supabase, map APIs, and AI
-            services are intentionally not connected yet.
+            {zhCN.home.currentPhase.body}
           </p>
         </div>
 
