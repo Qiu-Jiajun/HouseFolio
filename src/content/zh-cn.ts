@@ -213,7 +213,12 @@ export const zhCN = {
       "commuteTime": "通勤时间",
       "lifeCircleScore": "生活圈评分",
       "mapStatus": "地图状态",
-      "notConnected": "未接入"
+      "notConnected": "未接入",
+      "cachedCommuteResults": "已保存的参考通勤结果",
+      "emptyCommuteResults": "尚未计算参考通勤",
+      "emptyCommuteDescription": "后续可通过手动按钮计算公共交通等参考通勤。当前阶段仅展示本地已保存的通勤摘要。",
+      "storedAt": "计算时间",
+      "referenceOnly": "通勤结果基于高德路径规划计算，仅作辅助比较；实际通勤受等车、换乘、拥堵、天气等因素影响。"
     },
     "l2": {
       "title": "L2 参考评分",
