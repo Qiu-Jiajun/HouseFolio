@@ -18,6 +18,8 @@ export { createAmapLbsProvider, amapLbsProvider, AmapProviderNotImplementedError
 
 export { createMockLbsProvider, mockLbsProvider } from "./mock-provider";
 
+export { resolveLbsProvider } from "./registry";
+
 export {
   calculateCommute,
   geocodeAddress,

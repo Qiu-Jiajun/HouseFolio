@@ -1,5 +1,4 @@
-import { getLbsRuntimeConfig } from "../config/lbs";
-import { mockLbsProvider } from "./mock-provider";
+import { resolveLbsProvider } from "./registry";
 import type {
   CalculateCommuteInput,
   CalculateCommuteResult,
@@ -10,9 +9,9 @@ import type {
   SearchNearbyPoiResult,
 } from "./provider";
 
-const lbsRuntimeConfig = getLbsRuntimeConfig();
-
-const activeLbsProvider: LbsProvider = mockLbsProvider;
+const resolvedLbsProvider = resolveLbsProvider();
+const activeLbsProvider = resolvedLbsProvider.provider;
+const lbsRuntimeConfig = resolvedLbsProvider.runtimeConfig;
 
 export function getLbsProvider(): LbsProvider {
   return activeLbsProvider;
