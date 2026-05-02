@@ -130,6 +130,76 @@ export const zhCN = {
     },
   },
 
+  addListingPage: {
+    actions: {
+      backToPortfolio: "返回候选房源",
+    },
+    eyebrow: "HouseFolio · 添加候选房源",
+    title: "新增一套候选房源",
+    description:
+      "这是 HouseFolio 的基础输入层。用户主动添加候选房源后，后续才能进入 L1 通勤与生活圈分析、L2 评分排序、L3 AI 决策建议。",
+  },
+
+  addListingForm: {
+    title: "添加候选房源",
+    description:
+      "当前阶段仅保存到浏览器本地，不上传云端。请不要填写手机号、微信号、具体门牌号、身份证号或合同信息。",
+    errors: {
+      titleRequired: "请填写房源标题。",
+      validRentRequired: "请填写有效租金。",
+      validAreaRequired: "请填写有效面积。",
+      layoutRequired: "请填写户型。",
+      districtRequired: "请填写所在区域。",
+      addressHintRequired:
+        "请填写位置提示，例如“望京 SOHO 附近”或“五道口地铁站附近”。",
+    },
+    sourcePlatformOptions: {
+      manual: "手动添加",
+      beike: "贝壳",
+      58: "58 同城",
+      douban: "豆瓣",
+      xiaohongshu: "小红书",
+      other: "其他",
+    },
+    fields: {
+      title: {
+        label: "房源标题 *",
+        placeholder: "例如：望京 SOHO 附近一居室",
+      },
+      sourcePlatform: {
+        label: "来源平台",
+      },
+      rent: {
+        label: "月租金 *",
+        placeholder: "例如：7200",
+      },
+      area: {
+        label: "面积 *",
+        placeholder: "例如：45",
+      },
+      layout: {
+        label: "户型 *",
+        placeholder: "例如：1室1厅",
+      },
+      district: {
+        label: "所在区域 *",
+        placeholder: "例如：朝阳区",
+      },
+      addressHint: {
+        label: "位置提示 *",
+        placeholder: "例如：望京 SOHO 附近 / 五道口地铁站附近 / 中关村商圈",
+      },
+      sourceUrl: {
+        label: "原始链接，可选",
+        placeholder: "只保存 URL，不抓取第三方页面内容",
+      },
+    },
+    actions: {
+      save: "保存到候选房源",
+      cancel: "取消",
+    },
+  },
+
   listingDetail: {
     actions: {
       backToPortfolio: "返回候选房源",

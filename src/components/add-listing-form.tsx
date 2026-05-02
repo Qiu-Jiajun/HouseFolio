@@ -1,19 +1,23 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useState } from "react";
-import type { Listing, ListingSourcePlatform } from "@/types/listing";
+import { zhCN } from "@/content/zh-cn";
 import { saveLocalListing } from "@/lib/local-store/listings";
+import type { Listing, ListingSourcePlatform } from "@/types/listing";
 
 const sourcePlatformOptions: {
   label: string;
   value: ListingSourcePlatform;
 }[] = [
-  { label: "手动添加", value: "manual" },
-  { label: "贝壳", value: "beike" },
-  { label: "58 同城", value: "58" },
-  { label: "豆瓣", value: "douban" },
-  { label: "小红书", value: "xiaohongshu" },
-  { label: "其他", value: "other" },
+  { label: zhCN.addListingForm.sourcePlatformOptions.manual, value: "manual" },
+  { label: zhCN.addListingForm.sourcePlatformOptions.beike, value: "beike" },
+  { label: zhCN.addListingForm.sourcePlatformOptions["58"], value: "58" },
+  { label: zhCN.addListingForm.sourcePlatformOptions.douban, value: "douban" },
+  {
+    label: zhCN.addListingForm.sourcePlatformOptions.xiaohongshu,
+    value: "xiaohongshu",
+  },
+  { label: zhCN.addListingForm.sourcePlatformOptions.other, value: "other" },
 ];
 
 export function AddListingForm() {
@@ -33,32 +37,32 @@ export function AddListingForm() {
     setError("");
 
     if (!title.trim()) {
-      setError("请填写房源标题。");
+      setError(zhCN.addListingForm.errors.titleRequired);
       return;
     }
 
     if (!rent.trim() || Number(rent) <= 0) {
-      setError("请填写有效租金。");
+      setError(zhCN.addListingForm.errors.validRentRequired);
       return;
     }
 
     if (!area.trim() || Number(area) <= 0) {
-      setError("请填写有效面积。");
+      setError(zhCN.addListingForm.errors.validAreaRequired);
       return;
     }
 
     if (!layout.trim()) {
-      setError("请填写户型。");
+      setError(zhCN.addListingForm.errors.layoutRequired);
       return;
     }
 
     if (!district.trim()) {
-      setError("请填写所在区域。");
+      setError(zhCN.addListingForm.errors.districtRequired);
       return;
     }
 
     if (!addressHint.trim()) {
-      setError("请填写位置提示，例如“望京 SOHO 附近”或“五道口地铁站附近”。");
+      setError(zhCN.addListingForm.errors.addressHintRequired);
       return;
     }
 
@@ -87,9 +91,11 @@ export function AddListingForm() {
       className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
     >
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-white">添加候选房源</h2>
+        <h2 className="text-2xl font-semibold text-white">
+          {zhCN.addListingForm.title}
+        </h2>
         <p className="mt-2 text-sm leading-6 text-slate-400">
-          当前阶段仅保存到浏览器本地，不上传云端。请不要填写手机号、微信号、具体门牌号、身份证号或合同信息。
+          {zhCN.addListingForm.description}
         </p>
       </div>
 
@@ -101,17 +107,21 @@ export function AddListingForm() {
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm text-slate-300">房源标题 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.title.label}
+          </span>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="例如：望京 SOHO 附近一居室"
+            placeholder={zhCN.addListingForm.fields.title.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm text-slate-300">来源平台</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.sourcePlatform.label}
+          </span>
           <select
             value={sourcePlatform}
             onChange={(event) =>
@@ -128,65 +138,77 @@ export function AddListingForm() {
         </label>
 
         <label className="block">
-          <span className="text-sm text-slate-300">月租金 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.rent.label}
+          </span>
           <input
             value={rent}
             onChange={(event) => setRent(event.target.value)}
             type="number"
             min="0"
-            placeholder="例如：7200"
+            placeholder={zhCN.addListingForm.fields.rent.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm text-slate-300">面积 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.area.label}
+          </span>
           <input
             value={area}
             onChange={(event) => setArea(event.target.value)}
             type="number"
             min="0"
-            placeholder="例如：45"
+            placeholder={zhCN.addListingForm.fields.area.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm text-slate-300">户型 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.layout.label}
+          </span>
           <input
             value={layout}
             onChange={(event) => setLayout(event.target.value)}
-            placeholder="例如：1室1厅"
+            placeholder={zhCN.addListingForm.fields.layout.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm text-slate-300">所在区域 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.district.label}
+          </span>
           <input
             value={district}
             onChange={(event) => setDistrict(event.target.value)}
-            placeholder="例如：朝阳区"
+            placeholder={zhCN.addListingForm.fields.district.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="text-sm text-slate-300">位置提示 *</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.addressHint.label}
+          </span>
           <input
             value={addressHint}
             onChange={(event) => setAddressHint(event.target.value)}
-            placeholder="例如：望京 SOHO 附近 / 五道口地铁站附近 / 中关村商圈"
+            placeholder={zhCN.addListingForm.fields.addressHint.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="text-sm text-slate-300">原始链接，可选</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.addListingForm.fields.sourceUrl.label}
+          </span>
           <input
             value={sourceUrl}
             onChange={(event) => setSourceUrl(event.target.value)}
-            placeholder="只保存 URL，不抓取第三方页面内容"
+            placeholder={zhCN.addListingForm.fields.sourceUrl.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
         </label>
@@ -197,14 +219,14 @@ export function AddListingForm() {
           type="submit"
           className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
         >
-          保存到 Portfolio
+          {zhCN.addListingForm.actions.save}
         </button>
 
         <a
           href="/portfolio"
           className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
         >
-          取消
+          {zhCN.addListingForm.actions.cancel}
         </a>
       </div>
     </form>
