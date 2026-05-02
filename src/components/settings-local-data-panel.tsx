@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { zhCN } from "@/content/zh-cn";
 import {
   clearLocalHouseFolioData,
   downloadLocalHouseFolioData,
   getLocalHouseFolioDataSnapshot,
   type LocalHouseFolioDataExport,
 } from "@/lib/privacy/local-data";
+
+const localDataLabels: Record<string, string> = {
+  ...zhCN.settingsLocalDataPanel.localDataLabels,
+};
 
 export function SettingsLocalDataPanel() {
   const [snapshot, setSnapshot] = useState<LocalHouseFolioDataExport | null>(
@@ -24,12 +29,12 @@ export function SettingsLocalDataPanel() {
 
   function handleExport() {
     downloadLocalHouseFolioData();
-    setMessage("Local HouseFolio data export started.");
+    setMessage(zhCN.settingsLocalDataPanel.messages.exportStarted);
   }
 
   function handleClear() {
     const confirmed = window.confirm(
-      "Clear all HouseFolio local data from this browser? Mock listings in code will still remain visible."
+      zhCN.settingsLocalDataPanel.messages.clearConfirm
     );
 
     if (!confirmed) {
@@ -38,7 +43,7 @@ export function SettingsLocalDataPanel() {
 
     clearLocalHouseFolioData();
     refreshSnapshot();
-    setMessage("Local HouseFolio data has been cleared from this browser.");
+    setMessage(zhCN.settingsLocalDataPanel.messages.cleared);
   }
 
   return (
@@ -51,14 +56,11 @@ export function SettingsLocalDataPanel() {
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="text-2xl font-semibold text-white">
-          Local Data Controls
+          {zhCN.settingsLocalDataPanel.controls.title}
         </h2>
 
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          Current Phase 1 data is stored in this browser only. This page lets you
-          export or clear local HouseFolio data. It does not affect mock listings
-          stored in source code, and it does not delete any cloud data because
-          cloud storage is not connected yet.
+          {zhCN.settingsLocalDataPanel.controls.description}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -67,7 +69,7 @@ export function SettingsLocalDataPanel() {
             onClick={handleExport}
             className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
           >
-            Export local data as JSON
+            {zhCN.settingsLocalDataPanel.controls.exportJson}
           </button>
 
           <button
@@ -75,7 +77,7 @@ export function SettingsLocalDataPanel() {
             onClick={handleClear}
             className="rounded-full border border-red-900 px-5 py-3 text-sm font-medium text-red-200 hover:bg-red-950"
           >
-            Clear local HouseFolio data
+            {zhCN.settingsLocalDataPanel.controls.clearLocalData}
           </button>
 
           <button
@@ -83,14 +85,14 @@ export function SettingsLocalDataPanel() {
             onClick={refreshSnapshot}
             className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
           >
-            Refresh snapshot
+            {zhCN.settingsLocalDataPanel.controls.refreshSnapshot}
           </button>
         </div>
       </section>
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="text-2xl font-semibold text-white">
-          Local Storage Snapshot
+          {zhCN.settingsLocalDataPanel.snapshot.title}
         </h2>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -101,17 +103,21 @@ export function SettingsLocalDataPanel() {
             >
               <p className="text-sm text-slate-500">{item.key}</p>
               <h3 className="mt-1 text-lg font-semibold text-white">
-                {item.label}
+                {localDataLabels[item.key] ?? item.label}
               </h3>
               <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-slate-500">Exists</p>
+                  <p className="text-slate-500">
+                    {zhCN.settingsLocalDataPanel.snapshot.exists}
+                  </p>
                   <p className="mt-1 text-slate-200">
-                    {item.exists ? "Yes" : "No"}
+                    {item.exists ? zhCN.common.yes : zhCN.common.no}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Count</p>
+                  <p className="text-slate-500">
+                    {zhCN.settingsLocalDataPanel.snapshot.count}
+                  </p>
                   <p className="mt-1 text-slate-200">{item.count}</p>
                 </div>
               </div>
@@ -122,15 +128,13 @@ export function SettingsLocalDataPanel() {
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="text-2xl font-semibold text-white">
-          Compliance Boundary
+          {zhCN.settingsLocalDataPanel.complianceBoundary.title}
         </h2>
 
         <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-400">
-          <li>HouseFolio does not crawl third-party listing pages.</li>
-          <li>HouseFolio does not publish a public listing database.</li>
-          <li>HouseFolio does not broker rental transactions.</li>
-          <li>Current Phase 1 data stays in browser localStorage.</li>
-          <li>AI, map APIs, cloud database, and cloud storage are not connected yet.</li>
+          {zhCN.settingsLocalDataPanel.complianceBoundary.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
       </section>
     </div>

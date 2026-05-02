@@ -1,6 +1,8 @@
 export const zhCN = {
   common: {
     pending: "待补充",
+    yes: "是",
+    no: "否",
     currencyCny: "￥",
     month: "月",
     sqm: "㎡",
@@ -242,5 +244,43 @@ export const zhCN = {
     title: "设置与本地数据",
     description:
       "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面是 Demo 阶段隐私与数据权利能力的基础。",
+  },
+
+  settingsLocalDataPanel: {
+    messages: {
+      exportStarted: "本地 HouseFolio 数据导出已开始。",
+      clearConfirm:
+        "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？代码中的 mock 房源仍会继续显示。",
+      cleared: "当前浏览器中的 HouseFolio 本地数据已清除。",
+    },
+    controls: {
+      title: "本地数据控制",
+      description:
+        "当前 Phase 1 数据仅保存在这个浏览器中。你可以在这里导出或清除本地 HouseFolio 数据。该操作不会影响写在源代码中的 mock 房源，也不会删除任何云端数据，因为当前尚未接入云端存储。",
+      exportJson: "导出本地 JSON",
+      clearLocalData: "清除本机数据",
+      refreshSnapshot: "刷新数据快照",
+    },
+    snapshot: {
+      title: "LocalStorage 数据快照",
+      exists: "是否存在",
+      count: "数量",
+    },
+    localDataLabels: {
+      "housefolio:listings": "用户添加的候选房源",
+      "housefolio:listing-notes": "房源笔记",
+      "housefolio:listing-ratings": "主观评分",
+      "housefolio:listing-status-overrides": "房源状态覆盖",
+    },
+    complianceBoundary: {
+      title: "合规边界",
+      items: [
+        "HouseFolio 不抓取第三方房源页面。",
+        "HouseFolio 不发布公共房源库。",
+        "HouseFolio 不撮合租赁交易。",
+        "当前 Phase 1 数据仅保存在浏览器 localStorage。",
+        "当前尚未接入 AI、地图 API、云数据库或云存储。",
+      ],
+    },
   },
 } as const;
