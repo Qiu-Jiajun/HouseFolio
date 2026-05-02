@@ -6,6 +6,7 @@ import type {
   LbsAddressPrecision,
   LbsCoordinate,
   LbsProvider,
+  LbsTravelMode,
   SearchNearbyPoiInput,
   SearchNearbyPoiResult,
 } from "./provider";
@@ -82,6 +83,25 @@ interface AmapWalkingResponse {
   route?: AmapWalkingRoute;
 }
 
+interface AmapCyclingPath {
+  distance?: number | string;
+  duration?: number | string;
+}
+
+interface AmapCyclingData {
+  origin?: string;
+  destination?: string;
+  paths?: AmapCyclingPath[];
+}
+
+interface AmapCyclingResponse {
+  data?: AmapCyclingData;
+  errcode?: number;
+  errdetail?: string | null;
+  errmsg?: string;
+  ext?: unknown;
+}
+
 export class AmapProviderNotImplementedError extends Error {
   constructor(methodName: string) {
     super(`Amap LBS provider method is not implemented yet: ${methodName}`);
@@ -129,8 +149,8 @@ function formatCoordinate(coordinate: LbsCoordinate): string {
   return `${coordinate.longitude},${coordinate.latitude}`;
 }
 
-function parsePositiveNumber(value: string | undefined): number | null {
-  if (!value) {
+function parsePositiveNumber(value: number | string | undefined): number | null {
+  if (value === undefined || value === null || value === "") {
     return null;
   }
 
@@ -240,6 +260,17 @@ function createWalkingCommuteUrl(input: CalculateCommuteInput): string {
   return url.toString();
 }
 
+function createCyclingCommuteUrl(input: CalculateCommuteInput): string {
+  const url = new URL("https://restapi.amap.com/v4/direction/bicycling");
+
+  url.searchParams.set("key", getAmapApiKey());
+  url.searchParams.set("origin", formatCoordinate(input.origin));
+  url.searchParams.set("destination", formatCoordinate(input.destination));
+  url.searchParams.set("output", "JSON");
+
+  return url.toString();
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     method: "GET",
@@ -254,15 +285,21 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 function createCommuteSummary(
-  mode: "transit" | "walking",
+  mode: LbsTravelMode,
   input: CalculateCommuteInput,
   durationMinutes: number,
   distanceMeters: number,
 ): string {
   const anchorText = input.anchorName ? `到「${input.anchorName}」` : "该路线";
-  const modeText = mode === "transit" ? "公共交通" : "步行";
 
-  return `${anchorText}${modeText}约 ${durationMinutes} 分钟，路线距离约 ${(distanceMeters / 1000).toFixed(1)} 公里`;
+  const modeTextByMode: Record<LbsTravelMode, string> = {
+    transit: "公共交通",
+    walking: "步行",
+    cycling: "骑行",
+    driving: "驾车",
+  };
+
+  return `${anchorText}${modeTextByMode[mode]}约 ${durationMinutes} 分钟，路线距离约 ${(distanceMeters / 1000).toFixed(1)} 公里`;
 }
 
 export const amapLbsProvider: LbsProvider = {
@@ -365,6 +402,40 @@ export const amapLbsProvider: LbsProvider = {
         durationMinutes,
         distanceMeters: Math.round(distanceMeters),
         summary: createCommuteSummary("walking", input, durationMinutes, distanceMeters),
+      };
+    }
+
+    if (input.mode === "cycling") {
+      const data = await fetchJson<AmapCyclingResponse>(createCyclingCommuteUrl(input));
+
+      if (data.errcode !== 0) {
+        throw new AmapProviderError(
+          `Amap cycling request failed: ${data.errmsg ?? "unknown error"} (${data.errcode ?? "no errcode"}).`,
+        );
+      }
+
+      const firstPath = data.data?.paths?.[0];
+
+      if (!firstPath) {
+        throw new AmapProviderError("Amap cycling route returned no candidate paths.");
+      }
+
+      const durationSeconds = parsePositiveNumber(firstPath.duration);
+      const distanceMeters = parsePositiveNumber(firstPath.distance);
+
+      if (!durationSeconds || !distanceMeters) {
+        throw new AmapProviderError("Amap cycling route returned invalid duration or distance.");
+      }
+
+      const durationMinutes = Math.ceil(durationSeconds / 60);
+
+      return {
+        provider: "amap",
+        isMock: false,
+        mode: "cycling",
+        durationMinutes,
+        distanceMeters: Math.round(distanceMeters),
+        summary: createCommuteSummary("cycling", input, durationMinutes, distanceMeters),
       };
     }
 
