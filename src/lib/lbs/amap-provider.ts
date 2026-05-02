@@ -63,6 +63,25 @@ interface AmapTransitResponse {
   route?: AmapTransitRoute;
 }
 
+interface AmapWalkingPath {
+  distance?: string;
+  duration?: string;
+}
+
+interface AmapWalkingRoute {
+  origin?: string;
+  destination?: string;
+  paths?: AmapWalkingPath[];
+}
+
+interface AmapWalkingResponse {
+  status?: string;
+  count?: string;
+  info?: string;
+  infocode?: string;
+  route?: AmapWalkingRoute;
+}
+
 export class AmapProviderNotImplementedError extends Error {
   constructor(methodName: string) {
     super(`Amap LBS provider method is not implemented yet: ${methodName}`);
@@ -210,10 +229,15 @@ function createTransitCommuteUrl(input: CalculateCommuteInput): string {
   return url.toString();
 }
 
-function redactUrlForError(url: string): string {
-  const parsed = new URL(url);
-  parsed.searchParams.set("key", "[redacted]");
-  return parsed.toString();
+function createWalkingCommuteUrl(input: CalculateCommuteInput): string {
+  const url = new URL("https://restapi.amap.com/v3/direction/walking");
+
+  url.searchParams.set("key", getAmapApiKey());
+  url.searchParams.set("origin", formatCoordinate(input.origin));
+  url.searchParams.set("destination", formatCoordinate(input.destination));
+  url.searchParams.set("output", "JSON");
+
+  return url.toString();
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -227,6 +251,18 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+function createCommuteSummary(
+  mode: "transit" | "walking",
+  input: CalculateCommuteInput,
+  durationMinutes: number,
+  distanceMeters: number,
+): string {
+  const anchorText = input.anchorName ? `到「${input.anchorName}」` : "该路线";
+  const modeText = mode === "transit" ? "公共交通" : "步行";
+
+  return `${anchorText}${modeText}约 ${durationMinutes} 分钟，路线距离约 ${(distanceMeters / 1000).toFixed(1)} 公里`;
 }
 
 export const amapLbsProvider: LbsProvider = {
@@ -263,44 +299,76 @@ export const amapLbsProvider: LbsProvider = {
   },
 
   async calculateCommute(input: CalculateCommuteInput): Promise<CalculateCommuteResult> {
-    if (input.mode !== "transit") {
-      throw new AmapProviderNotImplementedError(`calculateCommute:${input.mode}`);
+    if (input.mode === "transit") {
+      const data = await fetchJson<AmapTransitResponse>(createTransitCommuteUrl(input));
+
+      if (data.status !== "1") {
+        throw new AmapProviderError(
+          `Amap transit request failed: ${data.info ?? "unknown error"} (${data.infocode ?? "no infocode"}).`,
+        );
+      }
+
+      const firstTransit = data.route?.transits?.[0];
+
+      if (!firstTransit) {
+        throw new AmapProviderError("Amap transit route returned no candidate plans.");
+      }
+
+      const durationSeconds = parsePositiveNumber(firstTransit.duration);
+      const distanceMeters =
+        parsePositiveNumber(firstTransit.distance) ?? parsePositiveNumber(data.route?.distance);
+
+      if (!durationSeconds || !distanceMeters) {
+        throw new AmapProviderError("Amap transit route returned invalid duration or distance.");
+      }
+
+      const durationMinutes = Math.ceil(durationSeconds / 60);
+
+      return {
+        provider: "amap",
+        isMock: false,
+        mode: "transit",
+        durationMinutes,
+        distanceMeters: Math.round(distanceMeters),
+        summary: createCommuteSummary("transit", input, durationMinutes, distanceMeters),
+      };
     }
 
-    const url = createTransitCommuteUrl(input);
-    const data = await fetchJson<AmapTransitResponse>(url);
+    if (input.mode === "walking") {
+      const data = await fetchJson<AmapWalkingResponse>(createWalkingCommuteUrl(input));
 
-    if (data.status !== "1") {
-      throw new AmapProviderError(
-        `Amap transit request failed: ${data.info ?? "unknown error"} (${redactUrlForError(url)})`,
-      );
+      if (data.status !== "1") {
+        throw new AmapProviderError(
+          `Amap walking request failed: ${data.info ?? "unknown error"} (${data.infocode ?? "no infocode"}).`,
+        );
+      }
+
+      const firstPath = data.route?.paths?.[0];
+
+      if (!firstPath) {
+        throw new AmapProviderError("Amap walking route returned no candidate paths.");
+      }
+
+      const durationSeconds = parsePositiveNumber(firstPath.duration);
+      const distanceMeters = parsePositiveNumber(firstPath.distance);
+
+      if (!durationSeconds || !distanceMeters) {
+        throw new AmapProviderError("Amap walking route returned invalid duration or distance.");
+      }
+
+      const durationMinutes = Math.ceil(durationSeconds / 60);
+
+      return {
+        provider: "amap",
+        isMock: false,
+        mode: "walking",
+        durationMinutes,
+        distanceMeters: Math.round(distanceMeters),
+        summary: createCommuteSummary("walking", input, durationMinutes, distanceMeters),
+      };
     }
 
-    const firstTransit = data.route?.transits?.[0];
-
-    if (!firstTransit) {
-      throw new AmapProviderError("Amap transit route returned no candidate plans.");
-    }
-
-    const durationSeconds = parsePositiveNumber(firstTransit.duration);
-    const distanceMeters =
-      parsePositiveNumber(firstTransit.distance) ?? parsePositiveNumber(data.route?.distance);
-
-    if (!durationSeconds || !distanceMeters) {
-      throw new AmapProviderError("Amap transit route returned invalid duration or distance.");
-    }
-
-    const durationMinutes = Math.ceil(durationSeconds / 60);
-    const anchorText = input.anchorName ? `到「${input.anchorName}」` : "该路线";
-
-    return {
-      provider: "amap",
-      isMock: false,
-      mode: "transit",
-      durationMinutes,
-      distanceMeters: Math.round(distanceMeters),
-      summary: `${anchorText}公共交通约 ${durationMinutes} 分钟，路线距离约 ${(distanceMeters / 1000).toFixed(1)} 公里`,
-    };
+    throw new AmapProviderNotImplementedError(`calculateCommute:${input.mode}`);
   },
 
   async searchNearbyPoi(_input: SearchNearbyPoiInput): Promise<SearchNearbyPoiResult> {
