@@ -35,6 +35,10 @@ export const HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
     key: "housefolio:work-locations",
     label: "Work/study locations and commute anchors",
   },
+  {
+    key: "housefolio:commute-results",
+    label: "Commute result summaries",
+  },
 ] as const;
 
 function safeParseJson(raw: string): unknown {
