@@ -61,6 +61,12 @@ export const zhCN = {
     },
   },
 
+  listingDetail: {
+    actions: {
+      backToPortfolio: "返回候选房源",
+    },
+  },
+
   settings: {
     eyebrow: "HouseFolio · Phase 1K",
     title: "设置与本地数据",

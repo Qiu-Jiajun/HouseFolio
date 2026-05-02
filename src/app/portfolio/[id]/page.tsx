@@ -1,6 +1,7 @@
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { ListingDetailView } from "@/components/listing-detail-view";
+import { zhCN } from "@/content/zh-cn";
 
 type ListingDetailPageProps = {
   params: Promise<{
@@ -23,7 +24,7 @@ export default async function ListingDetailPage({
             href="/portfolio"
             className="text-sm text-slate-400 hover:text-white"
           >
-            Back to Portfolio
+            {zhCN.listingDetail.actions.backToPortfolio}
           </a>
         </div>
 
