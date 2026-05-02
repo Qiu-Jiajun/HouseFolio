@@ -1,6 +1,10 @@
 export type {
   AmapCommuteAdapterOutput,
+  AmapCommuteApiKind,
+  AmapCommuteLegSummary,
+  AmapCommutePersistableSummary,
   AmapCommuteRequestShape,
+  AmapCommuteStrategy,
   AmapGeocodeAdapterOutput,
   AmapGeocodeCandidateSummary,
   AmapGeocodeRequestShape,
