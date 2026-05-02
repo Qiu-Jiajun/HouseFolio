@@ -1,6 +1,7 @@
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { PortfolioList } from "@/components/portfolio-list";
+import { zhCN } from "@/content/zh-cn";
 
 export default function PortfolioPage() {
   return (
@@ -10,20 +11,17 @@ export default function PortfolioPage() {
 
         <div className="mb-8">
           <p className="text-sm font-medium text-slate-400">
-            HouseFolio · Portfolio
+            {zhCN.portfolio.eyebrow}
           </p>
 
           <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-4xl font-bold tracking-tight">
-                Candidate Listings
+                {zhCN.portfolio.title}
               </h1>
 
               <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
-                This page shows candidate listings added by the user or provided
-                as mock data. Current Phase 1 data uses browser localStorage and
-                mock listings only. Reference scores are auxiliary comparison
-                signals, not final recommendations.
+                {zhCN.portfolio.description}
               </p>
             </div>
 
@@ -31,7 +29,7 @@ export default function PortfolioPage() {
               href="/portfolio/new"
               className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
             >
-              Add Listing
+              {zhCN.portfolio.actions.addListing}
             </a>
           </div>
         </div>

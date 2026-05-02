@@ -50,4 +50,14 @@ export const zhCN = {
         "Phase 1M：建立中文文案中心。当前 Demo 仍只使用模拟数据与浏览器 localStorage，尚未接入 Supabase、地图 API 或 AI 服务。",
     },
   },
+
+  portfolio: {
+    eyebrow: "HouseFolio · 候选房源",
+    title: "候选房源",
+    description:
+      "这里展示用户主动添加的候选房源，以及用于演示的模拟房源。当前 Phase 1 仅使用浏览器 localStorage 与 mock 数据。参考评分只是辅助比较信号，不代表最终推荐。",
+    actions: {
+      addListing: "添加房源",
+    },
+  },
 } as const;
