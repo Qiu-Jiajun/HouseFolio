@@ -14,6 +14,14 @@ export const zhCN = {
       shortlisted: "候选",
       rejected: "已排除",
     },
+    sourcePlatform: {
+      manual: "手动添加",
+      beike: "贝壳",
+      58: "58 同城",
+      douban: "豆瓣",
+      xiaohongshu: "小红书",
+      other: "其他",
+    },
   },
 
   nav: {
@@ -208,6 +216,65 @@ export const zhCN = {
     },
   },
 
+  listingDetailView: {
+    loading: "正在加载房源信息……",
+    notFound: {
+      title: "未找到该房源",
+      description: "该房源可能不存在，或浏览器本地数据已经被清除。",
+      action: "返回候选房源",
+    },
+    summaryCards: {
+      monthlyRent: "月租金",
+      area: "面积",
+      layout: "户型",
+      originalLink: "查看原始链接",
+    },
+    l1: {
+      title: "L1 LBS 空间分析",
+      description:
+        "后续这里会展示通勤时间、生活圈评分、地图位置和周边 POI 统计。当前数值仍是占位或 mock 输出。",
+      commuteTime: "通勤时间",
+      lifeCircleScore: "生活圈评分",
+      mapStatus: "地图状态",
+      notConnected: "未接入",
+    },
+    l2: {
+      title: "L2 参考评分",
+      description:
+        "该分数是基于租金、面积、通勤、生活圈评分和主观评分生成的轻量辅助比较信号，不是最终推荐。用户仍然可以基于任何硬性条件一票否决。",
+      referenceScore: "参考评分",
+      defaultWeight: "默认权重",
+      rows: {
+        rent: "租金贡献",
+        area: "面积贡献",
+        commute: "通勤贡献",
+        lifeCircle: "生活圈贡献",
+        subjective: "主观评分贡献",
+      },
+      disclaimer:
+        "该参考评分不是最终推荐。用户仍然可能因为通勤无法接受、采光差、租金过高或其他当前公式没有捕捉到的个人硬性条件，直接排除某套房源。",
+    },
+    l3: {
+      title: "L3 AI 决策建议",
+      description:
+        "后续在用户明确确认并完成数据脱敏后，这里会基于基础信息、L1/L2 输出、笔记、评分和状态生成 checklist、风险解释和决策建议。",
+      disabledButton: "AI 分析尚未接入",
+    },
+    basicInfo: {
+      title: "基础信息",
+      sourcePlatform: "来源平台",
+      createdAt: "添加日期",
+      currentStatus: "当前状态",
+      dataScope: "数据范围",
+      dataScopeValue: "本地或 mock 数据，未上传云端。",
+    },
+    complianceBoundary: {
+      title: "合规边界",
+      body:
+        "当前 Demo 只展示用户主动添加或 mock 的房源信息。它不抓取第三方页面，不发布公共房源库，不撮合交易，也不认证房源真实性。",
+    },
+  },
+
   listingStatusPanel: {
     title: "房源状态管理",
     description:
@@ -236,6 +303,40 @@ export const zhCN = {
         label: "已排除",
         description: "暂不考虑，但保留决策记录。",
       },
+    },
+  },
+
+  listingNotesPanel: {
+    title: "看房笔记与主观评分",
+    description:
+      "记录你自己的看房笔记和主观感受。当前数据仅保存在浏览器本地，不会上传云端。请不要填写手机号、微信号、身份证号、具体门牌号或合同原文。",
+    savedMessages: {
+      noteSaved: "笔记已保存到本地。",
+      ratingsSaved: "主观评分已保存到本地。",
+    },
+    ratings: {
+      light: "采光",
+      quiet: "安静程度",
+      decoration: "装修",
+      options: [
+        "1 - 很差",
+        "2 - 较弱",
+        "3 - 一般",
+        "4 - 较好",
+        "5 - 很好",
+      ],
+      averageLabel: "当前主观平均分：",
+      saveButton: "保存主观评分",
+    },
+    note: {
+      label: "看房笔记",
+      placeholder:
+        "例如：采光不错，但有一点吵；厨房偏小；房东要求押一付三。不要填写敏感信息。",
+      saveButton: "保存笔记",
+    },
+    savedNotes: {
+      title: "已保存笔记",
+      empty: "还没有笔记。",
     },
   },
 

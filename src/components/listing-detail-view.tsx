@@ -3,27 +3,27 @@
 import { useEffect, useState } from "react";
 import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { ListingStatusPanel } from "@/components/listing-status-panel";
+import { zhCN } from "@/content/zh-cn";
+import type { ScoreBreakdown } from "@/lib/algorithm/score";
 import {
   findClientListingById,
   findClientListingScoreById,
 } from "@/lib/local-store/listing-lookup";
-import type { ScoreBreakdown } from "@/lib/algorithm/score";
 import type { Listing } from "@/types/listing";
 
 type ListingDetailViewProps = {
   listingId: string;
 };
 
-const statusText: Record<Listing["status"], string> = {
-  draft: "Draft",
-  watching: "Watching",
-  visited: "Visited",
-  shortlisted: "Shortlisted",
-  rejected: "Rejected",
+const statusText = zhCN.common.listingStatus;
+const sourcePlatformText: Record<string, string> = {
+  ...zhCN.common.sourcePlatform,
 };
 
 function formatOptionalNumber(value: number | undefined, suffix = "") {
-  return typeof value === "number" ? `${value.toFixed(1)}${suffix}` : "Pending";
+  return typeof value === "number"
+    ? `${value.toFixed(1)}${suffix}`
+    : zhCN.common.pending;
 }
 
 function ScoreRow({
@@ -49,7 +49,9 @@ function ScoreRow({
         />
       </div>
 
-      <p className="mt-2 text-xs text-slate-500">Default weight: {weight}</p>
+      <p className="mt-2 text-xs text-slate-500">
+        {zhCN.listingDetailView.l2.defaultWeight}: {weight}
+      </p>
     </div>
   );
 }
@@ -62,8 +64,10 @@ function ReferenceScorePanel({
   if (!score) {
     return (
       <div className="mt-5 rounded-xl bg-slate-950 p-4">
-        <p className="text-sm text-slate-500">Reference Score</p>
-        <p className="mt-2 text-lg text-white">Pending</p>
+        <p className="text-sm text-slate-500">
+          {zhCN.listingDetailView.l2.referenceScore}
+        </p>
+        <p className="mt-2 text-lg text-white">{zhCN.common.pending}</p>
       </div>
     );
   }
@@ -71,7 +75,9 @@ function ReferenceScorePanel({
   return (
     <div className="mt-5 space-y-5">
       <div className="rounded-xl bg-slate-950 p-4">
-        <p className="text-sm text-slate-500">Reference Score</p>
+        <p className="text-sm text-slate-500">
+          {zhCN.listingDetailView.l2.referenceScore}
+        </p>
         <p className="mt-2 text-3xl font-semibold text-white">
           {score.totalScore.toFixed(1)}
         </p>
@@ -81,20 +87,28 @@ function ReferenceScorePanel({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <ScoreRow label="Rent contribution" score={score.rentScore} weight="25%" />
-        <ScoreRow label="Area contribution" score={score.areaScore} weight="20%" />
         <ScoreRow
-          label="Commute contribution"
+          label={zhCN.listingDetailView.l2.rows.rent}
+          score={score.rentScore}
+          weight="25%"
+        />
+        <ScoreRow
+          label={zhCN.listingDetailView.l2.rows.area}
+          score={score.areaScore}
+          weight="20%"
+        />
+        <ScoreRow
+          label={zhCN.listingDetailView.l2.rows.commute}
           score={score.commuteScore}
           weight="25%"
         />
         <ScoreRow
-          label="Life circle contribution"
+          label={zhCN.listingDetailView.l2.rows.lifeCircle}
           score={score.lifeCircleScore}
           weight="15%"
         />
         <ScoreRow
-          label="Subjective contribution"
+          label={zhCN.listingDetailView.l2.rows.subjective}
           score={score.subjectiveScore}
           weight="15%"
         />
@@ -102,10 +116,7 @@ function ReferenceScorePanel({
 
       <div className="rounded-xl border border-amber-900 bg-amber-950/40 p-4">
         <p className="text-sm leading-6 text-amber-100">
-          This reference score is not a final recommendation. A user may still
-          reject a listing because of one hard condition, such as unacceptable
-          commute, poor lighting, high rent, or a personal constraint not captured
-          by the current formula.
+          {zhCN.listingDetailView.l2.disclaimer}
         </p>
       </div>
     </div>
@@ -135,7 +146,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (!isLoaded) {
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 text-slate-300">
-        Loading listing information...
+        {zhCN.listingDetailView.loading}
       </div>
     );
   }
@@ -143,15 +154,17 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (!listing) {
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="text-2xl font-semibold text-white">Listing not found</h2>
+        <h2 className="text-2xl font-semibold text-white">
+          {zhCN.listingDetailView.notFound.title}
+        </h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          This listing may not exist, or local browser data may have been cleared.
+          {zhCN.listingDetailView.notFound.description}
         </p>
         <a
           href="/portfolio"
           className="mt-6 inline-flex rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
         >
-          Back to Portfolio
+          {zhCN.listingDetailView.notFound.action}
         </a>
       </div>
     );
@@ -178,21 +191,29 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Monthly Rent</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.summaryCards.monthlyRent}
+              </p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                CNY {listing.rent}
+                {zhCN.common.currencyCny}
+                {listing.rent}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Area</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.summaryCards.area}
+              </p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                {listing.area} sqm
+                {listing.area}
+                {zhCN.common.sqm}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Layout</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.summaryCards.layout}
+              </p>
               <p className="mt-2 text-2xl font-semibold text-white">
                 {listing.layout}
               </p>
@@ -206,7 +227,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
               rel="noreferrer"
               className="mt-5 inline-flex text-sm text-slate-300 underline decoration-slate-600 underline-offset-4 hover:text-white"
             >
-              View original link
+              {zhCN.listingDetailView.summaryCards.originalLink}
             </a>
           ) : null}
         </div>
@@ -231,46 +252,50 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
-            L1 LBS Spatial Analysis
+            {zhCN.listingDetailView.l1.title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            This area will later show commute time, life-circle score, map position,
-            and nearby POI statistics. Current values are placeholder or mock outputs.
+            {zhCN.listingDetailView.l1.description}
           </p>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Commute Time</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.l1.commuteTime}
+              </p>
               <p className="mt-2 text-lg text-white">
                 {typeof listing.commuteMinutes === "number"
-                  ? `${listing.commuteMinutes} min`
-                  : "Pending"}
+                  ? `${listing.commuteMinutes}${zhCN.common.minute}`
+                  : zhCN.common.pending}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Life Circle Score</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.l1.lifeCircleScore}
+              </p>
               <p className="mt-2 text-lg text-white">
                 {formatOptionalNumber(listing.lifeCircleScore)}
               </p>
             </div>
 
             <div className="rounded-xl bg-slate-950 p-4">
-              <p className="text-sm text-slate-500">Map Status</p>
-              <p className="mt-2 text-lg text-white">Not connected</p>
+              <p className="text-sm text-slate-500">
+                {zhCN.listingDetailView.l1.mapStatus}
+              </p>
+              <p className="mt-2 text-lg text-white">
+                {zhCN.listingDetailView.l1.notConnected}
+              </p>
             </div>
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
-            L2 Reference Scoring
+            {zhCN.listingDetailView.l2.title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            This score is a lightweight auxiliary comparison signal based on rent,
-            area, commute, life-circle score, and subjective ratings. It is not a
-            final recommendation. Users can still veto a listing based on any hard
-            requirement.
+            {zhCN.listingDetailView.l2.description}
           </p>
 
           <ReferenceScorePanel score={scoreBreakdown} />
@@ -278,60 +303,71 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-semibold text-white">
-            L3 AI Decision Advice
+            {zhCN.listingDetailView.l3.title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            Later, after explicit user confirmation and data redaction, this area
-            will generate checklist items, risk explanations, and decision advice
-            based on basic information, L1/L2 outputs, notes, ratings, and status.
+            {zhCN.listingDetailView.l3.description}
           </p>
 
           <button
             disabled
             className="mt-5 rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-500"
           >
-            AI analysis not connected
+            {zhCN.listingDetailView.l3.disabledButton}
           </button>
         </div>
       </section>
 
       <aside className="space-y-6">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold text-white">Basic Information</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {zhCN.listingDetailView.basicInfo.title}
+          </h2>
 
           <dl className="mt-5 space-y-4 text-sm">
             <div>
-              <dt className="text-slate-500">Source Platform</dt>
-              <dd className="mt-1 text-slate-200">{listing.sourcePlatform}</dd>
+              <dt className="text-slate-500">
+                {zhCN.listingDetailView.basicInfo.sourcePlatform}
+              </dt>
+              <dd className="mt-1 text-slate-200">
+                {sourcePlatformText[listing.sourcePlatform] ??
+                  listing.sourcePlatform}
+              </dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">Created At</dt>
+              <dt className="text-slate-500">
+                {zhCN.listingDetailView.basicInfo.createdAt}
+              </dt>
               <dd className="mt-1 text-slate-200">{listing.createdAt}</dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">Current Status</dt>
+              <dt className="text-slate-500">
+                {zhCN.listingDetailView.basicInfo.currentStatus}
+              </dt>
               <dd className="mt-1 text-slate-200">
                 {statusText[listing.status]}
               </dd>
             </div>
 
             <div>
-              <dt className="text-slate-500">Data Scope</dt>
+              <dt className="text-slate-500">
+                {zhCN.listingDetailView.basicInfo.dataScope}
+              </dt>
               <dd className="mt-1 text-slate-200">
-                Local or mock data. Not uploaded to cloud.
+                {zhCN.listingDetailView.basicInfo.dataScopeValue}
               </dd>
             </div>
           </dl>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-semibold text-white">Compliance Boundary</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {zhCN.listingDetailView.complianceBoundary.title}
+          </h2>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            The current demo only shows user-added or mock listing information. It
-            does not crawl third-party pages, does not publish a listing database,
-            does not broker transactions, and does not certify listing authenticity.
+            {zhCN.listingDetailView.complianceBoundary.body}
           </p>
         </div>
       </aside>

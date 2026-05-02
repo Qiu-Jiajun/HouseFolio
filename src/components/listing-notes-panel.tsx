@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { zhCN } from "@/content/zh-cn";
 import {
   loadListingNotes,
   loadListingRatings,
@@ -34,11 +35,11 @@ function RatingSelect({
         onChange={(event) => onChange(Number(event.target.value))}
         className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
       >
-        <option value={1}>1 - Very poor</option>
-        <option value={2}>2 - Weak</option>
-        <option value={3}>3 - Average</option>
-        <option value={4}>4 - Good</option>
-        <option value={5}>5 - Very good</option>
+        {zhCN.listingNotesPanel.ratings.options.map((option, index) => (
+          <option key={option} value={index + 1}>
+            {option}
+          </option>
+        ))}
       </select>
     </label>
   );
@@ -87,7 +88,7 @@ export function ListingNotesPanel({
     saveListingNote(nextNote);
     setNotes(loadListingNotes(listingId));
     setNoteContent("");
-    setSavedMessage("Note saved locally.");
+    setSavedMessage(zhCN.listingNotesPanel.savedMessages.noteSaved);
   }
 
   function handleSaveRatings() {
@@ -100,7 +101,7 @@ export function ListingNotesPanel({
     };
 
     saveListingRatings(nextRatings);
-    setSavedMessage("Subjective ratings saved locally.");
+    setSavedMessage(zhCN.listingNotesPanel.savedMessages.ratingsSaved);
     onRatingsSaved?.();
   }
 
@@ -109,14 +110,11 @@ export function ListingNotesPanel({
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <h2 className="text-2xl font-semibold text-white">
-        Notes and Subjective Ratings
+        {zhCN.listingNotesPanel.title}
       </h2>
 
       <p className="mt-2 text-sm leading-6 text-slate-400">
-        Record your own viewing notes and subjective impressions. Current data is
-        stored locally in the browser and is not uploaded to the cloud. Do not
-        enter phone numbers, WeChat IDs, ID numbers, exact doorplate numbers, or
-        contract text.
+        {zhCN.listingNotesPanel.description}
       </p>
 
       {savedMessage ? (
@@ -126,10 +124,18 @@ export function ListingNotesPanel({
       ) : null}
 
       <div className="mt-6 grid gap-5 md:grid-cols-3">
-        <RatingSelect label="Light" value={light} onChange={setLight} />
-        <RatingSelect label="Quietness" value={quiet} onChange={setQuiet} />
         <RatingSelect
-          label="Decoration"
+          label={zhCN.listingNotesPanel.ratings.light}
+          value={light}
+          onChange={setLight}
+        />
+        <RatingSelect
+          label={zhCN.listingNotesPanel.ratings.quiet}
+          value={quiet}
+          onChange={setQuiet}
+        />
+        <RatingSelect
+          label={zhCN.listingNotesPanel.ratings.decoration}
           value={decoration}
           onChange={setDecoration}
         />
@@ -137,7 +143,7 @@ export function ListingNotesPanel({
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-950 p-4">
         <p className="text-sm text-slate-400">
-          Current subjective average:
+          {zhCN.listingNotesPanel.ratings.averageLabel}
           <span className="ml-2 text-lg font-semibold text-white">
             {averageRating}
           </span>
@@ -148,18 +154,20 @@ export function ListingNotesPanel({
           onClick={handleSaveRatings}
           className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
         >
-          Save subjective ratings
+          {zhCN.listingNotesPanel.ratings.saveButton}
         </button>
       </div>
 
       <form onSubmit={handleSaveNote} className="mt-8">
         <label className="block">
-          <span className="text-sm text-slate-300">Viewing note</span>
+          <span className="text-sm text-slate-300">
+            {zhCN.listingNotesPanel.note.label}
+          </span>
           <textarea
             value={noteContent}
             onChange={(event) => setNoteContent(event.target.value)}
             rows={5}
-            placeholder="Example: good light, but a little noisy; kitchen is small; landlord asks for one month deposit and three months rent. Do not enter sensitive information."
+            placeholder={zhCN.listingNotesPanel.note.placeholder}
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm leading-6 text-white outline-none focus:border-slate-400"
           />
         </label>
@@ -168,15 +176,19 @@ export function ListingNotesPanel({
           type="submit"
           className="mt-4 rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
         >
-          Save note
+          {zhCN.listingNotesPanel.note.saveButton}
         </button>
       </form>
 
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-white">Saved notes</h3>
+        <h3 className="text-lg font-semibold text-white">
+          {zhCN.listingNotesPanel.savedNotes.title}
+        </h3>
 
         {notes.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">No notes yet.</p>
+          <p className="mt-3 text-sm text-slate-500">
+            {zhCN.listingNotesPanel.savedNotes.empty}
+          </p>
         ) : (
           <div className="mt-4 space-y-3">
             {notes.map((note) => (
