@@ -1,6 +1,6 @@
 import type { Listing } from "@/types/listing";
 import type { ListingSubjectiveRatings } from "@/types/listing-note";
-import type { ScoreInput } from "@/lib/algorithm/score";
+import type { ScoreBreakdown, ScoreInput } from "@/lib/algorithm/score";
 import {
   calculatePortfolioScores,
   getScoreByListingId,
@@ -9,6 +9,13 @@ import { mockListings } from "@/lib/db/mock-listings";
 import { loadLocalListings } from "@/lib/local-store/listings";
 import { loadListingRatings } from "@/lib/local-store/listing-notes";
 import { applyListingStatusOverrides } from "@/lib/local-store/listing-status";
+
+function getBaseClientListings(): Listing[] {
+  return applyListingStatusOverrides([
+    ...loadLocalListings(),
+    ...mockListings,
+  ]);
+}
 
 function getSubjectiveAverageScore(
   ratings: ListingSubjectiveRatings | null
@@ -33,9 +40,13 @@ function toScoreInput(listing: Listing): ScoreInput {
   };
 }
 
-function attachReferenceScores(listings: Listing[]): Listing[] {
+function getPortfolioScoreBreakdowns(listings: Listing[]): ScoreBreakdown[] {
   const scoreInputs = listings.map(toScoreInput);
-  const scores = calculatePortfolioScores(scoreInputs);
+  return calculatePortfolioScores(scoreInputs);
+}
+
+function attachReferenceScores(listings: Listing[]): Listing[] {
+  const scores = getPortfolioScoreBreakdowns(listings);
 
   return listings.map((listing) => {
     const score = getScoreByListingId(scores, listing.id);
@@ -48,14 +59,18 @@ function attachReferenceScores(listings: Listing[]): Listing[] {
 }
 
 export function getAllClientListings(): Listing[] {
-  const listings = applyListingStatusOverrides([
-    ...loadLocalListings(),
-    ...mockListings,
-  ]);
-
-  return attachReferenceScores(listings);
+  return attachReferenceScores(getBaseClientListings());
 }
 
 export function findClientListingById(id: string): Listing | undefined {
   return getAllClientListings().find((listing) => listing.id === id);
+}
+
+export function findClientListingScoreById(
+  id: string
+): ScoreBreakdown | undefined {
+  const listings = getBaseClientListings();
+  const scores = getPortfolioScoreBreakdowns(listings);
+
+  return getScoreByListingId(scores, id);
 }

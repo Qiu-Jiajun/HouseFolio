@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { ListingStatusPanel } from "@/components/listing-status-panel";
-import { findClientListingById } from "@/lib/local-store/listing-lookup";
+import {
+  findClientListingById,
+  findClientListingScoreById,
+} from "@/lib/local-store/listing-lookup";
+import type { ScoreBreakdown } from "@/lib/algorithm/score";
 import type { Listing } from "@/types/listing";
 
 type ListingDetailViewProps = {
@@ -22,13 +26,109 @@ function formatOptionalNumber(value: number | undefined, suffix = "") {
   return typeof value === "number" ? `${value.toFixed(1)}${suffix}` : "Pending";
 }
 
+function ScoreRow({
+  label,
+  score,
+  weight,
+}: {
+  label: string;
+  score: number;
+  weight: string;
+}) {
+  return (
+    <div className="rounded-xl bg-slate-950 p-4">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="text-sm text-slate-300">{label}</p>
+        <p className="text-sm font-medium text-white">{score.toFixed(1)}</p>
+      </div>
+
+      <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+        <div
+          className="h-full rounded-full bg-white"
+          style={{ width: `${Math.max(0, Math.min(100, score * 10))}%` }}
+        />
+      </div>
+
+      <p className="mt-2 text-xs text-slate-500">Default weight: {weight}</p>
+    </div>
+  );
+}
+
+function ReferenceScorePanel({
+  score,
+}: {
+  score: ScoreBreakdown | undefined;
+}) {
+  if (!score) {
+    return (
+      <div className="mt-5 rounded-xl bg-slate-950 p-4">
+        <p className="text-sm text-slate-500">Reference Score</p>
+        <p className="mt-2 text-lg text-white">Pending</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 space-y-5">
+      <div className="rounded-xl bg-slate-950 p-4">
+        <p className="text-sm text-slate-500">Reference Score</p>
+        <p className="mt-2 text-3xl font-semibold text-white">
+          {score.totalScore.toFixed(1)}
+        </p>
+        <p className="mt-3 text-sm leading-6 text-slate-400">
+          {score.explanation}
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <ScoreRow label="Rent contribution" score={score.rentScore} weight="25%" />
+        <ScoreRow label="Area contribution" score={score.areaScore} weight="20%" />
+        <ScoreRow
+          label="Commute contribution"
+          score={score.commuteScore}
+          weight="25%"
+        />
+        <ScoreRow
+          label="Life circle contribution"
+          score={score.lifeCircleScore}
+          weight="15%"
+        />
+        <ScoreRow
+          label="Subjective contribution"
+          score={score.subjectiveScore}
+          weight="15%"
+        />
+      </div>
+
+      <div className="rounded-xl border border-amber-900 bg-amber-950/40 p-4">
+        <p className="text-sm leading-6 text-amber-100">
+          This reference score is not a final recommendation. A user may still
+          reject a listing because of one hard condition, such as unacceptable
+          commute, poor lighting, high rent, or a personal constraint not captured
+          by the current formula.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const [listing, setListing] = useState<Listing | null>(null);
+  const [scoreBreakdown, setScoreBreakdown] = useState<
+    ScoreBreakdown | undefined
+  >(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    const found = findClientListingById(listingId);
+  function refreshListingState(id: string) {
+    const found = findClientListingById(id);
+    const score = findClientListingScoreById(id);
+
     setListing(found ?? null);
+    setScoreBreakdown(score);
+  }
+
+  useEffect(() => {
+    refreshListingState(listingId);
     setIsLoaded(true);
   }, [listingId]);
 
@@ -125,8 +225,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
         <ListingNotesPanel
           listingId={listing.id}
           onRatingsSaved={() => {
-            const updatedListing = findClientListingById(listing.id);
-            setListing(updatedListing ?? listing);
+            refreshListingState(listing.id);
           }}
         />
 
@@ -174,12 +273,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             requirement.
           </p>
 
-          <div className="mt-5 rounded-xl bg-slate-950 p-4">
-            <p className="text-sm text-slate-500">Reference Score</p>
-            <p className="mt-2 text-lg text-white">
-              {formatOptionalNumber(listing.compositeScore)}
-            </p>
-          </div>
+          <ReferenceScorePanel score={scoreBreakdown} />
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
