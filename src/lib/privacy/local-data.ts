@@ -33,7 +33,7 @@ export const HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
   },
   {
     key: "housefolio:work-locations",
-    label: "Work locations",
+    label: "Work/study locations and commute anchors",
   },
 ] as const;
 
