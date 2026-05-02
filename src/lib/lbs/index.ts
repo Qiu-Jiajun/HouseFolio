@@ -15,3 +15,11 @@ export type {
 } from "./provider";
 
 export { createMockLbsProvider, mockLbsProvider } from "./mock-provider";
+
+export {
+  calculateCommute,
+  geocodeAddress,
+  getLbsProvider,
+  isUsingMockLbsProvider,
+  searchNearbyPoi,
+} from "./service";
