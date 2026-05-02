@@ -1,4 +1,19 @@
 export type {
+  AmapCommuteAdapterOutput,
+  AmapCommuteRequestShape,
+  AmapGeocodeAdapterOutput,
+  AmapGeocodeCandidateSummary,
+  AmapGeocodeRequestShape,
+  AmapNearbyPoiAdapterOutput,
+  AmapNearbyPoiRequestShape,
+  AmapPoiCategoryCountSummary,
+  AmapRequestBoundary,
+  AmapRequestPurpose,
+} from "./amap-contract";
+
+export { createAmapRequestBoundary } from "./amap-contract";
+
+export type {
   CalculateCommuteInput,
   CalculateCommuteResult,
   GeocodeAddressInput,
