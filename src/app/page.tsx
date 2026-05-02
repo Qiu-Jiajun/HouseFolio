@@ -1,3 +1,6 @@
+import { AppNav } from "@/components/app-nav";
+import { ComplianceFooter } from "@/components/compliance-footer";
+
 const engines = [
   {
     level: "L1",
@@ -21,8 +24,10 @@ const engines = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16 text-white">
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-5xl">
+        <AppNav />
+
         <p className="mb-4 text-sm font-medium text-slate-400">
           HouseFolio · Private rental decision workspace
         </p>
@@ -85,11 +90,13 @@ export default function Home() {
         <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="mb-3 text-xl font-semibold">Current Phase</h2>
           <p className="text-sm leading-6 text-slate-400">
-            Phase 1K: local data export and clearing controls. The demo still
+            Phase 1L: global navigation and compliance footer. The demo still
             uses mock data and browser localStorage. Supabase, map APIs, and AI
             services are intentionally not connected yet.
           </p>
         </div>
+
+        <ComplianceFooter />
       </section>
     </main>
   );

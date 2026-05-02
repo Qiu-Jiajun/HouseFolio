@@ -1,3 +1,5 @@
+import { AppNav } from "@/components/app-nav";
+import { ComplianceFooter } from "@/components/compliance-footer";
 import { ListingDetailView } from "@/components/listing-detail-view";
 
 type ListingDetailPageProps = {
@@ -12,15 +14,22 @@ export default async function ListingDetailPage({
   const { id } = await params;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
-        <a href="/portfolio" className="text-sm text-slate-400 hover:text-white">
-          ← 返回 Portfolio
-        </a>
+        <AppNav />
 
-        <div className="mt-8">
-          <ListingDetailView listingId={id} />
+        <div className="mb-6">
+          <a
+            href="/portfolio"
+            className="text-sm text-slate-400 hover:text-white"
+          >
+            Back to Portfolio
+          </a>
         </div>
+
+        <ListingDetailView listingId={id} />
+
+        <ComplianceFooter />
       </section>
     </main>
   );

@@ -1,34 +1,15 @@
+import { AppNav } from "@/components/app-nav";
+import { ComplianceFooter } from "@/components/compliance-footer";
 import { PortfolioList } from "@/components/portfolio-list";
 
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-12 text-white">
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
       <section className="mx-auto max-w-6xl">
+        <AppNav />
+
         <div className="mb-8">
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="/"
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-900 hover:text-white"
-            >
-              Home
-            </a>
-
-            <a
-              href="/portfolio/new"
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-900 hover:text-white"
-            >
-              Add Listing
-            </a>
-
-            <a
-              href="/settings"
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-900 hover:text-white"
-            >
-              Settings
-            </a>
-          </div>
-
-          <p className="mt-8 text-sm font-medium text-slate-400">
+          <p className="text-sm font-medium text-slate-400">
             HouseFolio · Portfolio
           </p>
 
@@ -56,6 +37,8 @@ export default function PortfolioPage() {
         </div>
 
         <PortfolioList />
+
+        <ComplianceFooter />
       </section>
     </main>
   );
