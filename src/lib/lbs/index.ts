@@ -52,3 +52,12 @@ export {
   isUsingMockLbsProvider,
   searchNearbyPoi,
 } from "./service";
+export type {
+  CalculateAndStoreCommuteResultsInput,
+  CalculateAndStoreCommuteResultsOutput,
+  CalculateCommuteFn,
+  CommuteWorkflowFailure,
+  GeocodeAddressFn,
+} from "./commute-workflow";
+
+export { calculateAndStoreCommuteResults } from "./commute-workflow";
