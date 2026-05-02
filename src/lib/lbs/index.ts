@@ -19,6 +19,7 @@ export { createMockLbsProvider, mockLbsProvider } from "./mock-provider";
 export {
   calculateCommute,
   geocodeAddress,
+  getLbsConfigSnapshot,
   getLbsProvider,
   isUsingMockLbsProvider,
   searchNearbyPoi,

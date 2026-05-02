@@ -1,3 +1,4 @@
+import { getLbsRuntimeConfig } from "../config/lbs";
 import { mockLbsProvider } from "./mock-provider";
 import type {
   CalculateCommuteInput,
@@ -9,10 +10,16 @@ import type {
   SearchNearbyPoiResult,
 } from "./provider";
 
+const lbsRuntimeConfig = getLbsRuntimeConfig();
+
 const activeLbsProvider: LbsProvider = mockLbsProvider;
 
 export function getLbsProvider(): LbsProvider {
   return activeLbsProvider;
+}
+
+export function getLbsConfigSnapshot() {
+  return lbsRuntimeConfig;
 }
 
 export async function geocodeAddress(
