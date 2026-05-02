@@ -1,6 +1,7 @@
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { SettingsLocalDataPanel } from "@/components/settings-local-data-panel";
+import { WorkLocationSettingsPanel } from "@/components/work-location-settings-panel";
 import { zhCN } from "@/content/zh-cn";
 
 export default function SettingsPage() {
@@ -21,7 +22,10 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <SettingsLocalDataPanel />
+        <div className="space-y-6">
+          <WorkLocationSettingsPanel />
+          <SettingsLocalDataPanel />
+        </div>
 
         <ComplianceFooter />
       </div>

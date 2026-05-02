@@ -340,6 +340,42 @@ export const zhCN = {
     },
   },
 
+  workLocationSettingsPanel: {
+    title: "\u5de5\u4f5c\u5730\u70b9\u8bbe\u7f6e",
+    description:
+      "\u5de5\u4f5c\u5730\u70b9\u662f\u540e\u7eed L1 LBS \u901a\u52e4\u5206\u6790\u7684\u8f93\u5165\u3002\u5f53\u524d\u9636\u6bb5\u4ec5\u4fdd\u5b58\u5230\u6d4f\u89c8\u5668\u672c\u5730\uff0c\u4e0d\u63a5\u9ad8\u5fb7\u3001\u4e0d\u5730\u7406\u7f16\u7801\u3001\u4e0d\u8ba1\u7b97\u901a\u52e4\u3002",
+    form: {
+      name: {
+        label: "\u5730\u70b9\u540d\u79f0 *",
+        placeholder: "\u4f8b\u5982\uff1a\u516c\u53f8\u9644\u8fd1 / \u5b66\u6821\u9644\u8fd1 / \u5b9e\u4e60\u5355\u4f4d",
+      },
+      addressHint: {
+        label: "\u4f4d\u7f6e\u63d0\u793a *",
+        placeholder: "\u4f8b\u5982\uff1a\u671b\u4eac SOHO \u9644\u8fd1 / \u4e94\u9053\u53e3\u5730\u94c1\u7ad9\u9644\u8fd1",
+      },
+      note: {
+        label: "\u5907\u6ce8\uff0c\u53ef\u9009",
+        placeholder: "\u4f8b\u5982\uff1a\u4e3b\u8981\u7528\u4e8e\u5de5\u4f5c\u65e5\u901a\u52e4\u53c2\u8003\u3002\u4e0d\u8981\u586b\u5199\u7cbe\u786e\u95e8\u724c\u53f7\u3002",
+      },
+      save: "\u4fdd\u5b58\u5de5\u4f5c\u5730\u70b9",
+    },
+    errors: {
+      nameRequired: "\u8bf7\u586b\u5199\u5730\u70b9\u540d\u79f0\u3002",
+      addressHintRequired: "\u8bf7\u586b\u5199\u4f4d\u7f6e\u63d0\u793a\u3002",
+    },
+    savedMessage: "\u5de5\u4f5c\u5730\u70b9\u5df2\u4fdd\u5b58\u5230\u672c\u5730\u3002",
+    empty: "\u8fd8\u6ca1\u6709\u5de5\u4f5c\u5730\u70b9\u3002\u6dfb\u52a0\u540e\uff0c\u540e\u7eed L1 LBS \u53ef\u4ee5\u7528\u5b83\u4f5c\u4e3a\u901a\u52e4\u951a\u70b9\u3002",
+    cards: {
+      addressHint: "\u4f4d\u7f6e\u63d0\u793a",
+      note: "\u5907\u6ce8",
+      createdAt: "\u6dfb\u52a0\u65f6\u95f4",
+      delete: "\u5220\u9664",
+    },
+    deleteConfirm: "\u786e\u8ba4\u5220\u9664\u8fd9\u4e2a\u5de5\u4f5c\u5730\u70b9\u5417\uff1f",
+    boundary:
+      "\u8bf7\u4f18\u5148\u4f7f\u7528\u5730\u94c1\u7ad9\u3001\u5546\u5708\u3001\u5199\u5b57\u697c\u9644\u8fd1\u7b49\u6a21\u7cca\u4f4d\u7f6e\uff0c\u4e0d\u8981\u586b\u5199\u7cbe\u786e\u95e8\u724c\u53f7\u3002",
+  },
+
   settings: {
     eyebrow: "HouseFolio · Phase 1K",
     title: "设置与本地数据",
@@ -372,6 +408,7 @@ export const zhCN = {
       "housefolio:listing-notes": "房源笔记",
       "housefolio:listing-ratings": "主观评分",
       "housefolio:listing-status-overrides": "房源状态覆盖",
+      "housefolio:work-locations": "\u5de5\u4f5c\u5730\u70b9",
     },
     complianceBoundary: {
       title: "合规边界",
