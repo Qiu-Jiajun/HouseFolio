@@ -14,6 +14,8 @@ export type {
   SearchNearbyPoiResult,
 } from "./provider";
 
+export { createAmapLbsProvider, amapLbsProvider, AmapProviderNotImplementedError } from "./amap-provider";
+
 export { createMockLbsProvider, mockLbsProvider } from "./mock-provider";
 
 export {
