@@ -102,6 +102,25 @@ interface AmapCyclingResponse {
   ext?: unknown;
 }
 
+interface AmapDrivingPath {
+  distance?: string;
+  duration?: string;
+}
+
+interface AmapDrivingRoute {
+  origin?: string;
+  destination?: string;
+  paths?: AmapDrivingPath[];
+}
+
+interface AmapDrivingResponse {
+  status?: string;
+  count?: string;
+  info?: string;
+  infocode?: string;
+  route?: AmapDrivingRoute;
+}
+
 export class AmapProviderNotImplementedError extends Error {
   constructor(methodName: string) {
     super(`Amap LBS provider method is not implemented yet: ${methodName}`);
@@ -266,6 +285,19 @@ function createCyclingCommuteUrl(input: CalculateCommuteInput): string {
   url.searchParams.set("key", getAmapApiKey());
   url.searchParams.set("origin", formatCoordinate(input.origin));
   url.searchParams.set("destination", formatCoordinate(input.destination));
+  url.searchParams.set("output", "JSON");
+
+  return url.toString();
+}
+
+function createDrivingCommuteUrl(input: CalculateCommuteInput): string {
+  const url = new URL("https://restapi.amap.com/v3/direction/driving");
+
+  url.searchParams.set("key", getAmapApiKey());
+  url.searchParams.set("origin", formatCoordinate(input.origin));
+  url.searchParams.set("destination", formatCoordinate(input.destination));
+  url.searchParams.set("extensions", "base");
+  url.searchParams.set("strategy", "0");
   url.searchParams.set("output", "JSON");
 
   return url.toString();
@@ -436,6 +468,40 @@ export const amapLbsProvider: LbsProvider = {
         durationMinutes,
         distanceMeters: Math.round(distanceMeters),
         summary: createCommuteSummary("cycling", input, durationMinutes, distanceMeters),
+      };
+    }
+
+    if (input.mode === "driving") {
+      const data = await fetchJson<AmapDrivingResponse>(createDrivingCommuteUrl(input));
+
+      if (data.status !== "1") {
+        throw new AmapProviderError(
+          `Amap driving request failed: ${data.info ?? "unknown error"} (${data.infocode ?? "no infocode"}).`,
+        );
+      }
+
+      const firstPath = data.route?.paths?.[0];
+
+      if (!firstPath) {
+        throw new AmapProviderError("Amap driving route returned no candidate paths.");
+      }
+
+      const durationSeconds = parsePositiveNumber(firstPath.duration);
+      const distanceMeters = parsePositiveNumber(firstPath.distance);
+
+      if (!durationSeconds || !distanceMeters) {
+        throw new AmapProviderError("Amap driving route returned invalid duration or distance.");
+      }
+
+      const durationMinutes = Math.ceil(durationSeconds / 60);
+
+      return {
+        provider: "amap",
+        isMock: false,
+        mode: "driving",
+        durationMinutes,
+        distanceMeters: Math.round(distanceMeters),
+        summary: createCommuteSummary("driving", input, durationMinutes, distanceMeters),
       };
     }
 
