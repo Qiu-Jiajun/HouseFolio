@@ -206,6 +206,37 @@ export const zhCN = {
     },
   },
 
+  listingStatusPanel: {
+    title: "房源状态管理",
+    description:
+      "状态用于标记这套房源在你的找房决策流程中的位置。当前阶段仅保存到浏览器本地。",
+    currentStatus: "当前状态",
+    statusDescription: "状态说明",
+    savedMessage: "状态已保存到本地。",
+    options: {
+      draft: {
+        label: "草稿",
+        description: "刚添加，还没有认真评估。",
+      },
+      watching: {
+        label: "关注中",
+        description: "值得继续观察，但还没有进入最终候选。",
+      },
+      visited: {
+        label: "已看房",
+        description: "已经线下看过，等待复盘。",
+      },
+      shortlisted: {
+        label: "候选",
+        description: "进入最终对比池，可以参与后续 L2 对比。",
+      },
+      rejected: {
+        label: "已排除",
+        description: "暂不考虑，但保留决策记录。",
+      },
+    },
+  },
+
   settings: {
     eyebrow: "HouseFolio · Phase 1K",
     title: "设置与本地数据",

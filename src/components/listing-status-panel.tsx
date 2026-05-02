@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ListingStatus } from "@/types/listing";
+import { zhCN } from "@/content/zh-cn";
 import { saveListingStatus } from "@/lib/local-store/listing-status";
+import type { ListingStatus } from "@/types/listing";
 
 type ListingStatusPanelProps = {
   listingId: string;
@@ -17,28 +18,28 @@ const statusOptions: {
 }[] = [
   {
     value: "draft",
-    label: "草稿",
-    description: "刚添加，还没有认真评估。",
+    label: zhCN.listingStatusPanel.options.draft.label,
+    description: zhCN.listingStatusPanel.options.draft.description,
   },
   {
     value: "watching",
-    label: "关注中",
-    description: "值得继续观察，但还没进入最终候选。",
+    label: zhCN.listingStatusPanel.options.watching.label,
+    description: zhCN.listingStatusPanel.options.watching.description,
   },
   {
     value: "visited",
-    label: "已看房",
-    description: "已经线下看过，等待复盘。",
+    label: zhCN.listingStatusPanel.options.visited.label,
+    description: zhCN.listingStatusPanel.options.visited.description,
   },
   {
     value: "shortlisted",
-    label: "候选",
-    description: "进入最终对比池，可以参与后续 L2 对比。",
+    label: zhCN.listingStatusPanel.options.shortlisted.label,
+    description: zhCN.listingStatusPanel.options.shortlisted.description,
   },
   {
     value: "rejected",
-    label: "已排除",
-    description: "暂不考虑，但保留决策记录。",
+    label: zhCN.listingStatusPanel.options.rejected.label,
+    description: zhCN.listingStatusPanel.options.rejected.description,
   },
 ];
 
@@ -58,7 +59,7 @@ export function ListingStatusPanel({
     setCurrentStatus(nextStatus);
     saveListingStatus(listingId, nextStatus);
     onStatusChange(nextStatus);
-    setSavedMessage("状态已保存到本地。");
+    setSavedMessage(zhCN.listingStatusPanel.savedMessage);
   }
 
   const currentOption = statusOptions.find(
@@ -67,14 +68,18 @@ export function ListingStatusPanel({
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-      <h2 className="text-2xl font-semibold text-white">房源状态管理</h2>
+      <h2 className="text-2xl font-semibold text-white">
+        {zhCN.listingStatusPanel.title}
+      </h2>
 
       <p className="mt-2 text-sm leading-6 text-slate-400">
-        状态用于标记这套房源在你的找房决策流程中的位置。当前阶段仅保存到浏览器本地。
+        {zhCN.listingStatusPanel.description}
       </p>
 
       <label className="mt-5 block">
-        <span className="text-sm text-slate-300">当前状态</span>
+        <span className="text-sm text-slate-300">
+          {zhCN.listingStatusPanel.currentStatus}
+        </span>
         <select
           value={currentStatus}
           onChange={(event) =>
@@ -92,7 +97,9 @@ export function ListingStatusPanel({
 
       {currentOption ? (
         <div className="mt-5 rounded-xl bg-slate-950 p-4">
-          <p className="text-sm text-slate-500">状态说明</p>
+          <p className="text-sm text-slate-500">
+            {zhCN.listingStatusPanel.statusDescription}
+          </p>
           <p className="mt-2 text-sm leading-6 text-slate-300">
             {currentOption.description}
           </p>
