@@ -60,4 +60,11 @@ export const zhCN = {
       addListing: "添加房源",
     },
   },
+
+  settings: {
+    eyebrow: "HouseFolio · Phase 1K",
+    title: "设置与本地数据",
+    description:
+      "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面是 Demo 阶段隐私与数据权利能力的基础。",
+  },
 } as const;

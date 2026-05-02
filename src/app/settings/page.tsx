@@ -1,6 +1,7 @@
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { SettingsLocalDataPanel } from "@/components/settings-local-data-panel";
+import { zhCN } from "@/content/zh-cn";
 
 export default function SettingsPage() {
   return (
@@ -10,14 +11,13 @@ export default function SettingsPage() {
 
         <div className="mb-8">
           <p className="mb-3 text-sm font-medium text-slate-400">
-            HouseFolio Phase 1K
+            {zhCN.settings.eyebrow}
           </p>
           <h1 className="text-4xl font-bold tracking-tight">
-            Settings and Local Data
+            {zhCN.settings.title}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-400">
-            Export or clear local HouseFolio data stored in this browser. This
-            page is part of the privacy and data-rights foundation for the demo.
+            {zhCN.settings.description}
           </p>
         </div>
 
