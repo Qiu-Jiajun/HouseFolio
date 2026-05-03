@@ -218,6 +218,12 @@ export const zhCN = {
       "emptyCommuteResults": "尚未计算参考通勤",
       "emptyCommuteDescription": "后续可通过手动按钮计算公共交通等参考通勤。当前阶段仅展示本地已保存的通勤摘要。",
       "storedAt": "计算时间",
+      "calculateTransitButton": "计算公共交通参考通勤",
+      "calculating": "正在计算参考通勤……",
+      "calculateSucceeded": "参考通勤结果已保存到本地。",
+      "calculateFailed": "参考通勤计算失败，请稍后重试。",
+      "noWorkLocations": "请先到 Settings 添加工作/学习地点（通勤锚点）。",
+      "missingListingAddress": "当前房源缺少可用于计算的地址线索。",
       "referenceOnly": "通勤结果基于高德路径规划计算，仅作辅助比较；实际通勤受等车、换乘、拥堵、天气等因素影响。"
     },
     "l2": {

@@ -253,6 +253,9 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
         <ListingCommutePanel
           listingId={listing.id}
+          listingTitle={listing.title}
+          addressHint={listing.addressHint}
+          district={listing.district}
           commuteMinutes={listing.commuteMinutes}
           lifeCircleScore={listing.lifeCircleScore}
         />
