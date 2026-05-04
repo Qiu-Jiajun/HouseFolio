@@ -9,6 +9,7 @@ import { mockListings } from "@/lib/db/mock-listings";
 import { loadLocalListings } from "@/lib/local-store/listings";
 import { loadListingRatings } from "@/lib/local-store/listing-notes";
 import { applyListingStatusOverrides } from "@/lib/local-store/listing-status";
+import { getCommuteResultsForListing } from "@/lib/local-store/commute-results";
 
 function getBaseClientListings(): Listing[] {
   return applyListingStatusOverrides([
@@ -25,6 +26,46 @@ function getSubjectiveAverageScore(
   }
 
   return (ratings.light + ratings.quiet + ratings.decoration) / 3;
+}
+
+function getCachedTransitCommuteMinutes(listingId: string): number | null {
+  const transitResults = getCommuteResultsForListing(listingId).filter(
+    (result) =>
+      result.mode === "transit" &&
+      typeof result.durationMinutes === "number" &&
+      !Number.isNaN(result.durationMinutes)
+  );
+
+  if (transitResults.length === 0) {
+    return null;
+  }
+
+  const shortestTransitMinutes = Math.min(
+    ...transitResults.map((result) => result.durationMinutes)
+  );
+
+  return Math.round(shortestTransitMinutes);
+}
+
+function attachCachedTransitCommuteMinutes(listings: Listing[]): Listing[] {
+  return listings.map((listing) => {
+    const cachedTransitCommuteMinutes = getCachedTransitCommuteMinutes(
+      listing.id
+    );
+
+    if (cachedTransitCommuteMinutes === null) {
+      return listing;
+    }
+
+    return {
+      ...listing,
+      commuteMinutes: cachedTransitCommuteMinutes,
+    };
+  });
+}
+
+function getClientListingsForScoring(): Listing[] {
+  return attachCachedTransitCommuteMinutes(getBaseClientListings());
 }
 
 function toScoreInput(listing: Listing): ScoreInput {
@@ -59,7 +100,7 @@ function attachReferenceScores(listings: Listing[]): Listing[] {
 }
 
 export function getAllClientListings(): Listing[] {
-  return attachReferenceScores(getBaseClientListings());
+  return attachReferenceScores(getClientListingsForScoring());
 }
 
 export function findClientListingById(id: string): Listing | undefined {
@@ -69,7 +110,7 @@ export function findClientListingById(id: string): Listing | undefined {
 export function findClientListingScoreById(
   id: string
 ): ScoreBreakdown | undefined {
-  const listings = getBaseClientListings();
+  const listings = getClientListingsForScoring();
   const scores = getPortfolioScoreBreakdowns(listings);
 
   return getScoreByListingId(scores, id);
