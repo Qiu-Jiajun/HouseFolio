@@ -63,12 +63,12 @@ function isValidWorkLocation(value: unknown): value is WorkLocation {
   );
 }
 
-function getSafeErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
+function getGenericGeocodeFailureReason(): string {
+  return "Unable to calculate transit commute from the provided address hints.";
+}
 
-  return "Unknown transit commute calculation error.";
+function getGenericAnchorFailureReason(): string {
+  return "Unable to calculate transit commute for this commute anchor.";
 }
 
 function createFailure(
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
     const response: TransitCommuteResponseBody = {
       results,
       failures: validWorkLocations.map((workLocation) =>
-        createFailure(getSafeErrorMessage(error), listing, workLocation),
+        createFailure(getGenericGeocodeFailureReason(), listing, workLocation),
       ),
     };
 
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       results.push(createSaveInput(listing, workLocation, commute));
     } catch (error) {
       failures.push(
-        createFailure(getSafeErrorMessage(error), listing, workLocation),
+        createFailure(getGenericAnchorFailureReason(), listing, workLocation),
       );
     }
   }
