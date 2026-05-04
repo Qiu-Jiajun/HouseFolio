@@ -1,3 +1,4 @@
+import { ListingCardCoverPhoto } from "@/components/listing-card-cover-photo";
 import { zhCN } from "@/content/zh-cn";
 import type { Listing } from "@/types/listing";
 
@@ -30,6 +31,8 @@ export function ListingCard({ listing }: ListingCardProps) {
 
   return (
     <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-sm transition-colors hover:border-slate-700">
+      <ListingCardCoverPhoto listingId={listing.id} title={listing.title} />
+
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <p className="mb-2 text-xs text-slate-500">
