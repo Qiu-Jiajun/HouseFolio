@@ -1,283 +1,311 @@
-# Phase 3E-3｜Settings JSON Import UI Plan
+# Phase 3E-3｜Settings JSON 导入 UI 计划
 
-## 1. Phase Goal
+## 1. 阶段目标
 
-Phase 3E-3 defines the Settings JSON import UI plan.
+Phase 3E-3 用于定义 Settings 页面中的 JSON 导入 UI 方案。
 
-This phase does not implement UI code. It only documents the intended user flow, UI copy, confirmation behavior, error states, and implementation boundary before touching Settings.
+本阶段只写规划文档，不实现 UI，不添加文件选择器，不调用导入 helper，不写入 localStorage，也不处理照片、ZIP、AI、地图、高德、Supabase 或任何云同步能力。
 
-The purpose is to prevent accidental expansion from structured JSON import into photo ZIP restore, cloud sync, or third-party data import.
+本阶段的目标是先把用户流程、文案、确认行为、错误状态和实现边界写清楚，避免后续把“结构化 JSON 导入”误扩张成照片备份包、云端同步或第三方平台数据导入。
 
-## 2. Product Position
+## 2. 产品定位
 
-JSON import belongs to the local-first data rights layer.
+JSON 导入属于 HouseFolio v2.0 的本地优先数据权利层。
 
-It helps users restore or migrate their local HouseFolio structured data between browsers or devices.
+它解决的是：
 
-It is not:
+- 用户从当前浏览器导出 HouseFolio 本地结构化数据；
+- 用户在另一个浏览器或设备上手动导入 JSON；
+- 用户在单设备本地优先架构下拥有迁移和恢复路径。
 
-- cloud sync
-- account backup
-- multi-device realtime sync
-- photo restore
-- third-party platform import
-- AI-assisted import
-- rental website scraping
+它不是：
 
-## 3. Current Technical Basis
+- 云同步；
+- 账号备份；
+- 多设备实时同步；
+- 照片恢复；
+- 第三方平台导入；
+- AI 辅助导入；
+- 房源网站抓取；
+- 公开房源库。
 
-Already completed:
+## 3. 当前技术基础
 
-- Phase 3E-0: JSON import boundary review
-- Phase 3E-1: pure import helper scaffold
-- Phase 3E-2: helper checkpoint
+已经完成：
 
-Existing helper files:
+- Phase 3E-0：JSON import boundary review；
+- Phase 3E-1：纯函数导入 helper scaffold；
+- Phase 3E-2：JSON import helper checkpoint。
 
-- src/lib/privacy/local-data-import.ts
-- src/lib/privacy/local-data-import-contract-check.ts
+已有 helper 文件：
 
-Existing helper functions:
+- `src/lib/privacy/local-data-import.ts`
+- `src/lib/privacy/local-data-import-contract-check.ts`
 
-- parseHouseFolioLocalDataImportJson
-- applyHouseFolioLocalDataImportPayload
+已有 helper 函数：
 
-Current importable keys:
+- `parseHouseFolioLocalDataImportJson`
+- `applyHouseFolioLocalDataImportPayload`
 
-- housefolio:listings
-- housefolio:listing-notes
-- housefolio:listing-ratings
-- housefolio:listing-status-overrides
-- housefolio:work-locations
-- housefolio:commute-results
+当前允许导入的 localStorage keys：
 
-## 4. Future Settings UI Location
+- `housefolio:listings`
+- `housefolio:listing-notes`
+- `housefolio:listing-ratings`
+- `housefolio:listing-status-overrides`
+- `housefolio:work-locations`
+- `housefolio:commute-results`
 
-The JSON import entry should live in the existing Settings local data area, likely inside or near:
+## 4. 未来 UI 所在位置
 
-- src/components/settings-local-data-panel.tsx
+JSON 导入口应放在现有 Settings 本地数据管理区域，优先考虑放在：
 
-It should not be placed in:
+- `src/components/settings-local-data-panel.tsx`
 
-- Portfolio
-- Detail
-- Add Listing
-- AppNav
-- ComplianceFooter
-- a new route
-- a modal-only hidden feature without Settings entry
+不应放在：
 
-Reason:
+- Portfolio；
+- Detail；
+- Add Listing；
+- AppNav；
+- ComplianceFooter；
+- 新路由；
+- 只有弹窗、没有 Settings 入口的隐藏功能。
 
-Settings is the current home for local data rights:
+原因：
 
-- view local data
-- export local JSON
-- clear local data
-- view photo storage status
-- clear local photos
+Settings 当前已经是本地数据权利的集中入口，包括：
 
-Import belongs to the same data rights cluster.
+- 查看本地数据；
+- 导出本地 JSON；
+- 清除本机结构化数据；
+- 查看照片本机保存状态；
+- 清除全部本机照片。
 
-## 5. Suggested UI Structure
+JSON 导入应和这些功能在同一数据权利区域内出现。
 
-Recommended section title:
+## 5. 建议 UI 结构
+
+建议区块标题：
 
 导入本地 JSON
 
-Recommended short description:
+建议说明文案：
 
 从你之前导出的 HouseFolio JSON 文件中恢复本机结构化数据。导入会覆盖当前本机保存的房源、笔记、评分、状态、通勤锚点和通勤结果，但不会恢复看房照片。
 
-Recommended controls:
+建议控件：
 
-- file input accepting .json
-- import button
-- current data backup reminder
-- user confirmation before writing
-- success message
-- failure message
-- ignored keys summary if needed
+- `.json` 文件选择；
+- 导入按钮；
+- 当前数据备份提醒；
+- 写入前确认；
+- 成功提示；
+- 失败提示；
+- 可选的已忽略字段提示。
 
-Recommended import button text:
+建议按钮文案：
 
 导入 HouseFolio JSON
 
-Recommended warning text before file input:
+建议文件选择区域提示：
 
 导入前建议先导出当前本机数据作为备份。JSON 导入只恢复结构化数据，不包含本机照片文件。
 
-## 6. User Flow
+## 6. 用户流程
 
-Expected future flow:
+未来实现时，预期流程如下：
 
-1. User opens Settings.
-2. User sees local data management area.
-3. User clicks or selects a JSON file.
-4. App reads the selected file in the browser.
-5. App parses the file with parseHouseFolioLocalDataImportJson.
-6. If parsing fails, show user-readable error and do not write anything.
-7. If parsing succeeds, show recognized key count and overwrite warning.
-8. User confirms.
-9. App calls applyHouseFolioLocalDataImportPayload.
-10. App refreshes local data snapshot.
-11. App displays success message.
-12. App suggests reloading the app if needed.
+1. 用户打开 Settings。
+2. 用户进入本地数据管理区域。
+3. 用户选择一个本地 JSON 文件。
+4. 浏览器读取该 JSON 文件。
+5. 使用 `parseHouseFolioLocalDataImportJson` 解析文件内容。
+6. 如果解析失败，显示用户可理解的错误信息，不写入任何数据。
+7. 如果解析成功，显示识别到的可导入数据项和覆盖提醒。
+8. 用户二次确认。
+9. 调用 `applyHouseFolioLocalDataImportPayload` 写入已识别的白名单 key。
+10. 刷新 Settings 本地数据快照。
+11. 显示导入成功提示。
+12. 如有必要，提示用户刷新页面。
 
-## 7. Confirmation Behavior
+## 7. 确认行为
 
-The import action must require explicit confirmation.
+导入必须要求用户明确确认。
 
-Recommended confirmation copy:
+建议确认文案：
 
 导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？
 
-The confirmation should happen after:
+确认应发生在：
 
-- file has been selected
-- JSON has been parsed successfully
-- at least one importable key has been found
+- 用户已选择文件；
+- JSON 已成功解析；
+- 至少识别到一个可导入 key；
 
-The confirmation should happen before:
+确认必须发生在：
 
-- any localStorage write
+- 任何 localStorage 写入之前。
 
-## 8. Error States
+## 8. 错误状态
 
-The future UI should handle at least:
+未来 UI 至少需要处理以下状态：
 
-1. No file selected.
-   Message: 请选择一个 HouseFolio JSON 文件。
+### 8.1 未选择文件
 
-2. Invalid JSON.
-   Message: 导入文件不是有效的 JSON。
+提示：
 
-3. Invalid shape.
-   Message: 导入文件结构不符合 HouseFolio 本地数据格式。
+请选择一个 HouseFolio JSON 文件。
 
-4. No importable keys.
-   Message: 导入文件中没有可识别的 HouseFolio 本地数据键。
+### 8.2 JSON 格式无效
 
-5. Browser read failure.
-   Message: 文件读取失败，请重新选择 JSON 文件。
+提示：
 
-6. Import apply failure.
-   Message: 导入失败，请确认浏览器允许本地存储。
+导入文件不是有效的 JSON。
 
-7. Success.
-   Message: 导入成功。本机结构化数据已更新。
+### 8.3 文件结构无效
 
-## 9. Success State
+提示：
 
-After successful import, Settings should refresh:
+导入文件结构不符合 HouseFolio 本地数据格式。
 
-- local data snapshot
-- key counts
-- export preview status if present
+### 8.4 没有可导入字段
 
-The UI may also show:
+提示：
 
-- imported key count
-- skipped key count
-- ignored key count
+导入文件中没有可识别的 HouseFolio 本地数据键。
 
-But the first version can keep this simple.
+### 8.5 浏览器读取失败
 
-Recommended success copy:
+提示：
+
+文件读取失败，请重新选择 JSON 文件。
+
+### 8.6 写入失败
+
+提示：
+
+导入失败，请确认浏览器允许本地存储。
+
+### 8.7 导入成功
+
+提示：
+
+导入成功。本机结构化数据已更新。
+
+## 9. 成功状态
+
+导入成功后，Settings 应刷新：
+
+- 本地数据快照；
+- key 数量；
+- 本地数据导出状态；
+- 可选的当前页面提示信息。
+
+第一版可以保持简单，只显示：
 
 导入成功。已更新本机结构化数据。看房照片不包含在 JSON 导入中，如需迁移照片，请等待后续备份包功能。
 
-## 10. Boundary with Photos
+未来可选显示：
 
-The UI must clearly say:
+- 已导入 key 数量；
+- 已跳过 key 数量；
+- 已忽略未知 key 数量。
 
-- JSON import does not include photos.
-- Current local photos are stored separately in the browser.
-- Importing JSON should not delete current photos.
-- Photo backup belongs to a later ZIP backup package phase.
+## 10. 与照片能力的边界
 
-It must not claim:
+UI 必须明确说明：
 
-- restore all HouseFolio data
-- restore photos
-- migrate complete portfolio with images
-- import backup package
+- JSON 导入不包含照片；
+- 当前本机照片存储在浏览器 IndexedDB 中；
+- 导入 JSON 不应删除当前已有照片；
+- 照片迁移属于后续 ZIP 备份包阶段。
 
-Better wording:
+不得使用以下误导性说法：
 
-导入本地 JSON
+- 恢复全部数据；
+- 导入完整备份；
+- 导入照片；
+- 恢复 Portfolio 图片；
+- 一键迁移全部资料。
 
-Avoid wording:
+推荐使用：
 
-导入完整备份
-恢复全部数据
-导入照片
-恢复 Portfolio 图片
+- 导入本地 JSON；
+- 恢复结构化数据；
+- 看房照片不包含在 JSON 导入中。
 
-## 11. Implementation Boundary for Future Phase
+## 11. 后续实现允许修改的文件
 
-Future implementation may touch:
+未来真正实现 UI 时，允许考虑修改：
 
-- src/components/settings-local-data-panel.tsx
-- src/lib/privacy/local-data-import.ts
-- src/content/zh-cn.ts
+- `src/components/settings-local-data-panel.tsx`
+- `src/lib/privacy/local-data-import.ts`
+- `src/content/zh-cn.ts`
 
-It should not touch:
+如有必要，可新增或微调：
 
-- src/lib/storage/local-photo-provider.ts
-- src/lib/storage/photos.ts
-- src/components/listing-photo-panel.tsx
-- src/components/listing-card.tsx
-- src/app/portfolio/page.tsx
-- src/app/portfolio/[id]/page.tsx
-- src/app/api/lbs/commute/transit/route.ts
-- src/lib/lbs
-- src/lib/ai
-- Supabase-related files
-- any map UI files
+- `src/lib/privacy/local-data.ts`
 
-## 12. Future Implementation Rules
+但应避免触碰以下文件：
 
-When implementing the UI later:
+- `src/lib/storage/local-photo-provider.ts`
+- `src/lib/storage/photos.ts`
+- `src/components/listing-photo-panel.tsx`
+- `src/components/listing-card.tsx`
+- `src/app/portfolio/page.tsx`
+- `src/app/portfolio/[id]/page.tsx`
+- `src/app/api/lbs/commute/transit/route.ts`
+- `src/lib/lbs`
+- `src/lib/ai`
+- Supabase 相关文件
+- 地图 UI 文件
 
-- do not call localStorage.clear()
-- do not write unknown keys
-- do not touch IndexedDB
-- do not touch photo storage
-- do not fetch remote URLs
-- do not read third-party pages
-- do not call AI
-- do not call Amap
-- do not call Supabase
-- do not create a new route
-- do not import from clipboard automatically
+## 12. 后续实现规则
 
-The user must explicitly select a local JSON file.
+未来实现 UI 时必须遵守：
 
-## 13. Validation Plan for Future UI Phase
+- 不调用 `localStorage.clear()`；
+- 不写入未知 key；
+- 不触碰 IndexedDB；
+- 不触碰照片 storage；
+- 不 fetch 远程 URL；
+- 不读取第三方页面；
+- 不调用 AI；
+- 不调用高德；
+- 不调用 Supabase；
+- 不创建新路由；
+- 不从剪贴板自动导入；
+- 不扫描本机文件夹。
 
-Future manual regression should verify:
+用户必须通过浏览器文件选择器主动选择本地 JSON 文件。
 
-1. Export current local JSON.
-2. Import an invalid JSON file and confirm nothing changes.
-3. Import a JSON file with unknown keys and confirm unknown keys are ignored.
-4. Import valid HouseFolio keys and confirm Settings snapshot updates.
-5. Confirm existing photos are not deleted.
-6. Confirm no route changes.
-7. Confirm npm.cmd run build passes.
-8. Confirm git status clean after commit.
+## 13. 未来 UI 阶段回归验证计划
 
-## 14. Phase 3E-3 Validation Standard
+未来接入 UI 后，应手动验证：
 
-This planning phase is complete when:
+1. 导出当前本地 JSON。
+2. 导入无效 JSON，确认本机数据不变。
+3. 导入包含未知 key 的 JSON，确认未知 key 被忽略。
+4. 导入包含合法 HouseFolio key 的 JSON，确认 Settings 快照更新。
+5. 确认现有本机照片没有被删除。
+6. 确认没有新增路由。
+7. 确认 `npm.cmd run build` 通过。
+8. 确认提交后 `git status` clean。
 
-- docs/architecture/phase-3e-settings-json-import-ui-plan.md exists
-- npm.cmd run build passes
-- git status is clean after commit
-- no source code behavior changes
-- no UI changes
-- no import implementation
+## 14. Phase 3E-3 完成标准
 
-## 15. Recommended Commit Message
+本规划阶段完成标准：
 
-docs: plan settings json import ui
+- `docs/architecture/phase-3e-settings-json-import-ui-plan.md` 存在；
+- `npm.cmd run build` 通过；
+- 提交后 `git status` clean；
+- 没有源码行为变化；
+- 没有 UI 变化；
+- 没有导入实现。
+
+## 15. 建议提交信息
+
+建议 commit：
+
+docs: localize json import ui plan
