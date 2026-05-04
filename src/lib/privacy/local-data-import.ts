@@ -48,9 +48,43 @@ function isImportableHouseFolioKey(
   );
 }
 
+function extractRecordFromSnapshotItems(
+  items: unknown,
+): Record<string, unknown> | null {
+  if (!Array.isArray(items)) {
+    return null;
+  }
+
+  const record: Record<string, unknown> = {};
+
+  for (const item of items) {
+    if (!isRecord(item)) {
+      continue;
+    }
+
+    if (typeof item.key !== "string") {
+      continue;
+    }
+
+    if (item.exists === false) {
+      continue;
+    }
+
+    record[item.key] = item.value;
+  }
+
+  return record;
+}
+
 function extractCandidateRecord(value: unknown): Record<string, unknown> | null {
   if (!isRecord(value)) {
     return null;
+  }
+
+  const snapshotRecord = extractRecordFromSnapshotItems(value.items);
+
+  if (snapshotRecord) {
+    return snapshotRecord;
   }
 
   if (isRecord(value.data)) {
