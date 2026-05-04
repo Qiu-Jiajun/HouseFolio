@@ -88,23 +88,6 @@ function reloadCommuteResults(listingId: string): StoredCommuteResult[] {
   return getCommuteResultsForListing(listingId);
 }
 
-function getErrorMessage(
-  failures: TransitCommuteFailure[],
-  fallback: string,
-): string {
-  const firstFailure = failures[0];
-
-  if (!firstFailure) {
-    return fallback;
-  }
-
-  if (firstFailure.anchorName) {
-    return `${firstFailure.anchorName}: ${firstFailure.reason}`;
-  }
-
-  return firstFailure.reason;
-}
-
 export function ListingCommutePanel({
   listingId,
   listingTitle,
@@ -116,26 +99,46 @@ export function ListingCommutePanel({
   const [commuteResults, setCommuteResults] = useState<StoredCommuteResult[]>(
     [],
   );
+  const [workLocationCount, setWorkLocationCount] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const hasListingAddress = addressHint.trim().length > 0;
+  const hasWorkLocations = workLocationCount > 0;
+  const canCalculateTransit =
+    hasListingAddress && hasWorkLocations && !isCalculating;
+
   useEffect(() => {
     setCommuteResults(reloadCommuteResults(listingId));
+    setWorkLocationCount(loadWorkLocations().length);
     setIsLoaded(true);
   }, [listingId]);
+
+  function getEmptyStateDescription(): string {
+    if (!hasListingAddress) {
+      return zhCN.listingDetailView.l1.missingListingAddressDescription;
+    }
+
+    if (!hasWorkLocations) {
+      return zhCN.listingDetailView.l1.noWorkLocationsDescription;
+    }
+
+    return zhCN.listingDetailView.l1.emptyCommuteDescription;
+  }
 
   async function handleCalculateTransitCommute() {
     setStatusMessage(null);
     setErrorMessage(null);
 
-    if (!addressHint.trim()) {
+    if (!hasListingAddress) {
       setErrorMessage(zhCN.listingDetailView.l1.missingListingAddress);
       return;
     }
 
     const workLocations: WorkLocation[] = loadWorkLocations();
+    setWorkLocationCount(workLocations.length);
 
     if (workLocations.length === 0) {
       setErrorMessage(zhCN.listingDetailView.l1.noWorkLocations);
@@ -165,12 +168,7 @@ export function ListingCommutePanel({
       const payload = (await response.json()) as TransitCommuteResponseBody;
 
       if (!response.ok && payload.results.length === 0) {
-        setErrorMessage(
-          getErrorMessage(
-            payload.failures,
-            zhCN.listingDetailView.l1.calculateFailed,
-          ),
-        );
+        setErrorMessage(zhCN.listingDetailView.l1.calculateFailed);
         return;
       }
 
@@ -180,15 +178,12 @@ export function ListingCommutePanel({
 
       setCommuteResults(reloadCommuteResults(listingId));
 
-      if (payload.results.length > 0) {
+      if (payload.results.length > 0 && payload.failures.length > 0) {
+        setStatusMessage(zhCN.listingDetailView.l1.calculatePartiallySucceeded);
+      } else if (payload.results.length > 0) {
         setStatusMessage(zhCN.listingDetailView.l1.calculateSucceeded);
       } else {
-        setErrorMessage(
-          getErrorMessage(
-            payload.failures,
-            zhCN.listingDetailView.l1.calculateFailed,
-          ),
-        );
+        setErrorMessage(zhCN.listingDetailView.l1.calculateFailed);
       }
     } catch {
       setErrorMessage(zhCN.listingDetailView.l1.calculateFailed);
@@ -239,14 +234,21 @@ export function ListingCommutePanel({
 
       <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-medium text-white">
-            {zhCN.listingDetailView.l1.cachedCommuteResults}
-          </p>
+          <div>
+            <p className="text-sm font-medium text-white">
+              {zhCN.listingDetailView.l1.cachedCommuteResults}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              {zhCN.listingDetailView.l1.anchorCountPrefix}
+              {workLocationCount}
+              {zhCN.listingDetailView.l1.anchorCountSuffix}
+            </p>
+          </div>
 
           <button
             type="button"
             onClick={handleCalculateTransitCommute}
-            disabled={isCalculating}
+            disabled={!canCalculateTransit}
             className="rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-950 hover:bg-slate-200 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
           >
             {isCalculating
@@ -254,6 +256,18 @@ export function ListingCommutePanel({
               : zhCN.listingDetailView.l1.calculateTransitButton}
           </button>
         </div>
+
+        {!hasListingAddress ? (
+          <p className="mt-3 text-sm leading-6 text-amber-300">
+            {zhCN.listingDetailView.l1.missingListingAddress}
+          </p>
+        ) : null}
+
+        {hasListingAddress && !hasWorkLocations ? (
+          <p className="mt-3 text-sm leading-6 text-amber-300">
+            {zhCN.listingDetailView.l1.noWorkLocations}
+          </p>
+        ) : null}
 
         {statusMessage ? (
           <p className="mt-3 text-sm text-emerald-300">{statusMessage}</p>
@@ -327,7 +341,7 @@ export function ListingCommutePanel({
               {zhCN.listingDetailView.l1.emptyCommuteResults}
             </p>
             <p className="text-sm leading-6 text-slate-500">
-              {zhCN.listingDetailView.l1.emptyCommuteDescription}
+              {getEmptyStateDescription()}
             </p>
           </div>
         )}
