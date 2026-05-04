@@ -27,7 +27,7 @@ export type ScoreWeights = {
 }
 
 /**
- * HouseFolio Phase 1I: L2 reference scoring algorithm.
+ * HouseFolio 作品集预览版I: L2 reference scoring algorithm.
  *
  * Product boundary:
  * - This is a reference score, not a final recommendation.

@@ -31,8 +31,8 @@ export const zhCN = {
     "settings": "设置"
   },
   "complianceFooter": {
-    "title": "HouseFolio Phase 1 Demo 边界说明",
-    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不认证房源真实性。当前 Phase 1 仅使用模拟数据与浏览器 localStorage。"
+    "title": "HouseFolio 作品集预览版边界说明",
+    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不认证房源真实性。当前作品集预览版 仅使用模拟数据与浏览器 localStorage。"
   },
   "home": {
     "eyebrow": "HouseFolio · 私人找房决策工作台",
@@ -63,13 +63,13 @@ export const zhCN = {
     ],
     "currentPhase": {
       "title": "当前阶段",
-      "body": "Phase 2A：工作/学习地点（通勤锚点）设置。当前 Demo 仍只使用模拟数据与浏览器 localStorage，尚未接入 Supabase、地图 API 或 AI 服务。"
+      "body": "作品集预览版：工作/学习地点（通勤锚点）设置。当前 Demo 仍只使用模拟数据与浏览器 localStorage，尚未接入 Supabase、地图 API 或 AI 服务。"
     }
   },
   "portfolio": {
     "eyebrow": "HouseFolio · 候选房源",
     "title": "候选房源",
-    "description": "这里展示用户主动添加的候选房源，以及用于演示的模拟房源。当前 Phase 1 仅使用浏览器 localStorage 与 mock 数据。参考评分只是辅助比较信号，不代表最终推荐。",
+    "description": "这里展示用户主动添加的候选房源，以及用于演示的模拟房源。当前作品集预览版 仅使用浏览器 localStorage 与 mock 数据。参考评分只是辅助比较信号，不代表最终推荐。",
     "actions": {
       "addListing": "添加房源"
     }
@@ -375,7 +375,7 @@ export const zhCN = {
     "boundary": "请优先使用地铁站、商圈、写字楼、学校附近等模糊位置，不要填写精确门牌号。对于多人共同居住场景，建议添加 2–3 个通勤锚点，便于后续比较不同房源对每个人的通勤影响。"
   },
   "settings": {
-    "eyebrow": "HouseFolio · Phase 1K",
+    "eyebrow": "HouseFolio · 作品集预览版K",
     "title": "设置与本地数据",
     "description": "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面是 Demo 阶段隐私与数据权利能力的基础。"
   },
@@ -388,7 +388,7 @@ export const zhCN = {
     },
     "controls": {
       "title": "本地数据控制",
-      "description": "当前 Phase 1 数据仅保存在这个浏览器中。你可以在这里导出或清除本地 HouseFolio 数据。该操作不会影响写在源代码中的 mock 房源，也不会删除任何云端数据，因为当前尚未接入云端存储。",
+      "description": "当前作品集预览版 数据仅保存在这个浏览器中。你可以在这里导出或清除本地 HouseFolio 数据。该操作不会影响写在源代码中的 mock 房源，也不会删除任何云端数据，因为当前尚未接入云端存储。",
       "exportJson": "导出本地 JSON",
       "clearLocalData": "清除本机数据",
       "refreshSnapshot": "刷新数据快照"
@@ -412,7 +412,7 @@ export const zhCN = {
         "HouseFolio 不抓取第三方房源页面。",
         "HouseFolio 不发布公共房源库。",
         "HouseFolio 不撮合租赁交易。",
-        "当前 Phase 1 数据仅保存在浏览器 localStorage。",
+        "当前作品集预览版 数据仅保存在浏览器 localStorage。",
         "当前尚未接入 AI、地图 API、云数据库或云存储。"
       ]
     },
