@@ -4,6 +4,7 @@ import type {
   SaveListingPhotoInput,
 } from "@/types/listing-photo";
 import {
+  clearAllListingPhotos,
   clearListingPhotos,
   deleteListingPhoto,
   getListingCoverPhoto,
@@ -25,6 +26,7 @@ async function assertPhotoStorageContract(input: SaveListingPhotoInput) {
 
   await deleteListingPhoto(savedPhoto.id);
   await clearListingPhotos(input.listingId);
+  await clearAllListingPhotos();
 
   return {
     savedPhoto,

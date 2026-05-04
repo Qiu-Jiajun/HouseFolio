@@ -457,6 +457,24 @@ export function createLocalPhotoProvider(): ListingPhotoStorageProvider {
       }
     },
 
+    async clearAllPhotos(): Promise<void> {
+      const database = await openPhotoDatabase();
+      const transaction = database.transaction(
+        [photosStoreName, blobsStoreName],
+        "readwrite",
+      );
+      const photosStore = transaction.objectStore(photosStoreName);
+      const blobsStore = transaction.objectStore(blobsStoreName);
+
+      try {
+        await requestToPromise(photosStore.clear());
+        await requestToPromise(blobsStore.clear());
+        await transactionToPromise(transaction);
+      } finally {
+        database.close();
+      }
+    },
+
     async getStorageSummary(): Promise<ListingPhotoStorageSummary> {
       const database = await openPhotoDatabase();
       const transaction = database.transaction(photosStoreName, "readonly");

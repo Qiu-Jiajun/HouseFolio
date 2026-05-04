@@ -46,6 +46,10 @@ export async function clearListingPhotos(listingId: string): Promise<void> {
   return activePhotoProvider.clearPhotosForListing(listingId);
 }
 
+export async function clearAllListingPhotos(): Promise<void> {
+  return activePhotoProvider.clearAllPhotos();
+}
+
 export async function getListingPhotoStorageSummary(): Promise<ListingPhotoStorageSummary> {
   return activePhotoProvider.getStorageSummary();
 }

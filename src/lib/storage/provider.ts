@@ -15,6 +15,7 @@ export type ListingPhotoStorageProvider = Readonly<{
   getThumbnailBlob: (photoId: string) => Promise<ListingPhotoBinary | null>;
   deletePhoto: (photoId: string) => Promise<void>;
   clearPhotosForListing: (listingId: string) => Promise<void>;
+  clearAllPhotos: () => Promise<void>;
   getStorageSummary: () => Promise<ListingPhotoStorageSummary>;
 }>;
 
