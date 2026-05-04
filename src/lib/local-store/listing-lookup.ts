@@ -54,12 +54,17 @@ function attachCachedTransitCommuteMinutes(listings: Listing[]): Listing[] {
     );
 
     if (cachedTransitCommuteMinutes === null) {
-      return listing;
+      return {
+        ...listing,
+        commuteSource:
+          typeof listing.commuteMinutes === "number" ? "listing" : undefined,
+      };
     }
 
     return {
       ...listing,
       commuteMinutes: cachedTransitCommuteMinutes,
+      commuteSource: "cachedTransit",
     };
   });
 }

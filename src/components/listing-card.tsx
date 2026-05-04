@@ -13,7 +13,20 @@ function formatOptionalNumber(value: number | undefined, suffix = "") {
     : zhCN.common.pending;
 }
 
+function getCommuteSourceText(source: Listing["commuteSource"]): string | null {
+  if (source === "cachedTransit") {
+    return zhCN.listingCard.commuteSource.cachedTransit;
+  }
+
+  if (source === "listing") {
+    return zhCN.listingCard.commuteSource.listing;
+  }
+
+  return null;
+}
+
 export function ListingCard({ listing }: ListingCardProps) {
+  const commuteSourceText = getCommuteSourceText(listing.commuteSource);
   return (
     <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-sm">
       <div className="mb-4 flex items-start justify-between gap-4">
@@ -60,6 +73,11 @@ export function ListingCard({ listing }: ListingCardProps) {
               ? `${listing.commuteMinutes}${zhCN.common.minute}`
               : zhCN.common.pending}
           </p>
+          {commuteSourceText ? (
+            <p className="mt-1 text-xs text-slate-500">
+              {commuteSourceText}
+            </p>
+          ) : null}
         </div>
 
         <div>

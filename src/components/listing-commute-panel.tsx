@@ -8,6 +8,7 @@ import {
 } from "@/lib/local-store/commute-results";
 import { loadWorkLocations } from "@/lib/local-store/work-locations";
 import type { StoredCommuteResult } from "@/types/commute-result";
+import type { ListingCommuteSource } from "@/types/listing";
 import type {
   TransitCommuteResponseBody,
 } from "@/types/transit-commute-route";
@@ -19,6 +20,7 @@ type ListingCommutePanelProps = {
   addressHint: string;
   district: string;
   commuteMinutes?: number;
+  commuteSource?: ListingCommuteSource;
   lifeCircleScore?: number;
 };
 
@@ -52,6 +54,18 @@ function formatDistanceMeters(value: number): string {
   return `${Math.round(value)} ${zhCN.listingDetailView.l1.meter}`;
 }
 
+function formatCommuteSource(source: ListingCommuteSource | undefined): string | null {
+  if (source === "cachedTransit") {
+    return zhCN.listingDetailView.l1.commuteSource.cachedTransit;
+  }
+
+  if (source === "listing") {
+    return zhCN.listingDetailView.l1.commuteSource.listing;
+  }
+
+  return null;
+}
+
 function formatTravelMode(mode: StoredCommuteResult["mode"]): string {
   if (mode === "transit") {
     return zhCN.listingDetailView.l1.modeTransit;
@@ -82,6 +96,7 @@ export function ListingCommutePanel({
   addressHint,
   district,
   commuteMinutes,
+  commuteSource,
   lifeCircleScore,
 }: ListingCommutePanelProps) {
   const [commuteResults, setCommuteResults] = useState<StoredCommuteResult[]>(
@@ -97,6 +112,7 @@ export function ListingCommutePanel({
   const hasWorkLocations = workLocationCount > 0;
   const canCalculateTransit =
     hasListingAddress && hasWorkLocations && !isCalculating;
+  const commuteSourceText = formatCommuteSource(commuteSource);
 
   useEffect(() => {
     setCommuteResults(reloadCommuteResults(listingId));
@@ -199,6 +215,11 @@ export function ListingCommutePanel({
               ? `${commuteMinutes}${zhCN.common.minute}`
               : zhCN.common.pending}
           </p>
+          {commuteSourceText ? (
+            <p className="mt-1 text-xs text-slate-500">
+              {commuteSourceText}
+            </p>
+          ) : null}
         </div>
 
         <div className="rounded-xl bg-slate-950 p-4">

@@ -13,6 +13,8 @@ export type ListingSourcePlatform =
   | "xiaohongshu"
   | "other";
 
+export type ListingCommuteSource = "listing" | "cachedTransit";
+
 export type Listing = {
   id: string;
   title: string;
@@ -25,6 +27,7 @@ export type Listing = {
   district: string;
   status: ListingStatus;
   commuteMinutes?: number;
+  commuteSource?: ListingCommuteSource;
   lifeCircleScore?: number;
   compositeScore?: number;
   createdAt: string;

@@ -257,6 +257,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           addressHint={listing.addressHint}
           district={listing.district}
           commuteMinutes={listing.commuteMinutes}
+          commuteSource={listing.commuteSource}
           lifeCircleScore={listing.lifeCircleScore}
         />
 

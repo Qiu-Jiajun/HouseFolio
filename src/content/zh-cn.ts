@@ -120,6 +120,10 @@ export const zhCN = {
       "referenceScore": "L2 参考评分"
     },
     "referenceScoreNote": "参考评分仅用于辅助比较，不代表最终推荐，也不替用户做决定。",
+    "commuteSource": {
+      "listing": "默认参考值",
+      "cachedTransit": "本地通勤结果"
+    },
     "actions": {
       "viewDetails": "查看详情"
     }
@@ -211,6 +215,10 @@ export const zhCN = {
       "title": "L1 LBS 空间分析",
       "description": "后续这里会展示通勤时间、生活圈评分、地图位置和周边 POI 统计。当前数值仍是占位或 mock 输出。",
       "commuteTime": "通勤时间",
+      "commuteSource": {
+        "listing": "默认参考值",
+        "cachedTransit": "本地通勤结果"
+      },
       "lifeCircleScore": "生活圈评分",
       "mapStatus": "地图状态",
       "notConnected": "未接入",
