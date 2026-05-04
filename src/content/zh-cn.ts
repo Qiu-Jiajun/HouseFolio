@@ -383,7 +383,8 @@ export const zhCN = {
     "messages": {
       "exportStarted": "本地 HouseFolio 数据导出已开始。",
       "clearConfirm": "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？代码中的 mock 房源仍会继续显示。",
-      "cleared": "当前浏览器中的 HouseFolio 本地数据已清除。"
+      "cleared": "当前浏览器中的 HouseFolio 本地数据已清除。",
+      "importStarted": "本地 HouseFolio JSON 导入已开始。"
     },
     "controls": {
       "title": "本地数据控制",
@@ -402,7 +403,8 @@ export const zhCN = {
       "housefolio:listing-notes": "房源笔记",
       "housefolio:listing-ratings": "主观评分",
       "housefolio:listing-status-overrides": "房源状态覆盖",
-      "housefolio:work-locations": "工作/学习地点（通勤锚点）"
+      "housefolio:work-locations": "工作/学习地点（通勤锚点）",
+      "housefolio:commute-results": "参考通勤结果"
     },
     "complianceBoundary": {
       "title": "合规边界",
@@ -413,6 +415,27 @@ export const zhCN = {
         "当前 Phase 1 数据仅保存在浏览器 localStorage。",
         "当前尚未接入 AI、地图 API、云数据库或云存储。"
       ]
+    },
+    "importJson": {
+      "title": "导入本地 JSON",
+      "description": "从你之前导出的 HouseFolio JSON 文件中恢复本机结构化数据。导入会覆盖当前本机保存的房源、笔记、评分、状态、通勤锚点和通勤结果，但不会恢复看房照片。",
+      "warning": "导入前建议先导出当前本机数据作为备份。JSON 导入只恢复结构化数据，不包含本机照片文件。",
+      "fileLabel": "选择 HouseFolio JSON 文件",
+      "noFileSelected": "尚未选择文件。",
+      "selectedFilePrefix": "已选择：",
+      "action": "导入 HouseFolio JSON",
+      "importing": "正在导入…",
+      "confirmMessage": "导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？",
+      "recognizedKeys": "识别到的可导入数据项",
+      "ignoredKeys": "将被忽略的未知数据项",
+      "importedKeys": "已导入数据项",
+      "messages": {
+        "success": "导入成功。已更新本机结构化数据。看房照片不包含在 JSON 导入中，如需迁移照片，请等待后续备份包功能。"
+      },
+      "errors": {
+        "noFileSelected": "请选择一个 HouseFolio JSON 文件。",
+        "importFailed": "导入失败，请确认文件格式正确，并确认浏览器允许本地存储。"
+      }
     }
   },
   "listingPhotoPanel": {
