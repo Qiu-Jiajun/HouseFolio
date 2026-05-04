@@ -48,6 +48,7 @@ export function SettingsLocalDataPanel() {
   function showError(nextMessage: string) {
     setMessageTone("error");
     setMessage(nextMessage);
+    window.alert(nextMessage);
   }
 
   useEffect(() => {
