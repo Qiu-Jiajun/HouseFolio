@@ -7,10 +7,10 @@ import {
   upsertCommuteResult,
 } from "@/lib/local-store/commute-results";
 import { loadWorkLocations } from "@/lib/local-store/work-locations";
+import type { StoredCommuteResult } from "@/types/commute-result";
 import type {
-  SaveCommuteResultInput,
-  StoredCommuteResult,
-} from "@/types/commute-result";
+  TransitCommuteResponseBody,
+} from "@/types/transit-commute-route";
 import type { WorkLocation } from "@/types/work-location";
 
 type ListingCommutePanelProps = {
@@ -20,18 +20,6 @@ type ListingCommutePanelProps = {
   district: string;
   commuteMinutes?: number;
   lifeCircleScore?: number;
-};
-
-type TransitCommuteFailure = {
-  listingId?: string;
-  anchorId?: string;
-  anchorName?: string;
-  reason: string;
-};
-
-type TransitCommuteResponseBody = {
-  results: SaveCommuteResultInput[];
-  failures: TransitCommuteFailure[];
 };
 
 function formatOptionalNumber(value: number | undefined, suffix = "") {

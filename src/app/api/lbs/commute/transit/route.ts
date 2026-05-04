@@ -1,34 +1,16 @@
 import { NextResponse } from "next/server";
 import { calculateCommute, geocodeAddress } from "@/lib/lbs/service";
 import type { SaveCommuteResultInput } from "@/types/commute-result";
-import type { Listing } from "@/types/listing";
 import type { WorkLocation } from "@/types/work-location";
+import type {
+  TransitCommuteFailure,
+  TransitCommuteListing,
+  TransitCommuteRequestBody,
+  TransitCommuteResponseBody,
+} from "@/types/transit-commute-route";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-type TransitCommuteListing = Pick<
-  Listing,
-  "id" | "title" | "addressHint" | "district"
->;
-
-type TransitCommuteRequestBody = {
-  listing?: TransitCommuteListing;
-  workLocations?: WorkLocation[];
-  city?: string;
-};
-
-type TransitCommuteFailure = {
-  listingId?: string;
-  anchorId?: string;
-  anchorName?: string;
-  reason: string;
-};
-
-type TransitCommuteResponseBody = {
-  results: SaveCommuteResultInput[];
-  failures: TransitCommuteFailure[];
-};
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
