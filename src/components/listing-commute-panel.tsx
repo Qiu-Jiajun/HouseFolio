@@ -56,6 +56,34 @@ function formatCalculatedAt(value: string) {
   });
 }
 
+function formatDistanceMeters(value: number): string {
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)} ${zhCN.listingDetailView.l1.kilometer}`;
+  }
+
+  return `${Math.round(value)} ${zhCN.listingDetailView.l1.meter}`;
+}
+
+function formatTravelMode(mode: StoredCommuteResult["mode"]): string {
+  if (mode === "transit") {
+    return zhCN.listingDetailView.l1.modeTransit;
+  }
+
+  if (mode === "walking") {
+    return zhCN.listingDetailView.l1.modeWalking;
+  }
+
+  if (mode === "cycling") {
+    return zhCN.listingDetailView.l1.modeCycling;
+  }
+
+  if (mode === "driving") {
+    return zhCN.listingDetailView.l1.modeDriving;
+  }
+
+  return mode;
+}
+
 function reloadCommuteResults(listingId: string): StoredCommuteResult[] {
   return getCommuteResultsForListing(listingId);
 }
@@ -242,9 +270,48 @@ export function ListingCommutePanel({
             {commuteResults.map((result) => (
               <div
                 key={result.id}
-                className="rounded-lg border border-slate-800 bg-slate-900 p-3"
+                className="rounded-lg border border-slate-800 bg-slate-900 p-4"
               >
-                <p className="text-sm leading-6 text-slate-200">
+                <div className="grid gap-3 md:grid-cols-4">
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      {zhCN.listingDetailView.l1.resultAnchor}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-white">
+                      {result.anchorName}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      {zhCN.listingDetailView.l1.resultMode}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-white">
+                      {formatTravelMode(result.mode)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      {zhCN.listingDetailView.l1.resultDuration}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-white">
+                      {Math.round(result.durationMinutes)}
+                      {zhCN.common.minute}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      {zhCN.listingDetailView.l1.resultDistance}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-white">
+                      {formatDistanceMeters(result.distanceMeters)}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="mt-4 text-sm leading-6 text-slate-200">
                   {result.summary}
                 </p>
                 <p className="mt-2 text-xs text-slate-500">
