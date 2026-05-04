@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { zhCN } from "@/content/zh-cn";
@@ -77,6 +78,28 @@ export default function Home() {
 
         <ComplianceFooter />
       </section>
-    </main>
+    
+        <section className="rounded-3xl border border-emerald-300/30 bg-emerald-300/10 p-6 shadow-xl shadow-black/10">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-emerald-200">作品集演示入口</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">
+                不想从空白数据开始？先查看 HouseFolio 演示模式
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200">
+                使用完全虚构的数据，快速了解 HouseFolio 如何把候选房源、通勤锚点、参考评分和 AI 解释组织成找房决策流程。
+                演示模式不会读取或修改你的真实本机数据。
+              </p>
+            </div>
+
+            <Link
+              href="/demo"
+              className="shrink-0 rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
+              查看演示
+            </Link>
+          </div>
+        </section>
+</main>
   );
 }
