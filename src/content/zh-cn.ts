@@ -442,5 +442,31 @@ export const zhCN = {
       "saveFailed": "照片保存失败，请稍后重试。",
       "deleteFailed": "照片删除失败，请稍后重试。"
     }
+  },
+  "settingsPhotoDataPanel": {
+    "eyebrow": "本地优先 · 照片数据",
+    "title": "看房照片｜本机保存",
+    "description": "这里展示当前浏览器与设备中保存的看房照片数据状态。照片文件本体不保存在 localStorage 中，也不会默认上传云端。",
+    "actions": {
+      "refresh": "刷新照片状态"
+    },
+    "metrics": {
+      "photoCount": "本机照片数量",
+      "totalSize": "本机照片占用空间",
+      "storageLocation": "存储位置"
+    },
+    "values": {
+      "localIndexedDb": "当前浏览器与设备的本地数据库"
+    },
+    "notices": {
+      "localOnly": "这些照片仅保存在当前浏览器与设备中。",
+      "noCloudSync": "当前未开启云端同步，照片不会默认上传云端。",
+      "noAi": "当前不会将照片发送给 AI，也不会进行 AI 照片分析。",
+      "browserDataWarning": "更换设备、清除网站数据或使用无痕模式，可能导致本机照片不可见。",
+      "backupLater": "后续将通过 Portfolio 备份包支持照片导出与导入；当前 JSON 导出暂不包含照片文件本体。"
+    },
+    "states": {
+      "loadFailed": "本机照片数据读取失败，请稍后重试。"
+    }
   }
 } as const;
