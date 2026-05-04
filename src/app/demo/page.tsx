@@ -41,6 +41,10 @@ function getListingScore(listingId: string) {
   return demoModeData.scoreBreakdowns.find((item) => item.listingId === listingId);
 }
 
+function getListingAiSummary(listingId: string) {
+  return demoModeData.aiSummaries.find((item) => item.listingId === listingId);
+}
+
 export default function DemoPage() {
   const rankedListings = [...demoModeData.listings].sort(
     (a, b) => b.referenceScore - a.referenceScore,
@@ -125,6 +129,7 @@ export default function DemoPage() {
             {rankedListings.map((listing) => {
               const commutes = getListingCommutes(listing.id);
               const score = getListingScore(listing.id);
+              const aiSummary = getListingAiSummary(listing.id);
 
               return (
                 <article
@@ -229,7 +234,7 @@ export default function DemoPage() {
                       ) : null}
                     </div>
 
-                    <div className="mt-auto grid gap-3 text-sm leading-6 md:grid-cols-2">
+                    <div className="grid gap-3 text-sm leading-6 md:grid-cols-2">
                       <div className="rounded-2xl bg-white/[0.04] p-4">
                         <p className="text-xs font-semibold text-slate-400">主要优势</p>
                         <p className="mt-2 text-slate-200">{listing.primaryStrength}</p>
@@ -239,8 +244,85 @@ export default function DemoPage() {
                         <p className="mt-2 text-slate-200">{listing.primaryWeakness}</p>
                       </div>
                     </div>
+
+                    {aiSummary ? (
+                      <div className="mt-auto rounded-2xl border border-violet-300/20 bg-violet-300/[0.07] p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-sm font-semibold text-violet-100">
+                            L3 解释预览
+                          </p>
+                          <span className="rounded-full bg-violet-300/10 px-3 py-1 text-xs text-violet-100">
+                            预生成文本
+                          </span>
+                        </div>
+                        <p className="mt-3 text-sm leading-6 text-violet-50/90">
+                          {aiSummary.summary}
+                        </p>
+
+                        <div className="mt-4">
+                          <p className="text-xs font-semibold text-violet-100/80">
+                            看房 checklist
+                          </p>
+                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-violet-50/80">
+                            {aiSummary.checklist.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <p className="mt-4 text-xs leading-5 text-violet-100/70">
+                          {aiSummary.disclaimer}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="rounded-3xl border border-violet-300/20 bg-violet-300/[0.06] p-6">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-violet-200">L3 AI 解释层演示</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">
+                把结构化结果翻译成人话建议
+              </h2>
+            </div>
+            <p className="max-w-2xl text-sm leading-6 text-violet-50/80">
+              本区域展示的是预生成演示文本，用于说明未来 AI 辅助解释的产品方向。当前页面不调用任何模型服务。
+            </p>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {demoModeData.aiSummaries.map((item) => {
+              const listing = demoModeData.listings.find(
+                (demoListing) => demoListing.id === item.listingId,
+              );
+
+              return (
+                <div
+                  key={item.listingId}
+                  className="rounded-2xl border border-violet-300/20 bg-slate-950/50 p-5"
+                >
+                  <p className="text-sm font-semibold text-white">
+                    {listing?.title ?? "演示房源"}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-violet-50/85">
+                    {item.summary}
+                  </p>
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold text-violet-100/80">
+                      Trade-off
+                    </p>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-violet-50/75">
+                      {item.tradeoffs.map((tradeoff) => (
+                        <li key={tradeoff}>{tradeoff}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -262,9 +344,9 @@ export default function DemoPage() {
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-semibold text-slate-100">L3 解释预览</p>
+            <p className="text-sm font-semibold text-slate-100">L3 人话解释</p>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              下一阶段会展示预生成分析文本，用来说明未来 AI 辅助解释的产品方向。
+              Demo 展示预生成分析文本，用来说明 AI 如何把结构化结果转化为条件化建议。
             </p>
           </div>
         </section>
