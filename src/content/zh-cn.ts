@@ -414,5 +414,33 @@ export const zhCN = {
         "当前尚未接入 AI、地图 API、云数据库或云存储。"
       ]
     }
+  },
+  "listingPhotoPanel": {
+    "eyebrow": "基础层 · 本机照片资料",
+    "title": "看房照片｜本机保存",
+    "description": "把你实地看房时主动拍摄的照片保存到这套房源档案中。照片文件本体仅保存在当前浏览器与设备中，不会默认上传云端。",
+    "localOnlyNotice": "照片仅保存在当前浏览器与设备中，不会默认上传云端。请避免保存身份证、合同、手机号、微信号、具体门牌号、人脸等敏感内容。",
+    "photoAltPrefix": "看房照片：",
+    "actions": {
+      "addPhoto": "添加本地照片",
+      "saving": "正在保存…",
+      "deletePhoto": "删除",
+      "deleting": "正在删除…"
+    },
+    "empty": {
+      "title": "还没有为这套房源保存看房照片",
+      "description": "你可以添加 JPG、PNG 或 WebP 图片。当前最小实现只做本机保存、展示和删除，不做云同步、AI 分析或公开分享。"
+    },
+    "messages": {
+      "saved": "照片已保存到本机。",
+      "deleted": "照片已从本机删除。"
+    },
+    "errors": {
+      "unsupportedType": "当前仅支持 JPG、PNG 或 WebP 图片。",
+      "fileTooLarge": "单张照片不能超过 5MB。",
+      "loadFailed": "本机照片读取失败，请稍后重试。",
+      "saveFailed": "照片保存失败，请稍后重试。",
+      "deleteFailed": "照片删除失败，请稍后重试。"
+    }
   }
 } as const;

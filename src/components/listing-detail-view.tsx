@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { ListingStatusPanel } from "@/components/listing-status-panel";
 import { ListingCommutePanel } from "@/components/listing-commute-panel";
+import { ListingPhotoPanel } from "@/components/listing-photo-panel";
 import { zhCN } from "@/content/zh-cn";
 import type { ScoreBreakdown } from "@/lib/algorithm/score";
 import {
@@ -249,6 +250,11 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           onRatingsSaved={() => {
             refreshListingState(listing.id);
           }}
+        />
+
+        <ListingPhotoPanel
+          listingId={listing.id}
+          listingTitle={listing.title}
         />
 
         <ListingCommutePanel
