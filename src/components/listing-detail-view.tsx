@@ -37,13 +37,13 @@ function ScoreRow({
   weight: string;
 }) {
   return (
-    <div className="rounded-xl bg-slate-950 p-4">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-300">{label}</p>
-        <p className="text-sm font-medium text-white">{score.toFixed(1)}</p>
+    <div className="rounded-xl border border-slate-800 bg-slate-950 p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-sm font-medium text-slate-200">{label}</p>
+        <p className="text-base font-semibold text-white">{score.toFixed(1)}</p>
       </div>
 
-      <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+      <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
         <div
           className="h-full rounded-full bg-white"
           style={{ width: `${Math.max(0, Math.min(100, score * 10))}%` }}
@@ -75,11 +75,11 @@ function ReferenceScorePanel({
 
   return (
     <div className="mt-5 space-y-5">
-      <div className="rounded-xl bg-slate-950 p-4">
-        <p className="text-sm text-slate-500">
+      <div className="rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <p className="text-sm text-slate-400">
           {zhCN.listingDetailView.l2.referenceScore}
         </p>
-        <p className="mt-2 text-3xl font-semibold text-white">
+        <p className="mt-2 text-4xl font-semibold tracking-tight text-white">
           {score.totalScore.toFixed(1)}
         </p>
         <p className="mt-3 text-sm leading-6 text-slate-400">
@@ -115,7 +115,7 @@ function ReferenceScorePanel({
         />
       </div>
 
-      <div className="rounded-xl border border-amber-900 bg-amber-950/40 p-4">
+      <div className="rounded-xl border border-amber-800/80 bg-amber-950/50 p-5">
         <p className="text-sm leading-6 text-amber-100">
           {zhCN.listingDetailView.l2.disclaimer}
         </p>
