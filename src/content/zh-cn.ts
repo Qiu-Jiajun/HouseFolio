@@ -448,7 +448,9 @@ export const zhCN = {
     "title": "看房照片｜本机保存",
     "description": "这里展示当前浏览器与设备中保存的看房照片数据状态。照片文件本体不保存在 localStorage 中，也不会默认上传云端。",
     "actions": {
-      "refresh": "刷新照片状态"
+      "refresh": "刷新照片状态",
+      "clearAll": "清除全部本机照片",
+      "clearing": "正在清除…"
     },
     "metrics": {
       "photoCount": "本机照片数量",
@@ -463,10 +465,16 @@ export const zhCN = {
       "noCloudSync": "当前未开启云端同步，照片不会默认上传云端。",
       "noAi": "当前不会将照片发送给 AI，也不会进行 AI 照片分析。",
       "browserDataWarning": "更换设备、清除网站数据或使用无痕模式，可能导致本机照片不可见。",
-      "backupLater": "后续将通过 Portfolio 备份包支持照片导出与导入；当前 JSON 导出暂不包含照片文件本体。"
+      "backupLater": "后续将通过 Portfolio 备份包支持照片导出与导入；当前 JSON 导出暂不包含照片文件本体。",
+      "clearScope": "清除全部本机照片只会删除照片文件本体，不会删除房源、笔记、评分、状态、通勤锚点或通勤结果。"
+    },
+    "messages": {
+      "clearConfirm": "确认清除当前浏览器与设备中保存的全部看房照片吗？该操作不会删除房源、笔记、评分或通勤结果，但照片文件本体将从本机删除，且当前阶段无法恢复。",
+      "cleared": "本机照片已清除。"
     },
     "states": {
-      "loadFailed": "本机照片数据读取失败，请稍后重试。"
+      "loadFailed": "本机照片数据读取失败，请稍后重试。",
+      "clearFailed": "本机照片清除失败，请稍后重试。"
     }
   }
 } as const;

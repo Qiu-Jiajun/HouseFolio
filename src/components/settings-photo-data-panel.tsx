@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { zhCN } from "@/content/zh-cn";
-import { getListingPhotoStorageSummary } from "@/lib/storage/photos";
+import {
+  clearAllListingPhotos,
+  getListingPhotoStorageSummary,
+} from "@/lib/storage/photos";
 import type { ListingPhotoStorageSummary } from "@/types/listing-photo";
 
 function formatBytes(sizeBytes: number): string {
@@ -22,6 +25,8 @@ export function SettingsPhotoDataPanel() {
     null,
   );
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   async function refreshPhotoSummary() {
@@ -42,6 +47,30 @@ export function SettingsPhotoDataPanel() {
     void refreshPhotoSummary();
   }, []);
 
+  async function handleClearAllPhotos() {
+    const confirmed = window.confirm(
+      zhCN.settingsPhotoDataPanel.messages.clearConfirm,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsClearing(true);
+    setStatusMessage("");
+    setErrorMessage("");
+
+    try {
+      await clearAllListingPhotos();
+      await refreshPhotoSummary();
+      setStatusMessage(zhCN.settingsPhotoDataPanel.messages.cleared);
+    } catch {
+      setErrorMessage(zhCN.settingsPhotoDataPanel.states.clearFailed);
+    } finally {
+      setIsClearing(false);
+    }
+  }
+
   return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -57,16 +86,37 @@ export function SettingsPhotoDataPanel() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            void refreshPhotoSummary();
-          }}
-          className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
-        >
-          {zhCN.settingsPhotoDataPanel.actions.refresh}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              void refreshPhotoSummary();
+            }}
+            className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
+          >
+            {zhCN.settingsPhotoDataPanel.actions.refresh}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              void handleClearAllPhotos();
+            }}
+            disabled={isClearing}
+            className="rounded-full border border-red-900 px-5 py-3 text-sm font-medium text-red-200 hover:bg-red-950 disabled:cursor-not-allowed disabled:text-red-900"
+          >
+            {isClearing
+              ? zhCN.settingsPhotoDataPanel.actions.clearing
+              : zhCN.settingsPhotoDataPanel.actions.clearAll}
+          </button>
+        </div>
       </div>
+
+      {statusMessage ? (
+        <div className="mt-5 rounded-xl border border-emerald-900 bg-emerald-950 px-4 py-3 text-sm text-emerald-200">
+          {statusMessage}
+        </div>
+      ) : null}
 
       {errorMessage ? (
         <div className="mt-5 rounded-xl border border-amber-900 bg-amber-950 px-4 py-3 text-sm text-amber-200">
@@ -112,6 +162,7 @@ export function SettingsPhotoDataPanel() {
           <li>{zhCN.settingsPhotoDataPanel.notices.noAi}</li>
           <li>{zhCN.settingsPhotoDataPanel.notices.browserDataWarning}</li>
           <li>{zhCN.settingsPhotoDataPanel.notices.backupLater}</li>
+          <li>{zhCN.settingsPhotoDataPanel.notices.clearScope}</li>
         </ul>
       </div>
     </section>
