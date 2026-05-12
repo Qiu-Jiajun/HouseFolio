@@ -7,13 +7,26 @@ import {
   buildComparisonInput,
   buildComparisonInputs,
 } from "@/lib/algorithm/comparison";
+import type {
+  ComparisonCommuteSummary,
+  ComparisonMissingField,
+  ComparisonRiskFlag,
+  ComparisonSignal,
+  ComparisonSubjectiveSummary,
+} from "@/types/comparison";
 
 type ForbiddenComparisonModelKeys =
   | "coordinate"
   | "coordinates"
+  | "latitude"
+  | "longitude"
+  | "lng"
+  | "lat"
   | "origin"
   | "destination"
   | "raw"
+  | "rawData"
+  | "rawJson"
   | "rawResponse"
   | "requestUrl"
   | "url"
@@ -21,25 +34,139 @@ type ForbiddenComparisonModelKeys =
   | "steps"
   | "apiKey"
   | "key"
+  | "amapKey"
   | "prompt"
   | "aiPrompt"
   | "aiResponse"
+  | "llmResponse"
   | "photoBlob"
   | "videoBlob"
   | "blob"
   | "objectUrl"
   | "imageBase64"
+  | "thumbnailBase64"
   | "fullNote"
   | "noteText"
+  | "rawNote"
+  | "phone"
+  | "wechat"
+  | "idCard"
   | "doorNumber"
   | "roomNumber"
-  | "buildingNumber";
+  | "buildingNumber"
+  | "unitNumber";
+
+type AllowedComparisonModelKeys =
+  | "listingId"
+  | "title"
+  | "rentMonthly"
+  | "areaSqm"
+  | "layout"
+  | "district"
+  | "areaLabel"
+  | "status"
+  | "sourcePlatform"
+  | "sourceUrl"
+  | "commuteMinutes"
+  | "commuteSource"
+  | "commuteSummaries"
+  | "lifeCircleScore"
+  | "referenceScore"
+  | "scoreBreakdown"
+  | "subjectiveSummary"
+  | "hasNotes"
+  | "hasPhotos"
+  | "photoCount"
+  | "strengths"
+  | "weaknesses"
+  | "neutralFacts"
+  | "missingFields"
+  | "riskFlags";
+
+type AssertTrue<T extends true> = T;
 
 type AssertNoForbiddenKeys<T> =
   Extract<keyof T, ForbiddenComparisonModelKeys> extends never ? true : never;
 
+type AssertOnlyAllowedKeys<T> =
+  Exclude<keyof T, AllowedComparisonModelKeys> extends never ? true : never;
+
+type AssertAllAllowedKeysAreKnown<T> =
+  Exclude<AllowedComparisonModelKeys, keyof T> extends never ? true : never;
+
+type AssertSameShape<A, B> = A extends B ? (B extends A ? true : never) : never;
+
 const comparisonModelHasNoForbiddenKeys: AssertNoForbiddenKeys<ComparisonModel> =
   true;
+
+const comparisonModelUsesOnlyAllowedKeys: AssertOnlyAllowedKeys<ComparisonModel> =
+  true;
+
+const comparisonModelContainsAllAllowedKeys: AssertAllAllowedKeysAreKnown<ComparisonModel> =
+  true;
+
+const comparisonInputMatchesComparisonModel: AssertSameShape<
+  ComparisonInput,
+  ComparisonModel
+> = true;
+
+const commuteSummaryHasNoForbiddenKeys: AssertNoForbiddenKeys<ComparisonCommuteSummary> =
+  true;
+
+const subjectiveSummaryHasNoForbiddenKeys: AssertNoForbiddenKeys<ComparisonSubjectiveSummary> =
+  true;
+
+const signalHasNoForbiddenKeys: AssertNoForbiddenKeys<ComparisonSignal> = true;
+
+const allMissingFields = [
+  "rentMonthly",
+  "areaSqm",
+  "layout",
+  "district",
+  "areaLabel",
+  "commuteMinutes",
+  "referenceScore",
+  "subjectiveSummary",
+] as const satisfies readonly ComparisonMissingField[];
+
+type MissingFieldCoverage = AssertTrue<
+  Exclude<ComparisonMissingField, (typeof allMissingFields)[number]> extends never
+    ? true
+    : false
+>;
+
+type MissingFieldNoExtra = AssertTrue<
+  Exclude<(typeof allMissingFields)[number], ComparisonMissingField> extends never
+    ? true
+    : false
+>;
+
+const missingFieldCoverage: MissingFieldCoverage = true;
+const missingFieldNoExtra: MissingFieldNoExtra = true;
+
+const allRiskFlags = [
+  "missingLocation",
+  "missingCommute",
+  "missingSubjectiveRating",
+  "highRent",
+  "lowArea",
+  "longCommute",
+] as const satisfies readonly ComparisonRiskFlag[];
+
+type RiskFlagCoverage = AssertTrue<
+  Exclude<ComparisonRiskFlag, (typeof allRiskFlags)[number]> extends never
+    ? true
+    : false
+>;
+
+type RiskFlagNoExtra = AssertTrue<
+  Exclude<(typeof allRiskFlags)[number], ComparisonRiskFlag> extends never
+    ? true
+    : false
+>;
+
+const riskFlagCoverage: RiskFlagCoverage = true;
+const riskFlagNoExtra: RiskFlagNoExtra = true;
 
 const mockOptions: BuildComparisonInputOptions = {
   listing: {
@@ -84,8 +211,22 @@ const mockOptions: BuildComparisonInputOptions = {
 };
 
 const singleInput: ComparisonInput = buildComparisonInput(mockOptions);
+const singleModel: ComparisonModel = buildComparisonInput(mockOptions);
 const multipleInputs: ComparisonInput[] = buildComparisonInputs([mockOptions]);
+const multipleModels: ComparisonModel[] = buildComparisonInputs([mockOptions]);
 
 void comparisonModelHasNoForbiddenKeys;
+void comparisonModelUsesOnlyAllowedKeys;
+void comparisonModelContainsAllAllowedKeys;
+void comparisonInputMatchesComparisonModel;
+void commuteSummaryHasNoForbiddenKeys;
+void subjectiveSummaryHasNoForbiddenKeys;
+void signalHasNoForbiddenKeys;
+void missingFieldCoverage;
+void missingFieldNoExtra;
+void riskFlagCoverage;
+void riskFlagNoExtra;
 void singleInput;
+void singleModel;
 void multipleInputs;
+void multipleModels;
