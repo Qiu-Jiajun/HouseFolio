@@ -1,22 +1,57 @@
 import type {
   BuildComparisonInputOptions,
   ComparisonInput,
+  ComparisonModel,
 } from "@/lib/algorithm/comparison";
 import {
   buildComparisonInput,
   buildComparisonInputs,
 } from "@/lib/algorithm/comparison";
 
+type ForbiddenComparisonModelKeys =
+  | "coordinate"
+  | "coordinates"
+  | "origin"
+  | "destination"
+  | "raw"
+  | "rawResponse"
+  | "requestUrl"
+  | "url"
+  | "polyline"
+  | "steps"
+  | "apiKey"
+  | "key"
+  | "prompt"
+  | "aiPrompt"
+  | "aiResponse"
+  | "photoBlob"
+  | "videoBlob"
+  | "blob"
+  | "objectUrl"
+  | "imageBase64"
+  | "fullNote"
+  | "noteText"
+  | "doorNumber"
+  | "roomNumber"
+  | "buildingNumber";
+
+type AssertNoForbiddenKeys<T> =
+  Extract<keyof T, ForbiddenComparisonModelKeys> extends never ? true : never;
+
+const comparisonModelHasNoForbiddenKeys: AssertNoForbiddenKeys<ComparisonModel> =
+  true;
+
 const mockOptions: BuildComparisonInputOptions = {
   listing: {
     id: "listing-test",
-    title: "测试房源",
+    title: "Test listing",
     rent: 6500,
     area: 48,
-    layout: "一室一厅",
-    district: "海淀",
-    addressHint: "五道口地铁站附近",
+    layout: "One bedroom",
+    district: "Haidian",
+    addressHint: "Near Wudaokou subway station",
     sourcePlatform: "manual",
+    sourceUrl: "https://example.com/listing",
     status: "watching",
     createdAt: "2026-05-04",
     commuteMinutes: 25,
@@ -29,13 +64,13 @@ const mockOptions: BuildComparisonInputOptions = {
       id: "commute-test",
       listingId: "listing-test",
       anchorId: "anchor-test",
-      anchorName: "学校",
+      anchorName: "School",
       mode: "transit",
       provider: "mock",
       isMock: true,
       durationMinutes: 25,
       distanceMeters: 6200,
-      summary: "公共交通约 25 分钟",
+      summary: "Transit takes about 25 minutes.",
       calculatedAt: "2026-05-04T00:00:00.000Z",
     },
   ],
@@ -51,5 +86,6 @@ const mockOptions: BuildComparisonInputOptions = {
 const singleInput: ComparisonInput = buildComparisonInput(mockOptions);
 const multipleInputs: ComparisonInput[] = buildComparisonInputs([mockOptions]);
 
+void comparisonModelHasNoForbiddenKeys;
 void singleInput;
 void multipleInputs;
