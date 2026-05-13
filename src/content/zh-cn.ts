@@ -539,3 +539,36 @@ export const portfolioCompareSelectionCopy = {
   },
 } as const;
 
+export const compareSelectedListingsCopy = {
+  badge: "Phase 4B-8｜Selected listings preview",
+  title: "结构化比较预览",
+  description: "当前页面已根据 URL 中的房源 ID 读取本机房源数据，并生成 ComparisonModel 预览。完整横向表将在后续阶段评审。",
+  loading: "正在读取本机房源数据…",
+  returnToPortfolio: "返回 Portfolio 重新选择",
+  foundPrefix: "已找到 ",
+  foundSuffix: " 套有效房源。",
+  missingPrefix: " 另有 ",
+  missingSuffix: " 个 ID 未在当前本机数据中找到。",
+  referenceNote: "当前结果仅用于辅助比较，不代表最终推荐。本阶段不读取照片文件本体，不接 AI，不重新计算通勤。",
+  fields: {
+    rent: "月租",
+    commute: "通勤",
+    referenceScore: "参考评分",
+    area: "面积",
+    layout: "户型",
+    lifeCircle: "生活圈",
+    missingFields: "缺失字段",
+    riskFlags: "风险信号",
+  },
+  empty: {
+    noIdsTitle: "当前还没有选择要比较的房源",
+    noIdsBody: "请先回到 Portfolio，选择 2–4 套候选房源。",
+    tooManyTitle: "第一版最多支持比较 4 套房源",
+    tooManyBody: "请减少选择数量后，再回到 Compare 页面查看结构化预览。",
+    notEnoughFoundTitle: "有效房源不足 2 套",
+    notEnoughFoundBody: "这些房源可能已被删除，或当前浏览器没有对应本机数据。请回到 Portfolio 重新选择。",
+    noMissingFields: "当前未标记缺失字段。",
+    noRiskFlags: "当前未标记风险信号。",
+  },
+} as const;
+
