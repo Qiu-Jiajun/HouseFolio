@@ -501,3 +501,23 @@ export const zhCN = {
     }
   }
 } as const;
+
+export const compareRouteCopy = {
+  badge: "Phase 4B-2｜Compare route scaffold",
+  title: "房源横向比较",
+  subtitle: "这是 Compare UI 的最小路由骨架。当前只校验 URL 中的房源选择数量，不读取真实房源数据。",
+  noSelectionTitle: "当前还没有选择要比较的房源",
+  noSelectionBody: "请先回到 Portfolio，选择 2–4 套候选房源后再进入横向比较。",
+  tooFewTitle: "至少需要选择 2 套房源",
+  tooFewBody: "横向比较需要至少 2 套候选房源。当前有效选择不足，请回到 Portfolio 重新选择。",
+  tooManyTitle: "第一版最多支持比较 4 套房源",
+  tooManyBody: "为了保持比较结果清晰，第一版 Compare UI 最多同时比较 4 套房源。请减少选择数量后再进入。",
+  readyTitle: "已收到待比较房源",
+  readyBody: "当前页面已经识别 URL 中的选择结果。下一阶段将接入 ComparisonModel 渲染真实结构化对比。",
+  selectedCountPrefix: "当前待比较数量",
+  selectedCountSuffix: "套",
+  routeOnlyNote: "当前阶段不读取真实本地房源、不展示横向表、不接 AI、不新增本地持久化。",
+  returnToPortfolio: "返回 Portfolio",
+  referenceNote: "比较结果后续仍将定位为辅助比较，不代表最终推荐。",
+} as const;
+
