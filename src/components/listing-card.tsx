@@ -1,9 +1,16 @@
 import { ListingCardCoverPhoto } from "@/components/listing-card-cover-photo";
-import { zhCN } from "@/content/zh-cn";
+import {
+  portfolioCompareSelectionCopy,
+  zhCN,
+} from "@/content/zh-cn";
 import type { Listing } from "@/types/listing";
 
 type ListingCardProps = {
   listing: Listing;
+  selectable?: boolean;
+  selected?: boolean;
+  selectionDisabled?: boolean;
+  onToggleSelect?: (listingId: string) => void;
 };
 
 const statusText = zhCN.common.listingStatus;
@@ -26,11 +33,22 @@ function getCommuteSourceText(source: Listing["commuteSource"]): string | null {
   return null;
 }
 
-export function ListingCard({ listing }: ListingCardProps) {
+export function ListingCard({
+  listing,
+  selectable = false,
+  selected = false,
+  selectionDisabled = false,
+  onToggleSelect,
+}: ListingCardProps) {
   const commuteSourceText = getCommuteSourceText(listing.commuteSource);
 
   return (
-    <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-sm transition-colors hover:border-slate-700">
+    <article
+      className={[
+        "rounded-2xl border bg-slate-900 p-5 shadow-sm transition-colors hover:border-slate-700",
+        selected ? "border-white" : "border-slate-800",
+      ].join(" ")}
+    >
       <ListingCardCoverPhoto listingId={listing.id} title={listing.title} />
 
       <div className="mb-5 flex items-start justify-between gap-4">
@@ -43,9 +61,33 @@ export function ListingCard({ listing }: ListingCardProps) {
           </h2>
         </div>
 
-        <span className="shrink-0 rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
-          {statusText[listing.status]}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <span className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
+            {statusText[listing.status]}
+          </span>
+
+          {selectable ? (
+            <button
+              type="button"
+              onClick={() => onToggleSelect?.(listing.id)}
+              disabled={selectionDisabled}
+              aria-pressed={selected}
+              className={[
+                "rounded-full border px-3 py-1 text-xs transition",
+                selected
+                  ? "border-white bg-white text-slate-950"
+                  : "border-slate-700 bg-slate-950 text-slate-300 hover:border-slate-500",
+                selectionDisabled
+                  ? "cursor-not-allowed opacity-40 hover:border-slate-700"
+                  : "",
+              ].join(" ")}
+            >
+              {selected
+                ? portfolioCompareSelectionCopy.cardSelected
+                : portfolioCompareSelectionCopy.cardSelect}
+            </button>
+          ) : null}
+        </div>
       </div>
 
       <div className="mb-5 grid gap-3 md:grid-cols-[1.2fr_1fr_1fr]">

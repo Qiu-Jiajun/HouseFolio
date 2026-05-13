@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ListingCard } from "@/components/listing-card";
-import { zhCN } from "@/content/zh-cn";
+import {
+  portfolioCompareSelectionCopy,
+  zhCN,
+} from "@/content/zh-cn";
 import {
   filterListingsByStatus,
   sortListings,
@@ -39,12 +43,16 @@ const sortOptions: {
 ];
 
 const statusText: Record<ListingStatus, string> = zhCN.common.listingStatus;
+const maxCompareSelection = 4;
+const minCompareSelection = 2;
 
 export function PortfolioList() {
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [statusFilter, setStatusFilter] =
     useState<ListingStatusFilter>("all");
   const [sortKey, setSortKey] = useState<ListingSortKey>("createdAtDesc");
+  const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
 
   useEffect(() => {
     setListings(getAllClientListings());
@@ -70,6 +78,46 @@ export function PortfolioList() {
     return listings.filter((listing) => listing.status === "shortlisted")
       .length;
   }, [listings]);
+
+  const selectedCount = selectedListingIds.length;
+  const canCompare =
+    selectedCount >= minCompareSelection && selectedCount <= maxCompareSelection;
+
+  function toggleCompareSelection(listingId: string) {
+    setSelectedListingIds((current) => {
+      if (current.includes(listingId)) {
+        return current.filter((id) => id !== listingId);
+      }
+
+      if (current.length >= maxCompareSelection) {
+        return current;
+      }
+
+      return [...current, listingId];
+    });
+  }
+
+  function clearCompareSelection() {
+    setSelectedListingIds([]);
+  }
+
+  function goToCompare() {
+    if (!canCompare) {
+      return;
+    }
+
+    const ids = selectedListingIds.map((id) => encodeURIComponent(id)).join(",");
+    router.push(`/compare?ids=${ids}`);
+  }
+
+  const compareHint =
+    selectedCount === 0
+      ? portfolioCompareSelectionCopy.hints.none
+      : selectedCount === 1
+        ? portfolioCompareSelectionCopy.hints.tooFew
+        : selectedCount >= maxCompareSelection
+          ? portfolioCompareSelectionCopy.hints.maxReached
+          : portfolioCompareSelectionCopy.hints.ready;
 
   return (
     <>
@@ -168,6 +216,50 @@ export function PortfolioList() {
         )}
       </div>
 
+      <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-300">
+              {portfolioCompareSelectionCopy.title}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {portfolioCompareSelectionCopy.description}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full bg-slate-950 px-4 py-2 text-sm text-slate-300">
+              {portfolioCompareSelectionCopy.selectedPrefix}
+              {selectedCount}
+              {portfolioCompareSelectionCopy.selectedSuffix}
+            </span>
+
+            <button
+              type="button"
+              onClick={clearCompareSelection}
+              disabled={selectedCount === 0}
+              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {portfolioCompareSelectionCopy.clearAction}
+            </button>
+
+            <button
+              type="button"
+              onClick={goToCompare}
+              disabled={!canCompare}
+              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {portfolioCompareSelectionCopy.compareAction}
+            </button>
+          </div>
+        </div>
+
+        <p className="mt-4 text-sm leading-6 text-slate-500">{compareHint}</p>
+        <p className="mt-2 text-xs leading-5 text-slate-600">
+          {portfolioCompareSelectionCopy.referenceNote}
+        </p>
+      </div>
+
       {visibleListings.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
           <h2 className="text-2xl font-semibold text-white">
@@ -179,9 +271,22 @@ export function PortfolioList() {
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          {visibleListings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
+          {visibleListings.map((listing) => {
+            const selected = selectedListingIds.includes(listing.id);
+            const selectionDisabled =
+              !selected && selectedListingIds.length >= maxCompareSelection;
+
+            return (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                selectable
+                selected={selected}
+                selectionDisabled={selectionDisabled}
+                onToggleSelect={toggleCompareSelection}
+              />
+            );
+          })}
         </div>
       )}
     </>

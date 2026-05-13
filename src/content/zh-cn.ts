@@ -521,3 +521,21 @@ export const compareRouteCopy = {
   referenceNote: "比较结果后续仍将定位为辅助比较，不代表最终推荐。",
 } as const;
 
+export const portfolioCompareSelectionCopy = {
+  title: "横向比较",
+  description: "选择 2–4 套候选房源，进入 Compare 页面做结构化横向比较。当前选择只作为本次临时操作，不会保存到本地数据中。",
+  selectedPrefix: "已选择 ",
+  selectedSuffix: " / 4 套",
+  compareAction: "比较已选房源",
+  clearAction: "清空选择",
+  cardSelect: "选择比较",
+  cardSelected: "已选择",
+  referenceNote: "横向比较仅用于辅助比较，不代表最终推荐。",
+  hints: {
+    none: "请先选择 2–4 套候选房源。",
+    tooFew: "还需要再选择 1 套房源才能开始比较。",
+    ready: "已达到比较条件，可以进入 Compare 页面。",
+    maxReached: "已达到第一版最多比较 4 套的上限。你可以取消某套后重新选择。",
+  },
+} as const;
+
