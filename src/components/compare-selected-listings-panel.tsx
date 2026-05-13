@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { CompareExplanationPanel } from "@/components/compare-explanation-panel";
 import { CompareTable } from "@/components/compare-table";
 
 import {
@@ -244,6 +245,7 @@ export function CompareSelectedListingsPanel({
       </div>
 
       <CompareTable models={comparisonModels} />
+      <CompareExplanationPanel models={comparisonModels} />
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         {comparisonModels.map((model) => (
