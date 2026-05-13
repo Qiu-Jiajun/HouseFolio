@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import type { ComparisonInput } from "@/lib/algorithm/comparison";
 import { compareTableCopy, zhCN } from "@/content/zh-cn";
@@ -310,7 +310,7 @@ export function CompareTable({ models }: CompareTableProps) {
 
           <tbody>
             {tableGroups.map((group) => (
-              <>
+              <Fragment key={group.title}>
                 <tr key={group.title} className="border-b border-neutral-200">
                   <td
                     colSpan={models.length + 1}
@@ -339,7 +339,7 @@ export function CompareTable({ models }: CompareTableProps) {
                     ))}
                   </tr>
                 ))}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
