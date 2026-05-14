@@ -2,7 +2,7 @@ import type {
   ComparisonInput,
   ComparisonScoreBreakdown,
   ComparisonSignal,
-} from "@/lib/algorithm/comparison";
+} from "@/types/comparison";
 import type {
   CompareExplanationInput,
   CompareExplanationListingInput,
