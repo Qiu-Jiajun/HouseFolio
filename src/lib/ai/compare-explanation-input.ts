@@ -1,8 +1,8 @@
 import type {
   ComparisonInput,
   ComparisonScoreBreakdown,
-  ComparisonSignal,
-} from "@/types/comparison";
+} from "@/lib/algorithm/comparison";
+import type { ComparisonSignal } from "@/types/comparison";
 import type {
   CompareExplanationInput,
   CompareExplanationListingInput,
