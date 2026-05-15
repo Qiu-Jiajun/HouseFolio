@@ -664,15 +664,43 @@ export const compareExplanationCopy = {
     "该说明仅用于辅助比较，不构成房源推荐、真实性判断或租赁建议。请自行核实房源、合同和交易信息。",
 } as const;
 export const compareMockAiExplanationCopy = {
-  badge: "Phase 4D-14｜模拟 AI 辅助解释",
-  title: "模拟 AI 辅助解释",
+  badge: "Phase 4E-2｜AI 辅助解释确认",
+  title: "AI 辅助解释",
   description:
-    "点击后会把当前比较结果转换为已脱敏的结构化输入，并请求本地 mock API 生成辅助解释。当前不调用真实 AI，不保存解释结果。",
-  action: "生成模拟 AI 辅助解释",
-  loadingAction: "正在生成模拟解释…",
-  errorMessage: "暂时无法生成模拟辅助解释，请稍后重试。",
+    "点击后会先展示发送确认说明。确认后，系统会把当前比较结果转换为已脱敏的结构化输入，请求 AI 生成辅助解释；解释结果仍只保留在本次页面会话中。",
+  action: "生成 AI 辅助解释",
+  loadingAction: "正在生成辅助解释…",
+  errorMessage: "暂时无法生成 AI 辅助解释，请稍后重试。",
   boundaryNote:
-    "该功能仅用于验证未来 L3 说明流程。它基于已脱敏的结构化比较信息生成，不代表最终推荐，也不判断房源真实性。",
+    "AI 辅助解释基于已脱敏的结构化比较信息生成，仅用于辅助比较，不代表最终推荐，也不判断房源真实性。",
+  confirmation: {
+    title: "发送给 AI 前请确认",
+    body:
+      "本次 AI 辅助解释会将已选房源的脱敏结构化摘要发送给第三方大模型服务商，用于生成对比说明、取舍提示和看房 checklist。",
+    sentDataTitle: "可能发送的信息",
+    sentDataItems: [
+      "租金、面积、户型",
+      "区县或商圈",
+      "参考通勤时间与通勤来源",
+      "参考评分与评分摘要",
+      "主观评分摘要",
+      "资料完整度与风险标记",
+      "是否有笔记、是否有照片、照片数量",
+    ],
+    notSentDataTitle: "不会发送的信息",
+    notSentDataItems: [
+      "完整地址、门牌号、经纬度",
+      "高德原始路线、请求 URL、路线步骤",
+      "完整笔记原文、手机号、微信号",
+      "身份证号、合同内容、房东或中介姓名",
+      "照片或视频文件、图片 base64、object URL",
+      "API key、原始 prompt 或模型原始响应",
+    ],
+    disclaimer:
+      "AI 输出仅用于辅助比较，不代表系统推荐或最终决定。请结合实地看房、合同条款和个人硬性条件自行判断。",
+    confirmAction: "确认并生成 AI 辅助解释",
+    cancelAction: "暂不发送",
+  },
   sections: {
     summary: "概览",
     tradeoffs: "取舍说明",

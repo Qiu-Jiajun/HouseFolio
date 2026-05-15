@@ -161,6 +161,8 @@ export function CompareSelectedListingsPanel({
   const [mockAiOutput, setMockAiOutput] =
     useState<CompareExplanationOutput | null>(null);
   const [mockAiError, setMockAiError] = useState<string | null>(null);
+  const [mockAiConfirmationVisible, setMockAiConfirmationVisible] =
+    useState(false);
 
   useEffect(() => {
     setListings(getAllClientListings());
@@ -183,6 +185,7 @@ export function CompareSelectedListingsPanel({
   );
 
   async function handleGenerateMockAiExplanation() {
+    setMockAiConfirmationVisible(false);
     setMockAiStatus("loading");
     setMockAiOutput(null);
     setMockAiError(null);
@@ -341,7 +344,10 @@ export function CompareSelectedListingsPanel({
 
           <button
             type="button"
-            onClick={handleGenerateMockAiExplanation}
+            onClick={() => {
+              setMockAiError(null);
+              setMockAiConfirmationVisible(true);
+            }}
             disabled={mockAiStatus === "loading"}
             className="inline-flex rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
           >
@@ -354,6 +360,83 @@ export function CompareSelectedListingsPanel({
         <p className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm leading-6 text-neutral-500">
           {compareMockAiExplanationCopy.boundaryNote}
         </p>
+
+        {mockAiConfirmationVisible ? (
+          <div className="mt-4 rounded-3xl border border-neutral-200 bg-white p-5">
+            <div className="max-w-3xl">
+              <h3 className="text-base font-semibold text-neutral-950">
+                {compareMockAiExplanationCopy.confirmation.title}
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-600">
+                {compareMockAiExplanationCopy.confirmation.body}
+              </p>
+            </div>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <article className="rounded-2xl bg-neutral-50 p-4">
+                <h4 className="text-sm font-semibold text-neutral-900">
+                  {compareMockAiExplanationCopy.confirmation.sentDataTitle}
+                </h4>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-neutral-600">
+                  {compareMockAiExplanationCopy.confirmation.sentDataItems.map(
+                    (item) => (
+                      <li key={item} className="flex gap-2">
+                        <span aria-hidden="true" className="text-neutral-400">
+                          •
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </article>
+
+              <article className="rounded-2xl bg-neutral-50 p-4">
+                <h4 className="text-sm font-semibold text-neutral-900">
+                  {compareMockAiExplanationCopy.confirmation.notSentDataTitle}
+                </h4>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-neutral-600">
+                  {compareMockAiExplanationCopy.confirmation.notSentDataItems.map(
+                    (item) => (
+                      <li key={item} className="flex gap-2">
+                        <span aria-hidden="true" className="text-neutral-400">
+                          •
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </article>
+            </div>
+
+            <p className="mt-4 rounded-2xl bg-neutral-50 px-4 py-3 text-sm leading-6 text-neutral-500">
+              {compareMockAiExplanationCopy.confirmation.disclaimer}
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={handleGenerateMockAiExplanation}
+                disabled={mockAiStatus === "loading"}
+                className="inline-flex rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+              >
+                {mockAiStatus === "loading"
+                  ? compareMockAiExplanationCopy.loadingAction
+                  : compareMockAiExplanationCopy.confirmation.confirmAction}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMockAiConfirmationVisible(false)}
+                disabled={mockAiStatus === "loading"}
+                className="inline-flex rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-500 disabled:cursor-not-allowed disabled:text-neutral-400"
+              >
+                {compareMockAiExplanationCopy.confirmation.cancelAction}
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {mockAiError ? (
           <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
