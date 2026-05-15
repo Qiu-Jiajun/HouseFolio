@@ -30,6 +30,12 @@ type ApiSuccessResponse = {
 
 type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
+export type MockCompareExplanationApiRequest = CompareExplanationInput;
+export type MockCompareExplanationApiErrorCode = ApiErrorCode;
+export type MockCompareExplanationApiErrorResponse = ApiErrorResponse;
+export type MockCompareExplanationApiSuccessResponse = ApiSuccessResponse;
+export type MockCompareExplanationApiResponse = ApiResponse;
+
 const MIN_LISTINGS = 2;
 const MAX_LISTINGS = 4;
 const MAX_SHORT_TEXT_LENGTH = 120;
