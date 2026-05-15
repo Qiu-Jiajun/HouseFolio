@@ -6,12 +6,18 @@ import { useEffect, useMemo, useState } from "react";
 import { CompareExplanationPanel } from "@/components/compare-explanation-panel";
 import { CompareTable } from "@/components/compare-table";
 
+import { buildCompareExplanationInput } from "@/lib/ai/compare-explanation-input";
 import {
   buildComparisonInputs,
   type ComparisonInput,
 } from "@/lib/algorithm/comparison";
 import { getAllClientListings } from "@/lib/local-store/listing-lookup";
-import { compareSelectedListingsCopy, zhCN } from "@/content/zh-cn";
+import {
+  compareMockAiExplanationCopy,
+  compareSelectedListingsCopy,
+  zhCN,
+} from "@/content/zh-cn";
+import type { CompareExplanationOutput } from "@/types/ai-compare-explanation";
 import type { Listing, ListingCommuteSource } from "@/types/listing";
 
 type CompareSelectedListingsPanelProps = {
@@ -22,6 +28,22 @@ type FoundListingsResult = {
   foundListings: Listing[];
   missingIds: string[];
 };
+
+type MockAiExplanationStatus = "idle" | "loading" | "success" | "error";
+
+type MockAiExplanationApiResponse =
+  | {
+      ok: true;
+      provider: "mock";
+      data: CompareExplanationOutput;
+    }
+  | {
+      ok: false;
+      error: {
+        code: string;
+        message: string;
+      };
+    };
 
 const missingFieldLabels: Record<ComparisonInput["missingFields"][number], string> = {
   rentMonthly: "月租",
@@ -107,11 +129,38 @@ function renderTagList(items: string[], emptyText: string) {
   );
 }
 
+function renderMockAiList(title: string, items: string[]) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <article className="rounded-3xl border border-neutral-200 bg-white p-5">
+      <h3 className="text-base font-semibold text-neutral-950">{title}</h3>
+      <ul className="mt-3 space-y-2 text-sm leading-6 text-neutral-600">
+        {items.map((item) => (
+          <li key={item} className="flex gap-2">
+            <span aria-hidden="true" className="text-neutral-400">
+              •
+            </span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 export function CompareSelectedListingsPanel({
   selectedIds,
 }: CompareSelectedListingsPanelProps) {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [mockAiStatus, setMockAiStatus] =
+    useState<MockAiExplanationStatus>("idle");
+  const [mockAiOutput, setMockAiOutput] =
+    useState<CompareExplanationOutput | null>(null);
+  const [mockAiError, setMockAiError] = useState<string | null>(null);
 
   useEffect(() => {
     setListings(getAllClientListings());
@@ -132,6 +181,35 @@ export function CompareSelectedListingsPanel({
       ),
     [foundListings],
   );
+
+  async function handleGenerateMockAiExplanation() {
+    setMockAiStatus("loading");
+    setMockAiOutput(null);
+    setMockAiError(null);
+
+    try {
+      const response = await fetch("/api/ai/compare-explanation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify(buildCompareExplanationInput(comparisonModels)),
+      });
+
+      const result =
+        (await response.json()) as MockAiExplanationApiResponse;
+
+      if (!response.ok || !result.ok) {
+        throw new Error("mock_ai_explanation_failed");
+      }
+
+      setMockAiOutput(result.data);
+      setMockAiStatus("success");
+    } catch {
+      setMockAiError(compareMockAiExplanationCopy.errorMessage);
+      setMockAiStatus("error");
+    }
+  }
 
   if (!loaded) {
     return (
@@ -246,6 +324,83 @@ export function CompareSelectedListingsPanel({
 
       <CompareTable models={comparisonModels} />
       <CompareExplanationPanel models={comparisonModels} />
+
+      <section className="mt-6 rounded-[2rem] border border-neutral-200 bg-neutral-50 p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-3xl">
+            <p className="text-sm font-medium text-neutral-500">
+              {compareMockAiExplanationCopy.badge}
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
+              {compareMockAiExplanationCopy.title}
+            </h2>
+            <p className="mt-3 text-base leading-7 text-neutral-600">
+              {compareMockAiExplanationCopy.description}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGenerateMockAiExplanation}
+            disabled={mockAiStatus === "loading"}
+            className="inline-flex rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+          >
+            {mockAiStatus === "loading"
+              ? compareMockAiExplanationCopy.loadingAction
+              : compareMockAiExplanationCopy.action}
+          </button>
+        </div>
+
+        <p className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm leading-6 text-neutral-500">
+          {compareMockAiExplanationCopy.boundaryNote}
+        </p>
+
+        {mockAiError ? (
+          <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
+            {mockAiError}
+          </p>
+        ) : null}
+
+        {mockAiOutput ? (
+          <div className="mt-5">
+            <article className="rounded-3xl border border-neutral-200 bg-white p-5">
+              <h3 className="text-base font-semibold text-neutral-950">
+                {compareMockAiExplanationCopy.sections.summary}
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-600">
+                {mockAiOutput.summary}
+              </p>
+            </article>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              {renderMockAiList(
+                compareMockAiExplanationCopy.sections.tradeoffs,
+                mockAiOutput.tradeoffs,
+              )}
+              {renderMockAiList(
+                compareMockAiExplanationCopy.sections.commuteNotes,
+                mockAiOutput.commuteNotes,
+              )}
+              {renderMockAiList(
+                compareMockAiExplanationCopy.sections.riskExplanations,
+                mockAiOutput.riskExplanations,
+              )}
+              {renderMockAiList(
+                compareMockAiExplanationCopy.sections.missingFieldNotes,
+                mockAiOutput.missingFieldNotes,
+              )}
+              {renderMockAiList(
+                compareMockAiExplanationCopy.sections.checklist,
+                mockAiOutput.checklist,
+              )}
+            </div>
+
+            <p className="mt-5 rounded-2xl bg-white px-4 py-3 text-sm leading-6 text-neutral-500">
+              {mockAiOutput.disclaimer}
+            </p>
+          </div>
+        ) : null}
+      </section>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         {comparisonModels.map((model) => (

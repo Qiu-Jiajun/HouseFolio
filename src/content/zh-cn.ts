@@ -663,3 +663,22 @@ export const compareExplanationCopy = {
   disclaimer:
     "该说明仅用于辅助比较，不构成房源推荐、真实性判断或租赁建议。请自行核实房源、合同和交易信息。",
 } as const;
+export const compareMockAiExplanationCopy = {
+  badge: "Phase 4D-14｜模拟 AI 辅助解释",
+  title: "模拟 AI 辅助解释",
+  description:
+    "点击后会把当前比较结果转换为已脱敏的结构化输入，并请求本地 mock API 生成辅助解释。当前不调用真实 AI，不保存解释结果。",
+  action: "生成模拟 AI 辅助解释",
+  loadingAction: "正在生成模拟解释…",
+  errorMessage: "暂时无法生成模拟辅助解释，请稍后重试。",
+  boundaryNote:
+    "该功能仅用于验证未来 L3 说明流程。它基于已脱敏的结构化比较信息生成，不代表最终推荐，也不判断房源真实性。",
+  sections: {
+    summary: "概览",
+    tradeoffs: "取舍说明",
+    commuteNotes: "通勤提示",
+    riskExplanations: "风险信号解释",
+    missingFieldNotes: "待补充字段",
+    checklist: "下一步 checklist",
+  },
+} as const;
