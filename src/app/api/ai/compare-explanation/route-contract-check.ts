@@ -5,7 +5,12 @@ import type {
   CompareExplanationScoreSummary,
   CompareExplanationSubjectiveSummary,
 } from "@/types/ai-compare-explanation";
+import type { CompareExplanationProviderName } from "@/lib/ai/provider";
 import type {
+  CompareExplanationApiErrorResponse,
+  CompareExplanationApiRequest,
+  CompareExplanationApiResponse,
+  CompareExplanationApiSuccessResponse,
   MockCompareExplanationApiErrorResponse,
   MockCompareExplanationApiRequest,
   MockCompareExplanationApiResponse,
@@ -79,11 +84,15 @@ type AllowedErrorKeys = "ok" | "error";
 type AllowedErrorPayloadKeys = "code" | "message";
 
 type _RequestMatchesRedactedInput = Assert<
+  IsSame<CompareExplanationApiRequest, CompareExplanationInput>
+>;
+
+type _LegacyRequestAliasMatchesRedactedInput = Assert<
   IsSame<MockCompareExplanationApiRequest, CompareExplanationInput>
 >;
 
 type _RequestHasNoForbiddenTopLevelKeys = Assert<
-  HasNoForbiddenKeys<MockCompareExplanationApiRequest>
+  HasNoForbiddenKeys<CompareExplanationApiRequest>
 >;
 
 type _ListingInputHasNoForbiddenKeys = Assert<
@@ -103,28 +112,43 @@ type _OutputHasNoForbiddenKeys = Assert<
 >;
 
 type _SuccessResponseHasOnlyAllowedKeys = Assert<
-  HasNoKeysOutside<MockCompareExplanationApiSuccessResponse, AllowedSuccessKeys>
+  HasNoKeysOutside<CompareExplanationApiSuccessResponse, AllowedSuccessKeys>
 >;
 
-type _SuccessResponseUsesMockProvider = Assert<
-  IsSame<MockCompareExplanationApiSuccessResponse["provider"], "mock">
+type _SuccessResponseProviderIsTruthfulProviderName = Assert<
+  IsSame<
+    CompareExplanationApiSuccessResponse["provider"],
+    CompareExplanationProviderName
+  >
 >;
 
 type _SuccessResponseDataMatchesOutput = Assert<
-  IsSame<MockCompareExplanationApiSuccessResponse["data"], CompareExplanationOutput>
+  IsSame<CompareExplanationApiSuccessResponse["data"], CompareExplanationOutput>
+>;
+
+type _LegacySuccessAliasMatchesCurrentSuccess = Assert<
+  IsSame<MockCompareExplanationApiSuccessResponse, CompareExplanationApiSuccessResponse>
 >;
 
 type _ErrorResponseHasOnlyAllowedKeys = Assert<
-  HasNoKeysOutside<MockCompareExplanationApiErrorResponse, AllowedErrorKeys>
+  HasNoKeysOutside<CompareExplanationApiErrorResponse, AllowedErrorKeys>
 >;
 
 type _ErrorPayloadHasOnlyAllowedKeys = Assert<
-  HasNoKeysOutside<MockCompareExplanationApiErrorResponse["error"], AllowedErrorPayloadKeys>
+  HasNoKeysOutside<CompareExplanationApiErrorResponse["error"], AllowedErrorPayloadKeys>
+>;
+
+type _LegacyErrorAliasMatchesCurrentError = Assert<
+  IsSame<MockCompareExplanationApiErrorResponse, CompareExplanationApiErrorResponse>
 >;
 
 type _ApiResponseIsExpectedUnion = Assert<
   IsSame<
-    MockCompareExplanationApiResponse,
-    MockCompareExplanationApiSuccessResponse | MockCompareExplanationApiErrorResponse
+    CompareExplanationApiResponse,
+    CompareExplanationApiSuccessResponse | CompareExplanationApiErrorResponse
   >
+>;
+
+type _LegacyApiResponseAliasMatchesCurrentResponse = Assert<
+  IsSame<MockCompareExplanationApiResponse, CompareExplanationApiResponse>
 >;

@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
-
-import { generateMockCompareExplanation } from "@/lib/ai";
+import {
+  generateCompareExplanation,
+  generateMockCompareExplanation,
+} from "@/lib/ai/compare-explanation";
+import {
+  deepSeekCompareExplanationProvider,
+  DeepSeekProviderError,
+} from "@/lib/ai/deepseek-provider";
+import { mockCompareExplanationProvider } from "@/lib/ai/mock-provider";
+import type { CompareExplanationProviderName } from "@/lib/ai/provider";
 import type {
   CompareExplanationCommuteSource,
   CompareExplanationInput,
@@ -12,7 +20,21 @@ import type {
   CompareExplanationSubjectiveSummary,
 } from "@/types/ai-compare-explanation";
 
-type ApiErrorCode = "invalid_json" | "invalid_input" | "generation_failed";
+const MIN_LISTINGS = 2;
+const MAX_LISTINGS = 4;
+const MAX_ARRAY_ITEMS = 20;
+const MAX_TITLE_LENGTH = 120;
+const MAX_SHORT_TEXT_LENGTH = 80;
+
+type ApiErrorCode =
+  | "invalid_json"
+  | "invalid_input"
+  | "generation_failed"
+  | "missing_provider_configuration"
+  | "provider_unavailable"
+  | "provider_timeout"
+  | "provider_rate_limited"
+  | "provider_invalid_response";
 
 type ApiErrorResponse = {
   ok: false;
@@ -24,7 +46,7 @@ type ApiErrorResponse = {
 
 type ApiSuccessResponse = {
   ok: true;
-  provider: "mock";
+  provider: CompareExplanationProviderName;
   data: CompareExplanationOutput;
 };
 
@@ -36,11 +58,11 @@ export type MockCompareExplanationApiErrorResponse = ApiErrorResponse;
 export type MockCompareExplanationApiSuccessResponse = ApiSuccessResponse;
 export type MockCompareExplanationApiResponse = ApiResponse;
 
-const MIN_LISTINGS = 2;
-const MAX_LISTINGS = 4;
-const MAX_SHORT_TEXT_LENGTH = 120;
-const MAX_TITLE_LENGTH = 80;
-const MAX_ARRAY_ITEMS = 8;
+export type CompareExplanationApiRequest = CompareExplanationInput;
+export type CompareExplanationApiErrorCode = ApiErrorCode;
+export type CompareExplanationApiErrorResponse = ApiErrorResponse;
+export type CompareExplanationApiSuccessResponse = ApiSuccessResponse;
+export type CompareExplanationApiResponse = ApiResponse;
 
 const allowedCommuteSources = new Set<CompareExplanationCommuteSource>([
   "listing",
@@ -120,7 +142,7 @@ function jsonError(
   code: ApiErrorCode,
   message: string,
   status: number,
-): NextResponse<ApiResponse> {
+): NextResponse<ApiErrorResponse> {
   return NextResponse.json(
     {
       ok: false,
@@ -134,12 +156,12 @@ function jsonError(
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function hasForbiddenRequestKey(value: unknown): boolean {
   if (Array.isArray(value)) {
-    return value.some(hasForbiddenRequestKey);
+    return value.some((item) => hasForbiddenRequestKey(item));
   }
 
   if (!isRecord(value)) {
@@ -147,8 +169,8 @@ function hasForbiddenRequestKey(value: unknown): boolean {
   }
 
   return Object.entries(value).some(
-    ([key, nestedValue]) =>
-      forbiddenRequestKeys.has(key) || hasForbiddenRequestKey(nestedValue),
+    ([key, childValue]) =>
+      forbiddenRequestKeys.has(key) || hasForbiddenRequestKey(childValue),
   );
 }
 
@@ -455,6 +477,61 @@ function parseCompareExplanationInput(
   };
 }
 
+function getServerConfiguredProviderName(): CompareExplanationProviderName {
+  return process.env.AI_COMPARE_PROVIDER === "deepseek" ? "deepseek" : "mock";
+}
+
+async function generateRouteOutput(
+  input: CompareExplanationInput,
+): Promise<ApiSuccessResponse> {
+  const providerName = getServerConfiguredProviderName();
+
+  if (providerName === "deepseek") {
+    const output = await generateCompareExplanation(
+      input,
+      deepSeekCompareExplanationProvider,
+    );
+
+    return {
+      ok: true,
+      provider: "deepseek",
+      data: output,
+    };
+  }
+
+  const output = await generateMockCompareExplanation(input);
+
+  return {
+    ok: true,
+    provider: "mock",
+    data: output,
+  };
+}
+
+function mapGenerationError(error: unknown): NextResponse<ApiErrorResponse> {
+  if (error instanceof DeepSeekProviderError) {
+    switch (error.code) {
+      case "missing_configuration":
+        return jsonError(
+          "missing_provider_configuration",
+          error.safeMessage,
+          503,
+        );
+      case "request_timeout":
+        return jsonError("provider_timeout", error.safeMessage, 504);
+      case "rate_limited":
+        return jsonError("provider_rate_limited", error.safeMessage, 429);
+      case "invalid_response":
+        return jsonError("provider_invalid_response", error.safeMessage, 502);
+      case "request_failed":
+      case "unknown_failure":
+        return jsonError("provider_unavailable", error.safeMessage, 502);
+    }
+  }
+
+  return jsonError("generation_failed", "Failed to generate output.", 500);
+}
+
 export async function POST(request: Request): Promise<NextResponse<ApiResponse>> {
   let body: unknown;
 
@@ -475,14 +552,8 @@ export async function POST(request: Request): Promise<NextResponse<ApiResponse>>
   }
 
   try {
-    const output = await generateMockCompareExplanation(input);
-
-    return NextResponse.json({
-      ok: true,
-      provider: "mock",
-      data: output,
-    });
-  } catch {
-    return jsonError("generation_failed", "Failed to generate mock output.", 500);
+    return NextResponse.json(await generateRouteOutput(input));
+  } catch (error) {
+    return mapGenerationError(error);
   }
 }
