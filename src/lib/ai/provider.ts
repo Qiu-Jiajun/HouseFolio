@@ -3,7 +3,7 @@ import type {
   CompareExplanationOutput,
 } from "@/types/ai-compare-explanation";
 
-export type CompareExplanationProviderName = "mock";
+export type CompareExplanationProviderName = "mock" | "deepseek";
 
 export type CompareExplanationProvider = {
   name: CompareExplanationProviderName;
