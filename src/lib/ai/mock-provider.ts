@@ -87,7 +87,7 @@ function buildMissingFieldNotes(input: CompareExplanationInput): string[] {
 function buildChecklist(input: CompareExplanationInput): string[] {
   const checklist = [
     "核实实际通勤体验是否稳定。",
-    "确认夜间噪音、采光、通风和电梯等待时间。",
+    "确认夜间噪音、采光、通风和电梯等候时间。",
     "检查厨房、卫生间和基础设施是否满足日常使用。",
     "确认押金、维修责任、入住前费用和合同条款。",
   ];
