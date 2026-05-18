@@ -503,21 +503,21 @@ export const zhCN = {
 } as const;
 
 export const compareRouteCopy = {
-  badge: "Phase 4B-2｜Compare route scaffold",
+  badge: "Phase 4G-2｜横向比较",
   title: "房源横向比较",
-  subtitle: "这是 Compare UI 的最小路由骨架。当前只校验 URL 中的房源选择数量，不读取真实房源数据。",
+  subtitle: "基于本机候选房源与 URL 中的临时选择结果，展示结构化横向比较、参考评分拆解与辅助说明。",
   noSelectionTitle: "当前还没有选择要比较的房源",
-  noSelectionBody: "请先回到 Portfolio，选择 2–4 套候选房源后再进入横向比较。",
+  noSelectionBody: "请先回到 Portfolio，选择 2–4 套候选房源后再进入横向比较。本次选择只用于当前比较流程，不会保存为本地记录。",
   tooFewTitle: "至少需要选择 2 套房源",
-  tooFewBody: "横向比较需要至少 2 套候选房源。当前有效选择不足，请回到 Portfolio 重新选择。",
+  tooFewBody: "横向比较需要至少 2 套候选房源。当前有效选择不足，请回到 Portfolio 重新选择 2–4 套候选房源。",
   tooManyTitle: "第一版最多支持比较 4 套房源",
-  tooManyBody: "为了保持比较结果清晰，第一版 Compare UI 最多同时比较 4 套房源。请减少选择数量后再进入。",
+  tooManyBody: "为了保持比较结果清晰，第一版 Compare UI 最多同时比较 4 套房源。请回到 Portfolio 减少选择数量后再进入。",
   readyTitle: "已收到待比较房源",
-  readyBody: "当前页面已经识别 URL 中的选择结果。下一阶段将接入 ComparisonModel 渲染真实结构化对比。",
+  readyBody: "当前页面已识别 URL 中的临时选择结果，并会基于本机候选房源生成结构化横向比较。",
   selectedCountPrefix: "当前待比较数量",
   selectedCountSuffix: "套",
-  routeOnlyNote: "当前阶段不读取真实本地房源、不展示横向表、不接 AI、不新增本地持久化。",
-  returnToPortfolio: "返回 Portfolio",
+  routeOnlyNote: "当前比较只使用本机已有候选房源与临时 URL 选择，不新增本地持久化；AI 辅助解释需要用户确认后才会触发。",
+  returnToPortfolio: "返回 Portfolio 重新选择",
   referenceNote: "比较结果后续仍将定位为辅助比较，不代表最终推荐。",
 } as const;
 
@@ -549,7 +549,7 @@ export const compareSelectedListingsCopy = {
   foundSuffix: " 套有效房源。",
   missingPrefix: " 另有 ",
   missingSuffix: " 个 ID 未在当前本机数据中找到。",
-  referenceNote: "当前结果仅用于辅助比较，不代表最终推荐。本阶段不读取照片文件本体，不接 AI，不重新计算通勤。",
+  referenceNote: "当前结果仅用于辅助比较，不代表最终推荐。本阶段不读取照片文件本体，不重新计算通勤；AI 辅助解释需要用户确认后才会触发，输出仅保留在本次页面会话中。",
   fields: {
     rent: "月租",
     commute: "通勤",
@@ -578,7 +578,7 @@ export const compareTableCopy = {
   description: "把 2–4 套候选房源按同一组字段横向展开，帮助你从基础信息、通勤、参考评分、用户补充资料和风险信号中做维度拆解。",
   dimensionColumn: "比较维度",
   viewDetail: "查看详情",
-  boundaryNote: "横向对比表仅用于辅助比较，不代表最终推荐。本阶段不读取照片文件本体，不调用 AI，不重新计算高德通勤，不新增本地持久化。",
+  boundaryNote: "横向对比表仅用于辅助比较，不代表最终推荐。本表不读取照片文件本体，不重新计算高德通勤，不新增本地持久化；AI 辅助解释需在下方确认后单独触发。",
   groups: {
     basic: "基础信息",
     spatial: "L1 空间信息",
@@ -630,12 +630,12 @@ export const compareExplanationCopy = {
   badge: "Phase 4C-2｜静态辅助解释",
   title: "辅助解释｜基于当前对比信息",
   description:
-    "以下说明基于当前已选房源的结构化比较信息，用于帮助你理解取舍，不代表最终推荐。本阶段不调用 AI，不保存解释结果。",
+    "以下说明基于当前已选房源的结构化比较信息，用于帮助你理解取舍，不代表最终推荐。本面板不调用 AI，也不保存解释结果；AI 辅助解释需在下方确认后单独触发。",
   sections: {
     tradeoff: {
       title: "先看取舍，而不是寻找唯一答案",
       body:
-        "当前对比的核心不是选出“最好”的房源，而是看清每套房在租金、面积、通勤和资料完整度之间的取舍。参考评分可以帮助你快速定位差异，但不能替代你的硬性条件。",
+        "当前对比的核心不是选出某套绝对正确的房源，而是看清每套房在租金、面积、通勤和资料完整度之间的取舍。参考评分可以帮助你快速定位差异，但不能替代你的硬性条件。",
     },
     commute: {
       title: "通勤会长期影响日常稳定性",
@@ -697,7 +697,7 @@ export const compareMockAiExplanationCopy = {
       "API key、原始 prompt 或模型原始响应",
     ],
     disclaimer:
-      "AI 输出仅用于辅助比较，不代表系统推荐或最终决定。请结合实地看房、合同条款和个人硬性条件自行判断。",
+      "AI 输出仅用于辅助比较与解释，不构成租赁建议或真实性判断，也不替你做最终决定。请结合实地看房、合同条款和个人硬性条件自行判断。",
     confirmAction: "确认并生成 AI 辅助解释",
     cancelAction: "暂不发送",
   },
