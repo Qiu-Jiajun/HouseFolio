@@ -671,6 +671,9 @@ export const compareMockAiExplanationCopy = {
   action: "生成 AI 辅助解释",
   loadingAction: "正在生成辅助解释…",
   errorMessage: "暂时无法生成 AI 辅助解释，请稍后重试。",
+  clearOutputAction: "清除本次 AI 输出",
+  sessionOnlyNote:
+    "该 AI 输出只保留在当前页面会话中。你可以在这里清除本次结果；刷新页面后也不会保留。",
   boundaryNote:
     "AI 辅助解释基于已脱敏的结构化比较信息生成，仅用于辅助比较，不代表最终推荐，也不判断房源真实性。",
   confirmation: {
