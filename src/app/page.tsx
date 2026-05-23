@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { zhCN } from "@/content/zh-cn";
 
@@ -80,14 +81,15 @@ export default function Home() {
     <main className="min-h-screen bg-[#f6f1e7] text-[#242424]">
       <section className="mx-auto min-h-screen max-w-[1672px] overflow-hidden rounded-[22px] border border-[#d7d1c8] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(73,57,36,0.14)]">
         <header className="flex h-[101px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-[52px]">
-          <Link href="/" className="flex items-center gap-3 text-[31px] font-semibold leading-none tracking-normal">
-            <span className="relative h-10 w-10 text-[#8c956b]" aria-hidden="true">
-              <svg viewBox="0 0 40 40" className="h-10 w-10">
-                <path d="M7 19.5 20 8l13 11.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.2" />
-                <path d="M12 18.5V34h16V18.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.2" />
-              </svg>
-            </span>
-            {zhCN.nav.brand}
+          <Link href="/" className="flex h-[64px] items-center">
+            <Image
+              src="/images/phase-8a/housefolio-logo-transparent.png"
+              alt="HouseFolio"
+              width={3142}
+              height={1344}
+              priority
+              className="h-[58px] w-auto object-contain"
+            />
           </Link>
 
           <nav className="hidden items-center gap-[46px] text-[20px] font-semibold text-black xl:flex">
