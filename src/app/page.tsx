@@ -81,15 +81,24 @@ export default function Home() {
     <main className="min-h-screen bg-[#f6f1e7] text-[#242424]">
       <section className="mx-auto min-h-screen max-w-[1672px] overflow-hidden rounded-[22px] border border-[#d7d1c8] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(73,57,36,0.14)]">
         <header className="flex h-[101px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-[52px]">
-          <Link href="/" className="flex h-[64px] items-center">
+          <Link href="/" aria-label="HouseFolio 首页" className="flex h-[64px] items-center gap-3">
             <Image
-              src="/images/phase-8a/housefolio-logo-transparent.png"
-              alt="HouseFolio"
-              width={3142}
-              height={1344}
+              src="/images/phase-8a/housefolio-logo-icon.png"
+              alt=""
+              width={1099}
+              height={1229}
               priority
-              className="h-[58px] w-auto object-contain"
+              className="h-[50px] w-auto object-contain"
             />
+            <span
+              className="text-[32px] leading-none text-black"
+              style={{
+                fontFamily:
+                  '"Segoe Script", "Brush Script MT", "Snell Roundhand", "Apple Chancery", Georgia, serif',
+              }}
+            >
+              HouseFolio
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-[46px] text-[20px] font-semibold text-black xl:flex">
