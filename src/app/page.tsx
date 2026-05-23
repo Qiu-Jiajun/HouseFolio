@@ -83,12 +83,12 @@ export default function Home() {
         <header className="flex h-[101px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-[52px]">
           <Link href="/" aria-label="HouseFolio 首页" className="flex h-[64px] items-center gap-2.5">
             <Image
-              src="/images/phase-8a/housefolio-logo-icon.png"
+              src="/images/phase-8a/housefolio-logo-icon-large.png"
               alt=""
-              width={1099}
-              height={1229}
+              width={1552}
+              height={1398}
               priority
-              className="h-[60px] w-auto object-contain"
+              className="h-[64px] w-auto object-contain"
             />
             <span
               className="text-[32px] leading-none text-black"
