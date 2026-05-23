@@ -64,6 +64,37 @@ export const zhCN = {
     "currentPhase": {
       "title": "当前阶段",
       "body": "作品集预览版：工作/学习地点（通勤锚点）设置。当前 Demo 仍只使用模拟数据与浏览器 localStorage，尚未接入 Supabase、地图 API 或 AI 服务。"
+    },
+    "referenceHero": {
+      "script": "Home",
+      "titleLine1": "把候选房源整理成",
+      "titleLine2": "更安心的租房决策",
+      "description": "记录看房信息，比较通勤与预算，并在签约前检查常见合同风险。",
+      "primaryAction": "开始整理候选房源",
+      "secondaryAction": "了解如何辅助比较",
+      "navItems": [
+        "候选房源",
+        "辅助比较",
+        "看房记录",
+        "签约前检查",
+        "本地数据"
+      ],
+      "capabilities": [
+        {
+          "title": "通勤与预算",
+          "description": "帮助梳理取舍"
+        },
+        {
+          "title": "看房记录",
+          "description": "保留你的真实印象"
+        },
+        {
+          "title": "签约前检查",
+          "description": "提示常见合同风险"
+        }
+      ],
+      "localFirstTitle": "完整住址、看房笔记、合同文本默认保存在本机",
+      "localFirstBody": "本地优先，隐私由你掌控"
     }
   },
   "portfolio": {
