@@ -77,8 +77,10 @@ export const zhCN = {
         "辅助比较",
         "看房记录",
         "签约前检查",
-        "本地数据"
+        "设置"
       ],
+      "descriptionLead": "记录看房信息，比较通勤与预算，并在签约前检查",
+      "descriptionRisk": "常见合同风险。",
       "capabilities": [
         {
           "title": "通勤与预算",

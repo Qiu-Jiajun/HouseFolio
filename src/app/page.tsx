@@ -8,7 +8,7 @@ const navItems = [
   { label: copy.navItems[1], href: "/portfolio", icon: "compare" },
   { label: copy.navItems[2], href: "/portfolio", icon: "note" },
   { label: copy.navItems[3], href: "/portfolio", icon: "shield" },
-  { label: copy.navItems[4], href: "/settings", icon: "data" },
+  { label: copy.navItems[4], href: "/settings", icon: "settings" },
 ] as const;
 
 function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
@@ -50,8 +50,8 @@ function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-      <path d="M5 7c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3Z" fill="none" stroke="currentColor" strokeWidth="2" />
-      <path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 2.8v2.1m0 14.2v2.1M4.1 4.1l1.5 1.5m12.8 12.8 1.5 1.5M2.8 12h2.1m14.2 0h2.1M4.1 19.9l1.5-1.5M18.4 5.6l1.5-1.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
     </svg>
   );
 }
@@ -123,22 +123,23 @@ export default function Home() {
               "url('/images/phase-8a/home-hero-living-room.png')",
           }}
         >
-          <div className="relative z-10 w-[55%] px-[146px] pt-[145px]">
-            <h1 className="font-serif text-[74px] font-bold leading-[1.22] tracking-tight text-[#242424]">
+          <div className="relative z-10 w-[58%] px-[146px] pt-[163px]">
+            <h1 className="font-serif text-[74px] font-black leading-[1.1] tracking-tight text-[#242424]">
               {copy.titleLine1}
               <br />
               {copy.titleLine2}
             </h1>
-            <p className="mt-6 w-[660px] max-w-full text-[23px] leading-[1.7] text-[#4c4c4c]">
-              {copy.description}
+            <p className="mt-7 w-[780px] max-w-full text-[21px] leading-[1.65] text-[#4c4c4c]">
+              {copy.descriptionLead}
+              <span className="whitespace-nowrap">{copy.descriptionRisk}</span>
             </p>
             <div className="mt-9 flex items-center gap-6">
               <Link href="/portfolio" className="inline-flex h-[64px] items-center gap-3 rounded-[9px] bg-[#7d8654] px-9 text-[20px] font-semibold text-white shadow-[0_14px_24px_rgba(91,98,58,0.2)] transition hover:bg-[#687044]">
                 <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-white text-[28px] font-light leading-none">+</span>
                 {copy.primaryAction}
               </Link>
-              <Link href="/demo" className="inline-flex h-[64px] items-center gap-4 rounded-[9px] border border-[#bdb7aa] bg-white/65 px-10 text-[20px] font-semibold text-[#2d2d2d] transition hover:bg-white">
-                <span className="text-[#6f7848]" aria-hidden="true">
+              <Link href="/demo" className="inline-flex h-[64px] items-center gap-4 rounded-[9px] border border-[#d2ccc0] bg-white/60 px-10 text-[20px] font-semibold text-[#2d2d2d] transition hover:bg-white">
+                <span className="text-[#8b9469]" aria-hidden="true">
                   <svg viewBox="0 0 24 24" className="h-7 w-7">
                     <path d="M5 18V8h4l3-3h7v13z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
                     <path d="m10 14 2-2 2 2 3-4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
@@ -149,30 +150,30 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="absolute bottom-[150px] left-[145px] z-20 grid w-[920px] grid-cols-3 rounded-[14px] bg-white/88 px-6 py-5 shadow-[0_20px_50px_rgba(88,67,42,0.12)] backdrop-blur-sm">
+          <div className="absolute bottom-[154px] left-[145px] z-20 grid w-[870px] grid-cols-3 rounded-[14px] bg-white/88 px-5 py-4 shadow-[0_18px_44px_rgba(88,67,42,0.11)] backdrop-blur-sm">
             {copy.capabilities.map((item, index) => (
               <div
                 key={item.title}
                 className={[
-                  "flex min-w-0 items-center gap-5 px-3",
+                  "flex min-w-0 items-center gap-4 px-3",
                   index < copy.capabilities.length - 1
-                    ? "border-r border-[#ddd8cf]"
+                    ? "border-r border-[#e4dfd6]"
                     : "",
                 ].join(" ")}
               >
-                <span className="grid h-[60px] w-[60px] shrink-0 place-items-center rounded-full bg-[#efeee5] text-[#7d8654]">
+                <span className="grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full bg-[#efeee5] text-[#7d8654]">
                   <CapabilityIcon index={index} />
                 </span>
                 <span className="min-w-0">
-                  <strong className="block whitespace-nowrap text-[20px] font-semibold leading-tight text-[#242424]">{item.title}</strong>
-                  <span className="mt-2 block whitespace-nowrap text-[16px] leading-tight text-[#555]">{item.description}</span>
+                  <strong className="block whitespace-nowrap text-[19px] font-semibold leading-tight text-[#242424]">{item.title}</strong>
+                  <span className="mt-1.5 block whitespace-nowrap text-[15px] leading-tight text-[#555]">{item.description}</span>
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="absolute bottom-[38px] left-1/2 z-20 flex -translate-x-1/2 items-center gap-6 rounded-full px-8 py-4">
-            <span className="grid h-[72px] w-[72px] place-items-center rounded-full bg-[#efeee5] text-[#7d8654]" aria-hidden="true">
+          <div className="absolute bottom-[58px] left-1/2 z-20 flex -translate-x-1/2 items-center gap-5 rounded-full px-8 py-4">
+            <span className="grid h-[60px] w-[60px] place-items-center rounded-full bg-[#efeee5] text-[#7d8654]" aria-hidden="true">
               <svg viewBox="0 0 24 24" className="h-7 w-7">
                 <path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
                 <path d="M6 10h12v10H6z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
