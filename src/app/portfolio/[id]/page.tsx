@@ -15,14 +15,14 @@ export default async function ListingDetailPage({
   const { id } = await params;
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+    <main className="hf-warm-scope min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
         <AppNav />
 
         <div className="mb-6">
           <a
             href="/portfolio"
-            className="text-sm text-slate-400 hover:text-white"
+            className="text-sm text-[#6f675c] hover:text-[#282417]"
           >
             {zhCN.listingDetail.actions.backToPortfolio}
           </a>

@@ -51,11 +51,13 @@ export default function DemoPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <AppNav />
+    <div className="hf-warm-scope min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <AppNav />
+      </div>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
-        <section className="rounded-3xl border border-amber-300/40 bg-amber-300/10 p-6 shadow-2xl shadow-black/20">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 py-2">
+        <section className="rounded-[2rem] border border-[#e6ddcf] bg-[#fffaf2] p-8 shadow-[0_24px_80px_rgba(92,74,48,0.10)]">
           <p className="text-sm font-semibold text-amber-200">演示模式</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white md:text-5xl">
             用虚构 Portfolio 快速理解 HouseFolio 的找房决策流程
@@ -386,7 +388,9 @@ export default function DemoPage() {
         </section>
       </main>
 
-      <ComplianceFooter />
+      <div className="mx-auto max-w-6xl">
+        <ComplianceFooter />
+      </div>
     </div>
   );
 }

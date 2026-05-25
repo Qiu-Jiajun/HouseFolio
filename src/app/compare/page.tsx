@@ -29,29 +29,31 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const selectedIds = parseListingIds(params?.ids);
 
   return (
-    <main className="min-h-screen bg-neutral-50 text-neutral-950">
-      <AppNav />
+    <main className="hf-warm-scope min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
+      <section className="mx-auto w-full max-w-6xl">
+        <AppNav />
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10">
-        <div className="rounded-[2rem] border border-neutral-200 bg-white p-8 shadow-sm">
-          <p className="text-sm font-medium text-neutral-500">
+        <div className="rounded-[2rem] border border-[#e6ddcf] bg-[#fffaf2] p-8 shadow-[0_24px_80px_rgba(92,74,48,0.10)]">
+          <p className="text-sm font-medium text-[#73744b]">
             {compareRouteCopy.badge}
           </p>
 
           <div className="mt-4 flex flex-col gap-3">
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">
+            <h1 className="text-3xl font-semibold tracking-tight text-[#242114]">
               {compareRouteCopy.title}
             </h1>
-            <p className="max-w-3xl text-base leading-7 text-neutral-600">
+            <p className="max-w-3xl text-base leading-7 text-[#6f675c]">
               {compareRouteCopy.subtitle}
             </p>
           </div>
         </div>
 
-        <CompareSelectedListingsPanel selectedIds={selectedIds} />
-      </section>
+        <div className="mt-8">
+          <CompareSelectedListingsPanel selectedIds={selectedIds} />
+        </div>
 
-      <ComplianceFooter />
+        <ComplianceFooter />
+      </section>
     </main>
   );
 }

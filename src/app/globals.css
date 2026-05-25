@@ -24,3 +24,90 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.hf-warm-scope .bg-slate-950,
+.hf-warm-scope .bg-neutral-50 {
+  background-color: #f8f4ec;
+}
+
+.hf-warm-scope .bg-slate-900,
+.hf-warm-scope .bg-white,
+.hf-warm-scope .bg-neutral-50,
+.hf-warm-scope .bg-neutral-100 {
+  background-color: #fffaf2;
+}
+
+.hf-warm-scope .bg-slate-800,
+.hf-warm-scope .bg-slate-950\/50,
+.hf-warm-scope .bg-slate-950\/60,
+.hf-warm-scope .bg-white\/\[0\.04\],
+.hf-warm-scope .bg-white\/\[0\.03\],
+.hf-warm-scope .bg-neutral-100 {
+  background-color: #f4f0e7;
+}
+
+.hf-warm-scope .border-slate-800,
+.hf-warm-scope .border-slate-700,
+.hf-warm-scope .border-neutral-200,
+.hf-warm-scope .border-neutral-300,
+.hf-warm-scope .border-white\/10 {
+  border-color: #e4dbcd;
+}
+
+.hf-warm-scope .text-white,
+.hf-warm-scope .text-slate-50,
+.hf-warm-scope .text-slate-200,
+.hf-warm-scope .text-neutral-950 {
+  color: #282417;
+}
+
+.hf-warm-scope .text-slate-300,
+.hf-warm-scope .text-slate-400,
+.hf-warm-scope .text-slate-500,
+.hf-warm-scope .text-neutral-500,
+.hf-warm-scope .text-neutral-600,
+.hf-warm-scope .text-neutral-700,
+.hf-warm-scope .text-neutral-800 {
+  color: #746c5f;
+}
+
+.hf-warm-scope .text-slate-600,
+.hf-warm-scope .text-neutral-400 {
+  color: #958b7d;
+}
+
+.hf-warm-scope .bg-white.text-slate-950,
+.hf-warm-scope button.bg-white,
+.hf-warm-scope a.bg-white,
+.hf-warm-scope .bg-neutral-950.text-white,
+.hf-warm-scope button.bg-neutral-950,
+.hf-warm-scope a.bg-neutral-950 {
+  background-color: #727a3f;
+  color: #ffffff;
+}
+
+.hf-warm-scope button.bg-white:hover,
+.hf-warm-scope a.bg-white:hover,
+.hf-warm-scope button.bg-neutral-950:hover,
+.hf-warm-scope a.bg-neutral-950:hover {
+  background-color: #606936;
+}
+
+.hf-warm-scope input,
+.hf-warm-scope select,
+.hf-warm-scope textarea {
+  background-color: #fffdf8;
+  border-color: #ddd2c0;
+  color: #282417;
+}
+
+.hf-warm-scope input::placeholder,
+.hf-warm-scope textarea::placeholder {
+  color: #9a907f;
+}
+
+.hf-warm-scope .shadow-2xl,
+.hf-warm-scope .shadow-xl,
+.hf-warm-scope .shadow-sm {
+  box-shadow: 0 18px 55px rgba(117, 92, 58, 0.12);
+}
