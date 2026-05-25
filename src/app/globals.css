@@ -93,6 +93,31 @@ body {
   background-color: #606936;
 }
 
+.hf-warm-scope button.border-red-900 {
+  background-color: #a33a32;
+  border-color: #8f3029;
+  color: #fffaf5;
+  box-shadow: 0 12px 28px rgba(159, 58, 50, 0.18);
+}
+
+.hf-warm-scope button.border-red-900:hover {
+  background-color: #8f3029;
+  border-color: #7d2923;
+  color: #fffaf5;
+}
+
+.hf-warm-scope button.border-red-900:focus-visible {
+  outline: 3px solid rgba(163, 58, 50, 0.24);
+  outline-offset: 2px;
+}
+
+.hf-warm-scope button.border-red-900:disabled {
+  background-color: #d7b0aa;
+  border-color: #d7b0aa;
+  color: #fffaf5;
+  box-shadow: none;
+}
+
 .hf-warm-scope input,
 .hf-warm-scope select,
 .hf-warm-scope textarea {
