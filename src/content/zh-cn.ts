@@ -18,8 +18,29 @@ export const zhCN = {
       "58": "58 同城",
       "manual": "手动添加",
       "beike": "贝壳",
+      "lianjia": "链家",
+      "anjuke": "安居客",
+      "woaiwojia": "我爱我家",
+      "fangtianxia": "房天下",
+      "ziroom": "自如",
+      "xiangyu": "相寓",
+      "boyu": "泊寓",
+      "guanyu": "冠寓",
+      "mofang": "魔方公寓",
+      "baletu": "巴乐兔",
       "douban": "豆瓣",
       "xiaohongshu": "小红书",
+      "xianyu": "闲鱼",
+      "wechat_moments": "微信群/朋友圈",
+      "qq_group": "QQ 群",
+      "alumni_forum": "校友群/校园论坛",
+      "local_agency_store": "本地中介门店",
+      "landlord_direct": "房东直租",
+      "referral": "熟人介绍",
+      "community_notice": "小区公告/业主群",
+      "public_rental_platform": "政府保租房/公租房平台",
+      "talent_apartment_platform": "人才公寓平台",
+      "employer_school_housing": "单位/学校住房系统",
       "other": "其他"
     }
   },
@@ -32,7 +53,7 @@ export const zhCN = {
   },
   "complianceFooter": {
     "title": "HouseFolio 作品集预览版边界说明",
-    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不认证房源真实性。当前作品集预览版 仅使用模拟数据与浏览器 localStorage。"
+    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前作品集预览版 仅使用模拟数据与浏览器 localStorage。"
   },
   "home": {
     "eyebrow": "HouseFolio · 私人找房决策工作台",
@@ -197,9 +218,37 @@ export const zhCN = {
       "58": "58 同城",
       "manual": "手动添加",
       "beike": "贝壳",
+      "lianjia": "链家",
+      "anjuke": "安居客",
+      "woaiwojia": "我爱我家",
+      "fangtianxia": "房天下",
+      "ziroom": "自如",
+      "xiangyu": "相寓",
+      "boyu": "泊寓",
+      "guanyu": "冠寓",
+      "mofang": "魔方公寓",
+      "baletu": "巴乐兔",
       "douban": "豆瓣",
       "xiaohongshu": "小红书",
+      "xianyu": "闲鱼",
+      "wechat_moments": "微信群/朋友圈",
+      "qq_group": "QQ 群",
+      "alumni_forum": "校友群/校园论坛",
+      "local_agency_store": "本地中介门店",
+      "landlord_direct": "房东直租",
+      "referral": "熟人介绍",
+      "community_notice": "小区公告/业主群",
+      "public_rental_platform": "政府保租房/公租房平台",
+      "talent_apartment_platform": "人才公寓平台",
+      "employer_school_housing": "单位/学校住房系统",
       "other": "其他"
+    },
+    "sourcePlatformOptionGroups": {
+      "commonPlatforms": "常见平台",
+      "longTermApartments": "长租公寓",
+      "communitySublets": "社区/个人转租",
+      "offlineReferrals": "线下/熟人",
+      "policyInstitutions": "政策/机构"
     },
     "fields": {
       "title": {
@@ -324,7 +373,7 @@ export const zhCN = {
     },
     "complianceBoundary": {
       "title": "合规边界",
-      "body": "当前 Demo 只展示用户主动添加或 mock 的房源信息。它不抓取第三方页面，不发布公共房源库，不撮合交易，也不认证房源真实性。"
+      "body": "当前 Demo 只展示用户主动添加或 mock 的房源信息。它不抓取第三方页面，不发布公共房源库，不撮合交易，也不对房源真实性作背书。"
     }
   },
   "listingStatusPanel": {

@@ -5,17 +5,128 @@ import { zhCN } from "@/content/zh-cn";
 import { saveLocalListing } from "@/lib/local-store/listings";
 import type { Listing, ListingSourcePlatform } from "@/types/listing";
 
-const sourcePlatformOptions: {
+type SourcePlatformOption = {
   label: string;
   value: ListingSourcePlatform;
-}[] = [
+};
+
+type SourcePlatformSelectItem =
+  | SourcePlatformOption
+  | {
+      groupLabel: string;
+      options: SourcePlatformOption[];
+    };
+
+const sourcePlatformSelectItems: SourcePlatformSelectItem[] = [
   { label: zhCN.addListingForm.sourcePlatformOptions.manual, value: "manual" },
-  { label: zhCN.addListingForm.sourcePlatformOptions.beike, value: "beike" },
-  { label: zhCN.addListingForm.sourcePlatformOptions["58"], value: "58" },
-  { label: zhCN.addListingForm.sourcePlatformOptions.douban, value: "douban" },
   {
-    label: zhCN.addListingForm.sourcePlatformOptions.xiaohongshu,
-    value: "xiaohongshu",
+    groupLabel: zhCN.addListingForm.sourcePlatformOptionGroups.commonPlatforms,
+    options: [
+      { label: zhCN.addListingForm.sourcePlatformOptions.beike, value: "beike" },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.lianjia,
+        value: "lianjia",
+      },
+      { label: zhCN.addListingForm.sourcePlatformOptions["58"], value: "58" },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.anjuke,
+        value: "anjuke",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.woaiwojia,
+        value: "woaiwojia",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.fangtianxia,
+        value: "fangtianxia",
+      },
+    ],
+  },
+  {
+    groupLabel:
+      zhCN.addListingForm.sourcePlatformOptionGroups.longTermApartments,
+    options: [
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.ziroom,
+        value: "ziroom",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.xiangyu,
+        value: "xiangyu",
+      },
+      { label: zhCN.addListingForm.sourcePlatformOptions.boyu, value: "boyu" },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.guanyu,
+        value: "guanyu",
+      },
+      { label: zhCN.addListingForm.sourcePlatformOptions.mofang, value: "mofang" },
+      { label: zhCN.addListingForm.sourcePlatformOptions.baletu, value: "baletu" },
+    ],
+  },
+  {
+    groupLabel: zhCN.addListingForm.sourcePlatformOptionGroups.communitySublets,
+    options: [
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.xiaohongshu,
+        value: "xiaohongshu",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.douban,
+        value: "douban",
+      },
+      { label: zhCN.addListingForm.sourcePlatformOptions.xianyu, value: "xianyu" },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.wechat_moments,
+        value: "wechat_moments",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.qq_group,
+        value: "qq_group",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.alumni_forum,
+        value: "alumni_forum",
+      },
+    ],
+  },
+  {
+    groupLabel: zhCN.addListingForm.sourcePlatformOptionGroups.offlineReferrals,
+    options: [
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.local_agency_store,
+        value: "local_agency_store",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.landlord_direct,
+        value: "landlord_direct",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.referral,
+        value: "referral",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.community_notice,
+        value: "community_notice",
+      },
+    ],
+  },
+  {
+    groupLabel:
+      zhCN.addListingForm.sourcePlatformOptionGroups.policyInstitutions,
+    options: [
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.public_rental_platform,
+        value: "public_rental_platform",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.talent_apartment_platform,
+        value: "talent_apartment_platform",
+      },
+      {
+        label: zhCN.addListingForm.sourcePlatformOptions.employer_school_housing,
+        value: "employer_school_housing",
+      },
+    ],
   },
   { label: zhCN.addListingForm.sourcePlatformOptions.other, value: "other" },
 ];
@@ -129,11 +240,21 @@ export function AddListingForm() {
             }
             className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           >
-            {sourcePlatformOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            {sourcePlatformSelectItems.map((item) =>
+              "options" in item ? (
+                <optgroup key={item.groupLabel} label={item.groupLabel}>
+                  {item.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ) : (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ),
+            )}
           </select>
         </label>
 
