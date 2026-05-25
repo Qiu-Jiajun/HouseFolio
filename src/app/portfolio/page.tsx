@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { AppNav } from "@/components/app-nav";
 import { ComplianceFooter } from "@/components/compliance-footer";
 import { PortfolioList } from "@/components/portfolio-list";
@@ -52,10 +53,20 @@ export default function PortfolioPage() {
               </div>
             </div>
 
-            <div className="relative min-h-72 border-t border-[#e6ddcf] bg-[#ebe1d2] lg:border-l lg:border-t-0">
+            <div className="relative min-h-[30rem] border-t border-[#e6ddcf] bg-[#ebe1d2] lg:border-l lg:border-t-0">
               <div className="absolute inset-x-12 top-10 h-28 rounded-[2rem] border border-white/60 bg-[#f7efe4]/80" />
               <div className="absolute bottom-0 right-0 h-56 w-[82%] rounded-tl-[7rem] bg-[#fbf4ea]" />
               <div className="absolute right-12 top-14 h-32 w-20 rounded-t-full border border-[#ddd0bd] bg-[#f9f3e8]" />
+              <div className="absolute left-6 right-6 top-6 overflow-hidden rounded-[1.75rem] border border-white/70 bg-[#fff9ef] shadow-[0_18px_55px_rgba(117,92,58,0.16)] sm:left-10 sm:right-10 sm:top-8">
+                <Image
+                  src="/images/phase-8b/portfolio-hero-cat-nap.png"
+                  alt="温馨客厅里的猫咪午睡插画"
+                  width={840}
+                  height={560}
+                  priority
+                  className="h-44 w-full object-cover sm:h-52 lg:h-56"
+                />
+              </div>
               <div className="absolute bottom-8 left-[12%] right-[10%] rounded-[1.75rem] border border-white/70 bg-white/72 p-5 shadow-[0_18px_55px_rgba(117,92,58,0.16)] backdrop-blur">
                 <p className="text-sm font-medium text-[#73744b]">
                   {zhCN.portfolio.noteCard.kicker}
