@@ -121,51 +121,55 @@ export function PortfolioList() {
 
   return (
     <>
-      <div className="mb-8 grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">
+      <div className="mb-6 grid gap-3 md:grid-cols-3">
+        <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
+          <p className="text-sm text-[#80786a]">
             {zhCN.portfolioList.stats.totalListings}
           </p>
-          <p className="mt-2 text-3xl font-bold">{listings.length}</p>
+          <p className="mt-2 text-3xl font-semibold text-[#282417]">
+            {listings.length}
+          </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">
+        <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
+          <p className="text-sm text-[#80786a]">
             {zhCN.portfolioList.stats.currentlyVisible}
           </p>
-          <p className="mt-2 text-3xl font-bold">{visibleListings.length}</p>
+          <p className="mt-2 text-3xl font-semibold text-[#282417]">
+            {visibleListings.length}
+          </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <p className="text-sm text-slate-500">
+        <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
+          <p className="text-sm text-[#80786a]">
             {zhCN.portfolioList.stats.averageVisibleRent}
           </p>
-          <p className="mt-2 text-3xl font-bold">
+          <p className="mt-2 text-3xl font-semibold text-[#282417]">
             {zhCN.common.currencyCny}
             {averageVisibleRent}
           </p>
         </div>
       </div>
 
-      <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div className="mb-6 rounded-[1.75rem] border border-[#e3dacb] bg-[#fffaf2]/90 p-5 shadow-sm sm:p-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-white">
+            <h2 className="text-xl font-semibold text-[#282417]">
               {zhCN.portfolioList.controls.title}
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#746c5f]">
               {zhCN.portfolioList.controls.description}
             </p>
           </div>
 
-          <div className="rounded-full bg-slate-950 px-4 py-2 text-sm text-slate-300">
+          <div className="rounded-full border border-[#dfd5c4] bg-white/80 px-4 py-2 text-sm text-[#65683e]">
             {zhCN.portfolioList.controls.shortlisted}: {shortlistedCount}
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
-            <span className="text-sm text-slate-300">
+            <span className="text-sm text-[#5d584d]">
               {zhCN.portfolioList.controls.filterByStatus}
             </span>
             <select
@@ -173,7 +177,7 @@ export function PortfolioList() {
               onChange={(event) =>
                 setStatusFilter(event.target.value as ListingStatusFilter)
               }
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
+              className="mt-2 w-full rounded-2xl border border-[#ddd2c0] bg-white px-4 py-3 text-sm text-[#282417] outline-none transition focus:border-[#8a8f55] focus:ring-2 focus:ring-[#d8deb5]"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -184,7 +188,7 @@ export function PortfolioList() {
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-300">
+            <span className="text-sm text-[#5d584d]">
               {zhCN.portfolioList.controls.sortBy}
             </span>
             <select
@@ -192,7 +196,7 @@ export function PortfolioList() {
               onChange={(event) =>
                 setSortKey(event.target.value as ListingSortKey)
               }
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
+              className="mt-2 w-full rounded-2xl border border-[#ddd2c0] bg-white px-4 py-3 text-sm text-[#282417] outline-none transition focus:border-[#8a8f55] focus:ring-2 focus:ring-[#d8deb5]"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -204,31 +208,31 @@ export function PortfolioList() {
         </div>
 
         {statusFilter !== "all" ? (
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-[#82786a]">
             {zhCN.portfolioList.controls.showingStatusPrefix}
             “{statusText[statusFilter]}”
             {zhCN.portfolioList.controls.showingStatusSuffix}
           </p>
         ) : (
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-[#82786a]">
             {zhCN.portfolioList.controls.showingAll}
           </p>
         )}
       </div>
 
-      <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div className="mb-7 rounded-[1.75rem] border border-[#d9ddbd] bg-[#f1f4e4] p-5 shadow-sm sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-slate-300">
+            <p className="text-sm font-medium text-[#5b6435]">
               {portfolioCompareSelectionCopy.title}
             </p>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#6d714e]">
               {portfolioCompareSelectionCopy.description}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-slate-950 px-4 py-2 text-sm text-slate-300">
+            <span className="rounded-full bg-white/75 px-4 py-2 text-sm text-[#5a6135]">
               {portfolioCompareSelectionCopy.selectedPrefix}
               {selectedCount}
               {portfolioCompareSelectionCopy.selectedSuffix}
@@ -238,7 +242,7 @@ export function PortfolioList() {
               type="button"
               onClick={clearCompareSelection}
               disabled={selectedCount === 0}
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full border border-[#c7cca2] bg-transparent px-4 py-2 text-sm text-[#5a6135] transition hover:border-[#9ba36c] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {portfolioCompareSelectionCopy.clearAction}
             </button>
@@ -247,30 +251,36 @@ export function PortfolioList() {
               type="button"
               onClick={goToCompare}
               disabled={!canCompare}
-              className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {portfolioCompareSelectionCopy.compareAction}
             </button>
           </div>
         </div>
 
-        <p className="mt-4 text-sm leading-6 text-slate-500">{compareHint}</p>
-        <p className="mt-2 text-xs leading-5 text-slate-600">
+        <p className="mt-4 text-sm leading-6 text-[#697048]">{compareHint}</p>
+        <p className="mt-2 text-xs leading-5 text-[#838962]">
           {portfolioCompareSelectionCopy.referenceNote}
         </p>
       </div>
 
       {visibleListings.length === 0 ? (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
-          <h2 className="text-2xl font-semibold text-white">
+        <div className="rounded-[2rem] border border-[#e3dacb] bg-[#fffaf2] p-8 text-center shadow-sm">
+          <h2 className="text-2xl font-semibold text-[#282417]">
             {zhCN.portfolioList.empty.title}
           </h2>
-          <p className="mt-3 text-sm text-slate-400">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#746c5f]">
             {zhCN.portfolioList.empty.description}
           </p>
+          <a
+            href="/portfolio/new"
+            className="mt-6 inline-flex rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#606936]"
+          >
+            {zhCN.portfolioList.empty.action}
+          </a>
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-2">
           {visibleListings.map((listing) => {
             const selected = selectedListingIds.includes(listing.id);
             const selectionDisabled =

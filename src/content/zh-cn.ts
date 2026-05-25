@@ -101,21 +101,33 @@ export const zhCN = {
   },
   "portfolio": {
     "eyebrow": "HouseFolio · 候选房源",
-    "title": "候选房源",
-    "description": "这里展示用户主动添加的候选房源，以及用于演示的模拟房源。当前作品集预览版 仅使用浏览器 localStorage 与 mock 数据。参考评分只是辅助比较信号，不代表最终推荐。",
+    "title": "把候选房源整理成自己的看房清单",
+    "description": "把你已经在别处找到的房源放到这里，按通勤参考、预算、看房记录和参考评分慢慢整理。HouseFolio 只做本地保存与辅助比较，不发布、不抓取、不撮合。",
+    "pills": [
+      "候选房源",
+      "通勤参考",
+      "辅助比较",
+      "本地保存"
+    ],
+    "noteCard": {
+      "kicker": "私人整理台",
+      "title": "像看房备忘录一样，先把信息放整齐。",
+      "body": "每套房源仍由你自行添加、查看和判断；参考评分只帮助你比较取舍，不代表最终建议。"
+    },
     "actions": {
-      "addListing": "添加房源"
+      "addListing": "添加候选房源",
+      "openCompare": "查看辅助比较"
     }
   },
   "portfolioList": {
     "stats": {
-      "totalListings": "房源总数",
+      "totalListings": "已整理房源",
       "currentlyVisible": "当前显示",
-      "averageVisibleRent": "当前平均租金"
+      "averageVisibleRent": "显示范围内月租"
     },
     "controls": {
-      "title": "筛选与排序",
-      "description": "这是当前 L2 算法层的入口。排序基于简单规则与参考评分。参考评分只是辅助比较信号，不是最终推荐，也不是产品承诺。",
+      "title": "整理当前清单",
+      "description": "按状态和常用维度整理候选房源。参考评分只是辅助比较信号，不代表最终建议，也不会替你做选择。",
       "shortlisted": "候选",
       "filterByStatus": "按状态筛选",
       "sortBy": "排序方式",
@@ -139,8 +151,9 @@ export const zhCN = {
       "scoreDesc": "参考评分从高到低"
     },
     "empty": {
-      "title": "没有匹配的房源",
-      "description": "可以尝试切换筛选条件，或在详情页更新房源状态。"
+      "title": "先把你找到的房源放进清单",
+      "description": "你可以把已经在别处看到的房源自行添加到这里，后续再补充通勤参考、辅助比较和看房记录。信息默认本地保存，HouseFolio 不抓取、不发布、不撮合。",
+      "action": "添加候选房源"
     }
   },
   "listingCard": {
@@ -148,11 +161,11 @@ export const zhCN = {
       "rent": "租金",
       "area": "面积",
       "layout": "户型",
-      "commute": "L1 通勤",
-      "lifeCircle": "L1 生活圈",
-      "referenceScore": "L2 参考评分"
+      "commute": "通勤参考",
+      "lifeCircle": "生活圈参考",
+      "referenceScore": "参考评分"
     },
-    "referenceScoreNote": "参考评分仅用于辅助比较，不代表最终推荐，也不替用户做决定。",
+    "referenceScoreNote": "参考评分仅用于辅助比较，不代表最终建议，也不会替你做选择。",
     "commuteSource": {
       "listing": "默认参考值",
       "cachedTransit": "本地通勤结果"

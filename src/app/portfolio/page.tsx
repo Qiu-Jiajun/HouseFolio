@@ -5,32 +5,69 @@ import { zhCN } from "@/content/zh-cn";
 
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
-      <section className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl">
         <AppNav />
 
-        <div className="mb-8">
-          <p className="text-sm font-medium text-slate-400">
-            {zhCN.portfolio.eyebrow}
-          </p>
+        <div className="mb-8 overflow-hidden rounded-[2rem] border border-[#e6ddcf] bg-[#fffaf2] shadow-[0_24px_80px_rgba(92,74,48,0.12)]">
+          <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="px-6 py-8 sm:px-10 sm:py-12 lg:px-12">
+              <p className="text-sm font-medium text-[#73744b]">
+                {zhCN.portfolio.eyebrow}
+              </p>
 
-          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight">
+              <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-[#242114] sm:text-5xl">
                 {zhCN.portfolio.title}
               </h1>
 
-              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+              <p className="mt-5 max-w-2xl text-base leading-8 text-[#6f675c] sm:text-lg">
                 {zhCN.portfolio.description}
               </p>
+
+              <div className="mt-7 flex flex-wrap gap-3">
+                {zhCN.portfolio.pills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-[#e3dacb] bg-white/70 px-4 py-2 text-sm text-[#696c45]"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  href="/portfolio/new"
+                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#606936]"
+                >
+                  {zhCN.portfolio.actions.addListing}
+                </a>
+
+                <a
+                  href="/compare"
+                  className="rounded-full border border-[#d8cdbc] bg-white/80 px-5 py-3 text-sm font-medium text-[#4f5131] transition hover:border-[#b8ad8c]"
+                >
+                  {zhCN.portfolio.actions.openCompare}
+                </a>
+              </div>
             </div>
 
-            <a
-              href="/portfolio/new"
-              className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 hover:bg-slate-200"
-            >
-              {zhCN.portfolio.actions.addListing}
-            </a>
+            <div className="relative min-h-72 border-t border-[#e6ddcf] bg-[#ebe1d2] lg:border-l lg:border-t-0">
+              <div className="absolute inset-x-12 top-10 h-28 rounded-[2rem] border border-white/60 bg-[#f7efe4]/80" />
+              <div className="absolute bottom-0 right-0 h-56 w-[82%] rounded-tl-[7rem] bg-[#fbf4ea]" />
+              <div className="absolute right-12 top-14 h-32 w-20 rounded-t-full border border-[#ddd0bd] bg-[#f9f3e8]" />
+              <div className="absolute bottom-8 left-[12%] right-[10%] rounded-[1.75rem] border border-white/70 bg-white/72 p-5 shadow-[0_18px_55px_rgba(117,92,58,0.16)] backdrop-blur">
+                <p className="text-sm font-medium text-[#73744b]">
+                  {zhCN.portfolio.noteCard.kicker}
+                </p>
+                <p className="mt-3 text-xl font-semibold leading-8 text-[#2f2b1d]">
+                  {zhCN.portfolio.noteCard.title}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-[#766e60]">
+                  {zhCN.portfolio.noteCard.body}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
