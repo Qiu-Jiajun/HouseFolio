@@ -10,6 +10,8 @@ HouseFolio 不是房源平台、中介平台、房源聚合平台、真房源认
 - Live Demo: https://house-folio.vercel.app/
 - Demo Route: https://house-folio.vercel.app/demo
 
+<img width="1672" height="941" alt="温馨安静的猫咪午睡时光" src="https://github.com/user-attachments/assets/b7c15537-3478-4253-bb20-7f96303c0730" />
+
 ---
 
 ## 1. Why HouseFolio
