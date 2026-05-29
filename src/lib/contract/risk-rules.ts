@@ -17,7 +17,7 @@ export const contractRiskRules = [
     negativeKeywords: ["另行协商补偿", "双方协商补偿"],
     ruleReason:
       "涉及清退、征收或腾退安排时，补偿和搬离责任需要优先问清楚，避免后续影响居住稳定性。",
-    legalBasisIds: [],
+    legalBasisIds: ["lease_stability_policy_clearance_context"],
     shouldExplainWithAI: false,
   },
   {
@@ -35,7 +35,7 @@ export const contractRiskRules = [
     negativeKeywords: ["提前通知并经乙方同意", "经乙方同意后进入"],
     ruleReason:
       "进入房屋的条件、提前沟通方式和紧急情形建议签约前确认，避免影响日常居住边界。",
-    legalBasisIds: [],
+    legalBasisIds: ["landlord_entry_living_privacy_context"],
     shouldExplainWithAI: false,
   },
   {
@@ -73,7 +73,7 @@ export const contractRiskRules = [
     negativeKeywords: ["列明扣除项目", "结清后退还", "扣除明细"],
     ruleReason:
       "押金扣除项目、扣除标准和退还时间建议写清楚，避免退租时产生争议。",
-    legalBasisIds: [],
+    legalBasisIds: ["deposit_handling_refund_context"],
     shouldExplainWithAI: false,
   },
   {
@@ -112,7 +112,7 @@ export const contractRiskRules = [
     negativeKeywords: ["甲方负责主体维修", "自然损耗由甲方承担", "非乙方原因"],
     ruleReason:
       "维修责任、自然损耗和设施设备范围建议写清楚，避免入住后维修责任边界不清。",
-    legalBasisIds: [],
+    legalBasisIds: ["repair_responsibility_context"],
     shouldExplainWithAI: false,
   },
 ] as const satisfies readonly ContractRiskRule[];
