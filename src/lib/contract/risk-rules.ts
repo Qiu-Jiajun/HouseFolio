@@ -1,0 +1,118 @@
+import type { ContractRiskRule } from "@/lib/contract/types";
+
+export const contractRiskRules: readonly ContractRiskRule[] = [
+  {
+    id: "policy_clearance_no_compensation",
+    category: "stability",
+    priority: "high",
+    anyKeywords: [
+      "政策清退",
+      "政府清退",
+      "征收",
+      "拆迁",
+      "腾退",
+      "整治",
+    ],
+    allKeywords: ["不予补偿"],
+    negativeKeywords: ["另行协商补偿", "双方协商补偿"],
+    ruleReason:
+      "涉及清退、征收或腾退安排时，补偿和搬离责任需要优先问清楚，避免后续影响居住稳定性。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+  {
+    id: "landlord_entry_without_notice",
+    category: "privacy",
+    priority: "high",
+    anyKeywords: [
+      "随时进入",
+      "无需通知",
+      "不经乙方同意",
+      "甲方有权自行进入",
+      "乙方不得拒绝",
+      "可随时检查",
+    ],
+    negativeKeywords: ["提前通知并经乙方同意", "经乙方同意后进入"],
+    ruleReason:
+      "进入房屋的条件、提前沟通方式和紧急情形建议签约前确认，避免影响日常居住边界。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+  {
+    id: "excessive_late_fee_or_auto_termination",
+    category: "payment",
+    priority: "medium",
+    anyKeywords: [
+      "滞纳金",
+      "逾期付款",
+      "逾期支付",
+      "拖欠租金",
+      "自动解除",
+      "自行解除",
+    ],
+    allKeywords: ["逾期"],
+    negativeKeywords: ["宽限期", "双方协商"],
+    ruleReason:
+      "逾期费用、宽限期和解除条件建议写清楚，后续容易产生费用和履约争议。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+  {
+    id: "unclear_deposit_deduction",
+    category: "deposit",
+    priority: "medium",
+    anyKeywords: [
+      "押金不退",
+      "扣除押金",
+      "没收押金",
+      "押金抵扣",
+      "视情况扣除",
+      "其他损失",
+    ],
+    allKeywords: ["押金"],
+    negativeKeywords: ["列明扣除项目", "结清后退还", "扣除明细"],
+    ruleReason:
+      "押金扣除项目、扣除标准和退还时间建议写清楚，避免退租时产生争议。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+  {
+    id: "excessive_early_termination_penalty",
+    category: "termination",
+    priority: "medium",
+    anyKeywords: [
+      "提前退租",
+      "提前解除",
+      "提前终止",
+      "剩余租金",
+      "全部租金",
+      "押金不退",
+      "违约金",
+    ],
+    allKeywords: ["提前"],
+    negativeKeywords: ["双方协商", "另行约定", "合理损失"],
+    ruleReason:
+      "提前退租的通知期限、费用范围和交接条件建议签约前确认，避免退租成本不清楚。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+  {
+    id: "repair_responsibility_shifted_to_tenant",
+    category: "repair",
+    priority: "medium",
+    anyKeywords: [
+      "由乙方承担维修",
+      "维修费用由乙方承担",
+      "一切维修",
+      "全部维修",
+      "自然损耗",
+      "设施设备损坏",
+    ],
+    allKeywords: ["维修"],
+    negativeKeywords: ["甲方负责主体维修", "自然损耗由甲方承担", "非乙方原因"],
+    ruleReason:
+      "维修责任、自然损耗和设施设备范围建议写清楚，避免入住后维修责任边界不清。",
+    legalBasisIds: [],
+    shouldExplainWithAI: false,
+  },
+];
