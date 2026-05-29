@@ -28,8 +28,10 @@ type HasUniqueIds<
 
 type LegalBasisRelatedRiskIds =
   (typeof contractLegalBasisEntries)[number]["relatedRiskIds"][number];
-type RuleLegalBasisIds =
-  (typeof contractRiskRules)[number]["legalBasisIds"];
+type KnownLegalBasisIds =
+  (typeof contractLegalBasisEntries)[number]["id"];
+type RuleReferencedLegalBasisIds =
+  (typeof contractRiskRules)[number]["legalBasisIds"][number];
 
 type _LegalBasisEntriesMatchEntryType = Assert<
   IsAssignable<typeof contractLegalBasisEntries, readonly LegalBasisEntry[]>
@@ -47,20 +49,15 @@ type _LegalBasisIdsAreUnique = Assert<
   HasUniqueIds<typeof contractLegalBasisEntries>
 >;
 
-type _RuleLegalBasisIdsAreReadonlyStrings = Assert<
-  IsExact<RuleLegalBasisIds, readonly string[]>
+type _RuleLegalBasisIdsExist = Assert<
+  IsAssignable<RuleReferencedLegalBasisIds, KnownLegalBasisIds>
 >;
 
-// Current ContractRiskRule.legalBasisIds is typed as readonly string[], and
-// contractRiskRules is annotated as readonly ContractRiskRule[]. This check can
-// confirm the current shape, but cannot fully reject a future unknown non-empty
-// rule legalBasisId without narrowing risk-rules.ts typing in a later phase.
 export const contractLegalBasisAlignmentContractCheck = {
   legalBasisEntriesMatchEntryType: true as _LegalBasisEntriesMatchEntryType,
   contractRiskRulesMatchRuleType: true as _ContractRiskRulesMatchRuleType,
   relatedRiskIdsAreKnownContractRiskIds:
     true as _RelatedRiskIdsAreKnownContractRiskIds,
   legalBasisIdsAreUnique: true as _LegalBasisIdsAreUnique,
-  ruleLegalBasisIdsAreReadonlyStrings:
-    true as _RuleLegalBasisIdsAreReadonlyStrings,
+  ruleLegalBasisIdsExist: true as _RuleLegalBasisIdsExist,
 } as const;

@@ -36,10 +36,10 @@ type _RuleIdsMatchContractRiskId = Assert<
   IsExact<(typeof contractRiskRules)[number]["id"], ContractRiskId>
 >;
 
-type _LegalBasisIdsRemainStrings = Assert<
-  IsExact<
-    (typeof contractRiskRules)[number]["legalBasisIds"][number],
-    string
+type _LegalBasisIdsRemainReadonlyStringArrays = Assert<
+  IsAssignable<
+    (typeof contractRiskRules)[number]["legalBasisIds"],
+    readonly string[]
   >
 >;
 
@@ -48,5 +48,6 @@ export const contractRiskMatcherContractCheck = {
   matcherAcceptsClauseSegments: true as _MatcherAcceptsClauseSegments,
   matcherReturnsFindings: true as _MatcherReturnsFindings,
   ruleIdsMatchContractRiskId: true as _RuleIdsMatchContractRiskId,
-  legalBasisIdsRemainStrings: true as _LegalBasisIdsRemainStrings,
+  legalBasisIdsRemainReadonlyStringArrays:
+    true as _LegalBasisIdsRemainReadonlyStringArrays,
 } as const;

@@ -1,6 +1,6 @@
 import type { ContractRiskRule } from "@/lib/contract/types";
 
-export const contractRiskRules: readonly ContractRiskRule[] = [
+export const contractRiskRules = [
   {
     id: "policy_clearance_no_compensation",
     category: "stability",
@@ -115,4 +115,4 @@ export const contractRiskRules: readonly ContractRiskRule[] = [
     legalBasisIds: [],
     shouldExplainWithAI: false,
   },
-];
+] as const satisfies readonly ContractRiskRule[];
