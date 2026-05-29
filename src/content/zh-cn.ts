@@ -49,6 +49,7 @@ export const zhCN = {
     "home": "首页",
     "portfolio": "候选房源",
     "addListing": "添加房源",
+    "contractReview": "签约前检查",
     "settings": "设置"
   },
   "complianceFooter": {
@@ -595,6 +596,34 @@ export const zhCN = {
       "clearFailed": "本机照片清除失败，请稍后重试。"
     }
   }
+} as const;
+
+export const contractReviewCopy = {
+  badge: "Phase 9E · 签约前检查",
+  title: "把合同文本先拆成可检查的条款片段",
+  description:
+    "粘贴租房合同文本后，HouseFolio 会在当前页面会话中做本地条款切分预览，帮助你把长文本整理成更容易逐条核对的清单。",
+  disclaimer:
+    "本功能仅用于辅助识别常见租房合同风险点和签约前检查建议，不构成正式法律意见，不替代律师、仲裁机构、法院或行政机关判断。",
+  localSessionNote:
+    "粘贴内容仅在当前页面会话中本地处理，不会发送到服务器，也不会保存为合同历史记录。",
+  input: {
+    title: "合同文本",
+    label: "粘贴合同文本",
+    placeholder:
+      "可以粘贴租赁合同中的主要条款，例如租金、押金、维修、退租、转租、违约责任等文字。当前阶段只做本地切分预览。",
+    helper: "刷新页面或点击清空后，本次粘贴内容会从页面状态中移除。",
+    clear: "清空当前文本",
+  },
+  preview: {
+    title: "已切分条款",
+    emptyTitle: "还没有可预览的合同片段",
+    emptyDescription:
+      "在左侧粘贴合同文本后，这里会按空行、条款编号和常见中文序号切分为片段，方便逐条阅读。",
+    countPrefix: "当前识别到 ",
+    countSuffix: " 个片段",
+    segmentFallbackTitle: "片段",
+  },
 } as const;
 
 export const compareRouteCopy = {
