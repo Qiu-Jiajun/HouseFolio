@@ -599,30 +599,127 @@ export const zhCN = {
 } as const;
 
 export const contractReviewCopy = {
-  badge: "Phase 9E · 签约前检查",
-  title: "把合同文本先拆成可检查的条款片段",
+  badge: "Phase 9M-R · 签约前检查",
+  title: "先在本机脱敏合同，再确认是否发送",
   description:
-    "粘贴租房合同文本后，HouseFolio 会在当前页面会话中做本地条款切分预览，帮助你把长文本整理成更容易逐条核对的清单。",
+    "粘贴租房合同文本后，HouseFolio 会先在当前页面会话中完成条款切分、本地规则扫描与自动脱敏。只有在你查看完整脱敏预览并主动确认后，系统才会发送脱敏后的合同条款用于 AI 辅助审查。",
   disclaimer:
     "本功能仅用于辅助识别常见租房合同风险点和签约前检查建议，不构成正式法律意见，不替代律师、仲裁机构、法院或行政机关判断。",
   localSessionNote:
-    "粘贴内容仅在当前页面会话中本地处理，不会发送到服务器，也不会保存为合同历史记录。",
+    "粘贴内容会先在当前页面会话中本地处理，不会保存为合同历史记录。未经你主动确认，不会发送给 AI。",
   input: {
     title: "合同文本",
     label: "粘贴合同文本",
     placeholder:
-      "可以粘贴租赁合同中的主要条款，例如租金、押金、维修、退租、转租、违约责任等文字。当前阶段只做本地切分预览。",
-    helper: "刷新页面或点击清空后，本次粘贴内容会从页面状态中移除。",
+      "可以粘贴租赁合同中的主要条款，例如租金、押金、维修、退租、转租、违约责任等文字。系统会先在本机切分、扫描并自动脱敏。",
+    helper:
+      "刷新页面或点击清空后，本次粘贴内容会从页面状态中移除。发送前请检查完整脱敏预览。",
     clear: "清空当前文本",
   },
   preview: {
-    title: "已切分条款",
+    title: "本地条款预览",
     emptyTitle: "还没有可预览的合同片段",
     emptyDescription:
       "在左侧粘贴合同文本后，这里会按空行、条款编号和常见中文序号切分为片段，方便逐条阅读。",
     countPrefix: "当前识别到 ",
     countSuffix: " 个片段",
     segmentFallbackTitle: "片段",
+  },
+  localRisk: {
+    title: "本地规则信号",
+    countPrefix: "当前识别到 ",
+    countSuffix: " 个重点提示信号",
+    emptyTitle: "当前没有命中已知规则信号",
+    emptyDescription:
+      "这不代表合同没有风险，也不代表可以直接签署。你仍然可以发送完整脱敏合同进行 AI 辅助审查，并结合实际情况逐条核对。",
+    intro:
+      "以下信号来自 HouseFolio 本地规则库，用于帮助你优先关注常见风险。规则信号只是辅助，不决定 AI 可以审读哪些脱敏条款。",
+    previewAction: "开始辅助审查",
+    previewHelper:
+      "点击后只会在本机生成完整脱敏合同预览，不会联网，也不会自动请求 AI。即使当前没有命中规则信号，也可以继续。",
+    riskLevelLabel: "风险等级",
+    ruleTitleLabel: "风险标题",
+    clauseOrderLabel: "对应条款",
+    legalBasisLabel: "法规依据标题",
+    matchedPhrasesLabel: "命中词",
+    noLegalBasis: "暂未匹配到明确法规依据标题",
+    riskLevelLabels: {
+      high: "高",
+      medium: "中",
+      low: "低",
+    },
+  },
+  aiConfirmation: {
+    title: "发送前确认",
+    description:
+      "请检查下面的完整脱敏合同预览。确认后，HouseFolio 将发送脱敏后的全部合同条款和本地规则信号，用于生成更易理解的风险提示、签约前追问和协商方向。",
+    clauseCountLabel: "脱敏条款数量",
+    ruleSignalCountLabel: "本地规则信号",
+    previewTitle: "完整脱敏合同预览",
+    previewDescription:
+      "下面展示即将发送的脱敏条款。系统不会发送未经脱敏的合同原文。自动脱敏可能存在遗漏，请在发送前检查。",
+    ruleSignalsTitle: "本地规则信号摘要",
+    noRuleSignals:
+      "当前没有命中已知规则信号。完整脱敏合同仍可发送给 AI 做统一辅助审查。",
+    notices: [
+      "发送脱敏后的全部合同条款，不发送未经脱敏的合同原文。",
+      "本地规则信号只用于辅助解释，不决定 AI 审读范围。",
+      "自动脱敏可能存在遗漏，请在发送前自行核对。",
+      "确认前不会联网；本次结果只保留在当前页面会话中。",
+    ],
+    fields: {
+      riskLevel: "风险等级",
+      ruleTitleZh: "风险标题",
+      clauseOrder: "对应条款",
+      redactedClauseText: "脱敏条款",
+      unknownClauseOrder: "待核对",
+    },
+    actions: {
+      backToEdit: "返回修改",
+      cancel: "暂不发送",
+      confirm: "确认上传并开始审查",
+      submitting: "正在生成辅助审查结果…",
+    },
+  },
+  aiOutput: {
+    title: "AI 辅助审查结果",
+    summaryTitle: "概要",
+    disclaimerTitle: "边界说明",
+    clearAction: "清除本次 AI 结果",
+    regenerateAction: "重新生成",
+    ruleSignals: {
+      title: "HouseFolio 规则提示",
+      description:
+        "以下风险等级来自 HouseFolio 本地规则层。AI 只负责人话解释、追问建议和协商方向，不会修改风险等级。",
+      empty: "当前没有需要展开解释的本地规则信号。",
+    },
+    supplementalAttention: {
+      title: "AI 补充关注",
+      description:
+        "以下内容来自 AI 对完整脱敏合同的补充阅读，用于提示值得进一步核实的事项。它们不是 HouseFolio 规则命中，也不带风险等级。",
+      empty: "AI 当前没有补充标记其他需要核实的事项。",
+      relatedClauses: "相关条款",
+    },
+    sections: {
+      explanation: "解释",
+      legalBasisNotes: "法规依据说明",
+      preSigningQuestions: "签约前追问",
+      suggestedClauseDirections: "建议写清楚的方向",
+      negotiationScript: "协商话术",
+      furtherConfirmation: "是否需要继续确认",
+    },
+    needsFurtherConfirmation: {
+      yes: "需要进一步确认",
+      no: "当前未标记为必须进一步确认",
+    },
+  },
+  aiStates: {
+    previewBuildError:
+      "暂时无法生成完整脱敏预览，请检查合同文本长度后重试。",
+    safeErrorFallback:
+      "暂时无法生成 AI 辅助审查结果，请稍后重试，或返回修改后重新预览。",
+    invalidResponseError:
+      "AI 辅助审查结果返回结构异常，请稍后重试。",
   },
 } as const;
 
