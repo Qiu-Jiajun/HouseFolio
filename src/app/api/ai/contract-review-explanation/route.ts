@@ -2,14 +2,46 @@ import { NextResponse } from "next/server";
 import {
   ContractReviewDeepSeekProviderError,
   contractReviewDeepSeekProvider,
+  type ContractReviewDeepSeekProvider,
 } from "@/lib/ai/contract-review-deepseek-provider";
+import {
+  CONTRACT_REVIEW_AI_INPUT_VERSION,
+  CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION,
+  type ContractReviewAiInput,
+  type ContractReviewFullRedactedAiInput,
+} from "@/lib/contract/ai-safe-input";
 import {
   ContractReviewAiInputRouteGuardError,
   parseAndSanitizeContractReviewAiInput,
+  parseAndSanitizeContractReviewFullRedactedAiInput,
 } from "@/lib/contract/ai-safe-input-route-guard";
-import type { ContractReviewExplanationOutput } from "@/types/ai-contract-review-explanation";
+import type {
+  ContractReviewExplanationOutput,
+  ContractReviewFullRedactedExplanationOutput,
+} from "@/types/ai-contract-review-explanation";
 
-const MAX_REQUEST_BODY_CHARS = 100_000;
+const MAX_REQUEST_BODY_CHARS = 350_000;
+const MAX_REQUEST_BODY_BYTES = 900_000;
+
+type ContractReviewExplanationRouteOutput =
+  | ContractReviewExplanationOutput
+  | ContractReviewFullRedactedExplanationOutput;
+
+type ContractReviewExplanationRouteRequest =
+  | {
+      readonly mode: "matched-findings";
+      readonly input: ContractReviewAiInput;
+    }
+  | {
+      readonly mode: "full-redacted-contract";
+      readonly input: ContractReviewFullRedactedAiInput;
+    };
+
+type ContractReviewExplanationRouteProvider = Pick<
+  ContractReviewDeepSeekProvider,
+  | "generateContractReviewExplanation"
+  | "generateFullRedactedContractReviewExplanation"
+>;
 
 type ContractReviewExplanationApiErrorCode =
   | "unsupported_media_type"
@@ -101,6 +133,21 @@ function getContentLength(request: Request): number | undefined {
   return parsed;
 }
 
+function isRecord(
+  value: unknown,
+): value is Record<string, unknown> {
+  return Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value);
+}
+
+function invalidRouteRequest(): never {
+  throw new ContractReviewAiInputRouteGuardError(
+    "invalid_request",
+    "请求内容未通过安全校验，请返回检查后重试。",
+  );
+}
+
 async function readJsonBody(request: Request): Promise<unknown> {
   if (getMediaType(request) !== "application/json") {
     throw new ContractReviewApiRequestError(
@@ -114,7 +161,7 @@ async function readJsonBody(request: Request): Promise<unknown> {
 
   if (
     contentLength !== undefined &&
-    contentLength > MAX_REQUEST_BODY_CHARS
+    contentLength > MAX_REQUEST_BODY_BYTES
   ) {
     throw new ContractReviewApiRequestError(
       "request_too_large",
@@ -135,18 +182,24 @@ async function readJsonBody(request: Request): Promise<unknown> {
     );
   }
 
+  const textBytes =
+    new TextEncoder().encode(text).length;
+  const requestTooLarge =
+    text.length > MAX_REQUEST_BODY_CHARS ||
+    textBytes > MAX_REQUEST_BODY_BYTES;
+
   if (
     text.trim().length === 0 ||
-    text.length > MAX_REQUEST_BODY_CHARS
+    requestTooLarge
   ) {
     throw new ContractReviewApiRequestError(
-      text.length > MAX_REQUEST_BODY_CHARS
+      requestTooLarge
         ? "request_too_large"
         : "invalid_request",
-      text.length > MAX_REQUEST_BODY_CHARS
+      requestTooLarge
         ? 413
         : 400,
-      text.length > MAX_REQUEST_BODY_CHARS
+      requestTooLarge
         ? "请求内容过长，请减少内容后重试。"
         : "请求内容未通过安全校验，请返回检查后重试。",
     );
@@ -161,6 +214,38 @@ async function readJsonBody(request: Request): Promise<unknown> {
       "请求内容未通过安全校验，请返回检查后重试。",
     );
   }
+}
+
+function parseAndSanitizeContractReviewExplanationRequest(
+  value: unknown,
+): ContractReviewExplanationRouteRequest {
+  if (!isRecord(value)) {
+    return invalidRouteRequest();
+  }
+
+  if (typeof value.payloadVersion !== "string") {
+    return invalidRouteRequest();
+  }
+
+  if (value.payloadVersion === CONTRACT_REVIEW_AI_INPUT_VERSION) {
+    return {
+      mode: "matched-findings",
+      input: parseAndSanitizeContractReviewAiInput(value),
+    };
+  }
+
+  if (
+    value.payloadVersion ===
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION
+  ) {
+    return {
+      mode: "full-redacted-contract",
+      input:
+        parseAndSanitizeContractReviewFullRedactedAiInput(value),
+    };
+  }
+
+  return invalidRouteRequest();
 }
 
 function mapRouteError(
@@ -246,18 +331,38 @@ export async function POST(
   request: Request,
 ): Promise<
   NextResponse<
-    | ContractReviewExplanationOutput
+    | ContractReviewExplanationRouteOutput
+    | ContractReviewExplanationApiErrorResponse
+  >
+> {
+  return handleContractReviewExplanationPost(request);
+}
+
+async function handleContractReviewExplanationPost(
+  request: Request,
+  provider: ContractReviewExplanationRouteProvider =
+    contractReviewDeepSeekProvider,
+): Promise<
+  NextResponse<
+    | ContractReviewExplanationRouteOutput
     | ContractReviewExplanationApiErrorResponse
   >
 > {
   try {
     const body = await readJsonBody(request);
-    const input =
-      parseAndSanitizeContractReviewAiInput(body);
+    const requestInput =
+      parseAndSanitizeContractReviewExplanationRequest(body);
 
     const output =
-      await contractReviewDeepSeekProvider
-        .generateContractReviewExplanation(input);
+      requestInput.mode === "full-redacted-contract"
+        ? await provider
+            .generateFullRedactedContractReviewExplanation(
+              requestInput.input,
+            )
+        : await provider
+            .generateContractReviewExplanation(
+              requestInput.input,
+            );
 
     return jsonNoStore(output);
   } catch (error) {

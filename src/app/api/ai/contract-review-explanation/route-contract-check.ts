@@ -1,4 +1,5 @@
 import { POST } from "@/app/api/ai/contract-review-explanation/route";
+import { contractReviewDeepSeekProvider } from "@/lib/ai/contract-review-deepseek-provider";
 import {
   buildContractReviewFullRedactedAiInput,
   CONTRACT_REVIEW_AI_INPUT_LIMITS,
@@ -31,6 +32,11 @@ import type {
   ContractRiskId,
   ContractRiskRule,
 } from "@/lib/contract/types";
+import {
+  CONTRACT_REVIEW_FULL_REDACTED_EXPLANATION_OUTPUT_VERSION,
+  type ContractReviewExplanationOutput,
+  type ContractReviewFullRedactedExplanationOutput,
+} from "@/types/ai-contract-review-explanation";
 
 type Assert<T extends true> = T;
 
@@ -55,6 +61,22 @@ type _GuardReturnsFullRedactedAiSafeInput = Assert<
     ContractReviewFullRedactedAiInput
   >
 >;
+
+type ContractReviewDeepSeekProviderMethodShadow = {
+  generateContractReviewExplanation?:
+    typeof contractReviewDeepSeekProvider
+      .generateContractReviewExplanation;
+  generateFullRedactedContractReviewExplanation?:
+    typeof contractReviewDeepSeekProvider
+      .generateFullRedactedContractReviewExplanation;
+};
+
+type ContractReviewProviderMockState = {
+  legacyCallCount: number;
+  fullRedactedCallCount: number;
+  capturedLegacyInput?: ContractReviewAiInput;
+  capturedFullRedactedInput?: ContractReviewFullRedactedAiInput;
+};
 
 function assertContractReviewApiRouteCheck(
   condition: unknown,
@@ -85,6 +107,174 @@ function isRecord(
   return Boolean(value) &&
     typeof value === "object" &&
     !Array.isArray(value);
+}
+
+function createLegacyMockOutput(
+  input: ContractReviewAiInput,
+): ContractReviewExplanationOutput {
+  return {
+    summaryZh: "Mock legacy summary",
+    findingExplanations: input.findings.map((finding) => ({
+      riskId: finding.riskId,
+      riskLevel: finding.riskLevel,
+      titleZh: finding.ruleTitleZh,
+      explanationZh: "Mock legacy explanation",
+      legalBasisNotesZh: ["Mock legal basis note"],
+      preSigningQuestionsZh: ["Mock pre-signing question"],
+      suggestedClauseDirectionsZh: ["Mock clause direction"],
+      negotiationScriptZh: "Mock negotiation script",
+      needsFurtherConfirmation: true,
+    })),
+    disclaimerZh: "Mock disclaimer",
+  } satisfies ContractReviewExplanationOutput;
+}
+
+function createFullRedactedMockOutput(
+  input: ContractReviewFullRedactedAiInput,
+): ContractReviewFullRedactedExplanationOutput {
+  return {
+    outputVersion:
+      CONTRACT_REVIEW_FULL_REDACTED_EXPLANATION_OUTPUT_VERSION,
+    summaryZh: "Mock full redacted summary",
+    ruleSignalExplanations: input.ruleSignals.map((ruleSignal) => ({
+      riskId: ruleSignal.riskId,
+      clauseId: ruleSignal.clauseId,
+      riskLevel: ruleSignal.riskLevel,
+      titleZh: ruleSignal.ruleTitleZh,
+      explanationZh: "Mock full redacted explanation",
+      legalBasisNotesZh: ["Mock legal basis note"],
+      preSigningQuestionsZh: ["Mock pre-signing question"],
+      suggestedClauseDirectionsZh: ["Mock clause direction"],
+      negotiationScriptZh: "Mock negotiation script",
+      needsFurtherConfirmation: true,
+    })),
+    supplementalAttentionItems: [],
+    disclaimerZh: "Mock disclaimer",
+  } satisfies ContractReviewFullRedactedExplanationOutput;
+}
+
+async function withMockedContractReviewProvider<T>(
+  legacyMockOutput: ContractReviewExplanationOutput,
+  fullRedactedMockOutput:
+    ContractReviewFullRedactedExplanationOutput,
+  callback: (
+    state: ContractReviewProviderMockState,
+  ) => Promise<T>,
+): Promise<T> {
+  const legacyDescriptor =
+    Object.getOwnPropertyDescriptor(
+      contractReviewDeepSeekProvider,
+      "generateContractReviewExplanation",
+    );
+  const fullRedactedDescriptor =
+    Object.getOwnPropertyDescriptor(
+      contractReviewDeepSeekProvider,
+      "generateFullRedactedContractReviewExplanation",
+    );
+  const state: ContractReviewProviderMockState = {
+    legacyCallCount: 0,
+    fullRedactedCallCount: 0,
+  };
+
+  try {
+    Object.defineProperty(
+      contractReviewDeepSeekProvider,
+      "generateContractReviewExplanation",
+      {
+        configurable: true,
+        value: async (
+          input: ContractReviewAiInput,
+        ): Promise<ContractReviewExplanationOutput> => {
+          state.legacyCallCount += 1;
+          state.capturedLegacyInput = input;
+
+          return legacyMockOutput;
+        },
+      },
+    );
+
+    Object.defineProperty(
+      contractReviewDeepSeekProvider,
+      "generateFullRedactedContractReviewExplanation",
+      {
+        configurable: true,
+        value: async (
+          input: ContractReviewFullRedactedAiInput,
+        ): Promise<ContractReviewFullRedactedExplanationOutput> => {
+          state.fullRedactedCallCount += 1;
+          state.capturedFullRedactedInput = input;
+
+          return fullRedactedMockOutput;
+        },
+      },
+    );
+
+    return await callback(state);
+  } finally {
+    if (legacyDescriptor) {
+      Object.defineProperty(
+        contractReviewDeepSeekProvider,
+        "generateContractReviewExplanation",
+        legacyDescriptor,
+      );
+    } else {
+      delete (
+        contractReviewDeepSeekProvider as
+          ContractReviewDeepSeekProviderMethodShadow
+      ).generateContractReviewExplanation;
+    }
+
+    if (fullRedactedDescriptor) {
+      Object.defineProperty(
+        contractReviewDeepSeekProvider,
+        "generateFullRedactedContractReviewExplanation",
+        fullRedactedDescriptor,
+      );
+    } else {
+      delete (
+        contractReviewDeepSeekProvider as
+          ContractReviewDeepSeekProviderMethodShadow
+      ).generateFullRedactedContractReviewExplanation;
+    }
+  }
+}
+
+function assertNoProviderCalls(
+  state: ContractReviewProviderMockState,
+  message: string,
+): void {
+  assertContractReviewApiRouteCheck(
+    state.legacyCallCount === 0 &&
+      state.fullRedactedCallCount === 0,
+    message,
+  );
+}
+
+async function expectRouteErrorWithoutProviderCalls(
+  request: Request,
+  expectedStatus: number,
+  expectedCode: string,
+  message: string,
+): Promise<void> {
+  const legacyMockOutput =
+    createLegacyMockOutput(createFixtureInput());
+  const fullRedactedMockOutput =
+    createFullRedactedMockOutput(
+      createFullRedactedFixtureInput(),
+    );
+
+  await withMockedContractReviewProvider(
+    legacyMockOutput,
+    fullRedactedMockOutput,
+    async (state) => {
+      await expectRouteError(
+        request,
+        expectedStatus,
+        expectedCode,
+      );
+      assertNoProviderCalls(state, message);
+    },
+  );
 }
 
 function truncateText(
@@ -392,6 +582,7 @@ function expectFullRedactedGuardInvalid(
 function createRequest(
   body: string,
   contentType = "application/json",
+  extraHeaders: Readonly<Record<string, string>> = {},
 ): Request {
   return new Request(
     "http://localhost/api/ai/contract-review-explanation",
@@ -399,6 +590,7 @@ function createRequest(
       method: "POST",
       headers: {
         "Content-Type": contentType,
+        ...extraHeaders,
       },
       body,
     },
@@ -1372,6 +1564,164 @@ export async function runContractReviewApiRouteChecks(): Promise<void> {
     "expected full-redacted extra legal basis rejection",
   );
 
+  const legacyRouteInput = createFixtureInput();
+  const sanitizedLegacyRouteInput =
+    parseAndSanitizeContractReviewAiInput(legacyRouteInput);
+  const legacyMockOutput =
+    createLegacyMockOutput(sanitizedLegacyRouteInput);
+  const fullRedactedRouteInput =
+    createFullRedactedFixtureInput();
+  const sanitizedFullRedactedRouteInput =
+    parseAndSanitizeContractReviewFullRedactedAiInput(
+      fullRedactedRouteInput,
+    );
+  const fullRedactedMockOutput =
+    createFullRedactedMockOutput(
+      sanitizedFullRedactedRouteInput,
+    );
+
+  await withMockedContractReviewProvider(
+    legacyMockOutput,
+    fullRedactedMockOutput,
+    async (state) => {
+      const response = await POST(
+        createRequest(JSON.stringify(legacyRouteInput)),
+      );
+      const body = await response.json() as unknown;
+
+      assertContractReviewApiRouteCheck(
+        response.status === 200,
+        `expected legacy success HTTP 200, received ${response.status}`,
+      );
+
+      assertContractReviewApiRouteCheck(
+        response.headers.get("cache-control") === "no-store",
+        "expected legacy success Cache-Control: no-store",
+      );
+
+      assertContractReviewApiRouteCheck(
+        state.legacyCallCount === 1 &&
+          state.fullRedactedCallCount === 0,
+        "expected legacy payload to call only legacy provider",
+      );
+
+      assertContractReviewApiRouteCheck(
+        JSON.stringify(state.capturedLegacyInput) ===
+          JSON.stringify(sanitizedLegacyRouteInput),
+        "expected legacy provider to receive sanitized legacy input",
+      );
+
+      assertContractReviewApiRouteCheck(
+        JSON.stringify(body) === JSON.stringify(legacyMockOutput),
+        "expected legacy success response to match mock output",
+      );
+    },
+  );
+
+  await withMockedContractReviewProvider(
+    legacyMockOutput,
+    fullRedactedMockOutput,
+    async (state) => {
+      const response = await POST(
+        createRequest(JSON.stringify(fullRedactedRouteInput)),
+      );
+      const body = await response.json() as unknown;
+
+      assertContractReviewApiRouteCheck(
+        response.status === 200,
+        `expected full-redacted success HTTP 200, received ${response.status}`,
+      );
+
+      assertContractReviewApiRouteCheck(
+        response.headers.get("cache-control") === "no-store",
+        "expected full-redacted success Cache-Control: no-store",
+      );
+
+      assertContractReviewApiRouteCheck(
+        state.legacyCallCount === 0 &&
+          state.fullRedactedCallCount === 1,
+        "expected full-redacted payload to call only full-redacted provider",
+      );
+
+      assertContractReviewApiRouteCheck(
+        JSON.stringify(state.capturedFullRedactedInput) ===
+          JSON.stringify(sanitizedFullRedactedRouteInput),
+        "expected full-redacted provider to receive sanitized full-redacted input",
+      );
+
+      assertContractReviewApiRouteCheck(
+        JSON.stringify(body) ===
+          JSON.stringify(fullRedactedMockOutput),
+        "expected full-redacted success response to match mock output",
+      );
+    },
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      JSON.stringify({
+        ...legacyRouteInput,
+        payloadVersion: "unknown-version",
+      }),
+    ),
+    400,
+    "invalid_request",
+    "expected unknown payloadVersion not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      JSON.stringify({
+        locale: legacyRouteInput.locale,
+        disclaimerMode: legacyRouteInput.disclaimerMode,
+        findingCount: legacyRouteInput.findingCount,
+        findings: legacyRouteInput.findings,
+      }),
+    ),
+    400,
+    "invalid_request",
+    "expected missing payloadVersion not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest("null"),
+    400,
+    "invalid_request",
+    "expected null payload not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest("[]"),
+    400,
+    "invalid_request",
+    "expected array payload not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      JSON.stringify({
+        ...legacyRouteInput,
+        findingCount: 0,
+        findings: [],
+      }),
+    ),
+    400,
+    "invalid_request",
+    "expected malformed legacy payload not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      JSON.stringify({
+        ...fullRedactedRouteInput,
+        redactedClauses: [],
+      }),
+    ),
+    400,
+    "invalid_request",
+    "expected malformed full-redacted payload not to call provider",
+  );
+
   await expectRouteError(
     createRequest("{}", "text/plain"),
     415,
@@ -1390,12 +1740,86 @@ export async function runContractReviewApiRouteChecks(): Promise<void> {
     "invalid_request",
   );
 
-  await expectRouteError(
+  await expectRouteErrorWithoutProviderCalls(
     createRequest(
-      "x".repeat(100_001),
+      "x".repeat(350_001),
     ),
     413,
     "request_too_large",
+    "expected char limit rejection not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      "{}",
+      "application/json",
+      {
+        "Content-Length": "900001",
+      },
+    ),
+    413,
+    "request_too_large",
+    "expected byte limit rejection not to call provider",
+  );
+
+  const utf8ByteSeparatedBody = JSON.stringify({
+    payloadVersion: "unknown-version",
+    note: "租".repeat(40_000),
+  });
+  const utf8ByteSeparatedBytes =
+    new TextEncoder().encode(utf8ByteSeparatedBody).length;
+
+  assertContractReviewApiRouteCheck(
+    utf8ByteSeparatedBytes > 100_000 &&
+      utf8ByteSeparatedBytes < 900_000 &&
+      utf8ByteSeparatedBody.length < 350_000,
+    "expected UTF-8 body to exceed old byte gate while staying within new limits",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      utf8ByteSeparatedBody,
+      "application/json",
+      {
+        "Content-Length": String(utf8ByteSeparatedBytes),
+      },
+    ),
+    400,
+    "invalid_request",
+    "expected UTF-8 bytes/chars separation payload not to call provider",
+  );
+
+  const postReadByteLimitBody = JSON.stringify({
+    payloadVersion: "unknown-version",
+    note: "\u79df".repeat(310_000),
+  });
+  const postReadByteLimitBytes =
+    new TextEncoder().encode(postReadByteLimitBody).length;
+
+  assertContractReviewApiRouteCheck(
+    postReadByteLimitBody.length < 350_000 &&
+      postReadByteLimitBytes > 900_000,
+    "expected post-read byte limit fixture to exceed bytes while staying within chars",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(postReadByteLimitBody),
+    413,
+    "request_too_large",
+    "expected post-read UTF-8 byte limit rejection not to call provider",
+  );
+
+  await expectRouteErrorWithoutProviderCalls(
+    createRequest(
+      postReadByteLimitBody,
+      "application/json",
+      {
+        "Content-Length": "1",
+      },
+    ),
+    413,
+    "request_too_large",
+    "expected post-read UTF-8 byte limit rejection despite understated Content-Length",
   );
 
   await expectRouteError(
