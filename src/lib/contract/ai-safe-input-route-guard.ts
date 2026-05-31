@@ -1,11 +1,17 @@
 import {
   CONTRACT_REVIEW_AI_INPUT_LIMITS,
   CONTRACT_REVIEW_AI_INPUT_VERSION,
+  CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS,
+  CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION,
   contractReviewAiRiskMetadata,
   redactContractClauseExcerpt,
+  redactContractClauseText,
   type ContractReviewAiFindingInput,
   type ContractReviewAiInput,
   type ContractReviewAiLegalBasisInput,
+  type ContractReviewFullRedactedAiInput,
+  type ContractReviewFullRedactedAiRedactedClauseInput,
+  type ContractReviewFullRedactedAiRuleSignalInput,
 } from "@/lib/contract/ai-safe-input";
 import {
   contractLegalBasisEntries,
@@ -75,11 +81,39 @@ const legalBasisKeys = [
   "legalBasisSourceType",
 ] as const;
 
+const fullRedactedTopLevelKeys = [
+  "payloadVersion",
+  "locale",
+  "reviewMode",
+  "redactedClauses",
+  "ruleSignals",
+] as const;
+
+const fullRedactedClauseKeys = [
+  "clauseId",
+  "clauseOrder",
+  "redactedClauseText",
+] as const;
+
+const fullRedactedRuleSignalKeys = [
+  "riskId",
+  "riskLevel",
+  "category",
+  "ruleTitleZh",
+  "clauseId",
+  "riskSummaryZh",
+  "whyItMattersZh",
+  "legalBases",
+] as const;
+
 const forbiddenRequestKeys = new Set(
   [
     "rawText",
+    "rawContractText",
     "contractText",
     "fullContract",
+    "originalText",
+    "sourceText",
     "clauseText",
     "unredactedClauseText",
     "prompt",
@@ -116,7 +150,7 @@ const forbiddenRequestKeys = new Set(
 );
 
 const promptBoundaryPattern =
-  /<\/?contract_review_ai_safe_input>/gi;
+  /<\/?contract_review(?:_full_redacted)?_ai_safe_input>/gi;
 
 const controlCharacterPattern =
   /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
@@ -273,6 +307,35 @@ function sanitizeClauseExcerpt(value: unknown): string {
   );
 }
 
+function neutralizePromptBoundaryText(value: string): string {
+  return value.replace(
+    promptBoundaryPattern,
+    "[输入分隔符已转义]",
+  );
+}
+
+function sanitizeFullRedactedClauseText(value: unknown): string {
+  const parsed = parseRequiredString(
+    value,
+    CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+      .maxRedactedClauseChars,
+  );
+  const redacted = neutralizePromptBoundaryText(
+    redactContractClauseText(parsed),
+  );
+
+  if (
+    redacted.length === 0 ||
+    redacted.length >
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxRedactedClauseChars
+  ) {
+    return invalidRequest();
+  }
+
+  return redacted;
+}
+
 function parseRiskId(value: unknown): ContractRiskId {
   if (
     typeof value !== "string" ||
@@ -413,6 +476,340 @@ function parseLegalBases(
   }
 
   return legalBases;
+}
+
+function createCanonicalLegalBasisInput(
+  entry: LegalBasisEntry,
+  maxSummaryChars: number,
+): ContractReviewAiLegalBasisInput {
+  return {
+    legalBasisId: entry.id,
+    legalBasisTitleZh: entry.title,
+    legalBasisSummaryZh: truncateText(
+      entry.shortSummary,
+      maxSummaryChars,
+    ),
+    legalBasisSourceType: entry.sourceLevel,
+  };
+}
+
+function getExpectedFullRedactedLegalBasisIds(
+  rule: ContractRiskRule,
+): readonly string[] {
+  const seenLegalBasisIds = new Set<string>();
+  const legalBasisIds: string[] = [];
+
+  for (const legalBasisId of rule.legalBasisIds) {
+    if (
+      legalBasisIds.length >=
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxLegalBasesPerSignal
+    ) {
+      break;
+    }
+
+    if (
+      seenLegalBasisIds.has(legalBasisId) ||
+      !legalBasisById.has(legalBasisId)
+    ) {
+      continue;
+    }
+
+    seenLegalBasisIds.add(legalBasisId);
+    legalBasisIds.push(legalBasisId);
+  }
+
+  return legalBasisIds;
+}
+
+function createCanonicalFullRedactedLegalBases(
+  rule: ContractRiskRule,
+): readonly ContractReviewAiLegalBasisInput[] {
+  return getExpectedFullRedactedLegalBasisIds(rule).map((legalBasisId) => {
+    const entry = legalBasisById.get(legalBasisId);
+
+    if (!entry) {
+      return invalidRequest();
+    }
+
+    return createCanonicalLegalBasisInput(
+      entry,
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxLegalBasisSummaryChars,
+    );
+  });
+}
+
+function parseFullRedactedLegalBases(
+  value: unknown,
+  canonicalLegalBases: readonly ContractReviewAiLegalBasisInput[],
+): readonly ContractReviewAiLegalBasisInput[] {
+  if (
+    !Array.isArray(value) ||
+    value.length >
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxLegalBasesPerSignal ||
+    value.length !== canonicalLegalBases.length
+  ) {
+    return invalidRequest();
+  }
+
+  value.forEach((item, index) => {
+    if (
+      !isRecord(item) ||
+      !hasExactKeys(item, legalBasisKeys)
+    ) {
+      return invalidRequest();
+    }
+
+    const canonicalLegalBasis =
+      canonicalLegalBases[index];
+
+    if (!canonicalLegalBasis) {
+      return invalidRequest();
+    }
+
+    const legalBasisId = parseRequiredString(
+      item.legalBasisId,
+      CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS
+        .maxLegalBasisIdChars,
+    );
+    const legalBasisTitleZh = parseRequiredString(
+      item.legalBasisTitleZh,
+      CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS
+        .maxLegalBasisTitleZhChars,
+    );
+    const legalBasisSummaryZh = parseRequiredString(
+      item.legalBasisSummaryZh,
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxLegalBasisSummaryChars,
+    );
+
+    if (
+      legalBasisId !== canonicalLegalBasis.legalBasisId ||
+      legalBasisTitleZh !== canonicalLegalBasis.legalBasisTitleZh ||
+      legalBasisSummaryZh !==
+        canonicalLegalBasis.legalBasisSummaryZh ||
+      item.legalBasisSourceType !==
+        canonicalLegalBasis.legalBasisSourceType
+    ) {
+      return invalidRequest();
+    }
+  });
+
+  return canonicalLegalBases.map((legalBasis) => ({ ...legalBasis }));
+}
+
+function parseAndSanitizeFullRedactedClause(
+  value: unknown,
+): ContractReviewFullRedactedAiRedactedClauseInput {
+  if (
+    !isRecord(value) ||
+    !hasExactKeys(value, fullRedactedClauseKeys)
+  ) {
+    return invalidRequest();
+  }
+
+  const clauseId = parseRequiredString(
+    value.clauseId,
+    CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS.maxClauseIdChars,
+  );
+  const clauseOrder = parsePositiveInteger(
+    value.clauseOrder,
+    CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS.maxClauseOrder,
+  );
+
+  if (
+    !/^clause-[1-9]\d*$/.test(clauseId) ||
+    clauseId !== `clause-${clauseOrder}`
+  ) {
+    return invalidRequest();
+  }
+
+  return {
+    clauseId,
+    clauseOrder,
+    redactedClauseText: sanitizeFullRedactedClauseText(
+      value.redactedClauseText,
+    ),
+  };
+}
+
+function parseAndSanitizeFullRedactedClauses(
+  value: unknown,
+): readonly ContractReviewFullRedactedAiRedactedClauseInput[] {
+  if (
+    !Array.isArray(value) ||
+    value.length === 0 ||
+    value.length >
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxRedactedClauseCount
+  ) {
+    return invalidRequest();
+  }
+
+  const seenClauseIds = new Set<string>();
+  const seenClauseOrders = new Set<number>();
+  let totalRedactedChars = 0;
+
+  return value.map((item) => {
+    const clause = parseAndSanitizeFullRedactedClause(item);
+
+    if (
+      seenClauseIds.has(clause.clauseId) ||
+      seenClauseOrders.has(clause.clauseOrder)
+    ) {
+      return invalidRequest();
+    }
+
+    seenClauseIds.add(clause.clauseId);
+    seenClauseOrders.add(clause.clauseOrder);
+
+    totalRedactedChars += clause.redactedClauseText.length;
+
+    if (
+      totalRedactedChars >
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxTotalRedactedChars
+    ) {
+      return invalidRequest();
+    }
+
+    return clause;
+  });
+}
+
+function createCanonicalFullRedactedRuleSignalMetadata(
+  riskId: ContractRiskId,
+) {
+  const rule = riskRuleById.get(riskId);
+  const metadata = contractReviewAiRiskMetadata[riskId];
+
+  if (!rule || !metadata) {
+    return invalidRequest();
+  }
+
+  return {
+    rule,
+    riskLevel: rule.priority,
+    category: rule.category,
+    ruleTitleZh: metadata.ruleTitleZh,
+    riskSummaryZh: truncateText(
+      rule.ruleReason,
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxRiskSummaryChars,
+    ),
+    whyItMattersZh: truncateText(
+      metadata.whyItMattersZh,
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+        .maxWhyItMattersChars,
+    ),
+    legalBases: createCanonicalFullRedactedLegalBases(rule),
+  };
+}
+
+function parseAndSanitizeFullRedactedRuleSignal(
+  value: unknown,
+  clausesById: ReadonlyMap<
+    string,
+    ContractReviewFullRedactedAiRedactedClauseInput
+  >,
+): ContractReviewFullRedactedAiRuleSignalInput {
+  if (
+    !isRecord(value) ||
+    !hasExactKeys(value, fullRedactedRuleSignalKeys)
+  ) {
+    return invalidRequest();
+  }
+
+  const riskId = parseRiskId(value.riskId);
+  const clauseId = parseRequiredString(
+    value.clauseId,
+    CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS.maxClauseIdChars,
+  );
+  const clause = clausesById.get(clauseId);
+
+  if (!clause) {
+    return invalidRequest();
+  }
+
+  const canonicalMetadata =
+    createCanonicalFullRedactedRuleSignalMetadata(riskId);
+  const ruleTitleZh = parseBoundedPromptText(
+    value.ruleTitleZh,
+    CONTRACT_REVIEW_AI_INPUT_ROUTE_GUARD_LIMITS.maxRuleTitleZhChars,
+  );
+  const riskSummaryZh = parseBoundedPromptText(
+    value.riskSummaryZh,
+    CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+      .maxRiskSummaryChars,
+  );
+  const whyItMattersZh = parseBoundedPromptText(
+    value.whyItMattersZh,
+    CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+      .maxWhyItMattersChars,
+  );
+
+  if (
+    value.riskLevel !== canonicalMetadata.riskLevel ||
+    value.category !== canonicalMetadata.category ||
+    ruleTitleZh !== canonicalMetadata.ruleTitleZh ||
+    riskSummaryZh !== canonicalMetadata.riskSummaryZh ||
+    whyItMattersZh !== canonicalMetadata.whyItMattersZh
+  ) {
+    return invalidRequest();
+  }
+
+  const legalBases = parseFullRedactedLegalBases(
+    value.legalBases,
+    canonicalMetadata.legalBases,
+  );
+
+  return {
+    riskId,
+    riskLevel: canonicalMetadata.riskLevel,
+    category: canonicalMetadata.category,
+    clauseId,
+    ruleTitleZh: canonicalMetadata.ruleTitleZh,
+    riskSummaryZh: canonicalMetadata.riskSummaryZh,
+    whyItMattersZh: canonicalMetadata.whyItMattersZh,
+    legalBases,
+  };
+}
+
+function parseAndSanitizeFullRedactedRuleSignals(
+  value: unknown,
+  clauses:
+    readonly ContractReviewFullRedactedAiRedactedClauseInput[],
+): readonly ContractReviewFullRedactedAiRuleSignalInput[] {
+  if (
+    !Array.isArray(value) ||
+    value.length >
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxRuleSignals
+  ) {
+    return invalidRequest();
+  }
+
+  const clausesById = new Map(
+    clauses.map((clause) => [clause.clauseId, clause] as const),
+  );
+  const seenRuleSignals = new Set<string>();
+
+  return value.map((item) => {
+    const ruleSignal = parseAndSanitizeFullRedactedRuleSignal(
+      item,
+      clausesById,
+    );
+    const compositeKey = `${ruleSignal.riskId}::${ruleSignal.clauseId}`;
+
+    if (seenRuleSignals.has(compositeKey)) {
+      return invalidRequest();
+    }
+
+    seenRuleSignals.add(compositeKey);
+
+    return ruleSignal;
+  });
 }
 
 function parseFinding(
@@ -567,5 +964,38 @@ export function parseAndSanitizeContractReviewAiInput(
     disclaimerMode: "contract-risk-prompt-only",
     findingCount: findings.length,
     findings,
+  };
+}
+
+export function parseAndSanitizeContractReviewFullRedactedAiInput(
+  value: unknown,
+): ContractReviewFullRedactedAiInput {
+  if (
+    !isRecord(value) ||
+    hasForbiddenRequestKey(value) ||
+    !hasExactKeys(value, fullRedactedTopLevelKeys) ||
+    value.payloadVersion !==
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION ||
+    value.locale !== "zh-CN" ||
+    value.reviewMode !== "full-redacted-contract"
+  ) {
+    return invalidRequest();
+  }
+
+  const redactedClauses = parseAndSanitizeFullRedactedClauses(
+    value.redactedClauses,
+  );
+  const ruleSignals = parseAndSanitizeFullRedactedRuleSignals(
+    value.ruleSignals,
+    redactedClauses,
+  );
+
+  return {
+    payloadVersion:
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION,
+    locale: "zh-CN",
+    reviewMode: "full-redacted-contract",
+    redactedClauses,
+    ruleSignals,
   };
 }
