@@ -53,7 +53,7 @@ type ContractReviewAiRiskMetadata = {
   readonly whyItMattersZh: string;
 };
 
-const contractReviewAiRiskMetadata = {
+export const contractReviewAiRiskMetadata = {
   policy_clearance_no_compensation: {
     ruleTitleZh: "政策清退、征收或腾退补偿约定需要确认",
     whyItMattersZh:
