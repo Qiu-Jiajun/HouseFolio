@@ -18,6 +18,20 @@ export const CONTRACT_REVIEW_AI_INPUT_LIMITS = {
   maxTotalExcerptChars: 6000,
 } as const;
 
+export const CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION =
+  "contract-review-full-redacted-v1" as const;
+
+export const CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS = {
+  maxRedactedClauseCount: 120,
+  maxRedactedClauseChars: 2400,
+  maxTotalRedactedChars: 30000,
+  maxRuleSignals: 60,
+  maxLegalBasesPerSignal: 6,
+  maxLegalBasisSummaryChars: 240,
+  maxRiskSummaryChars: 240,
+  maxWhyItMattersChars: 320,
+} as const;
+
 export type ContractReviewAiLegalBasisInput = {
   readonly legalBasisId: string;
   readonly legalBasisTitleZh: string;
@@ -47,6 +61,55 @@ export type ContractReviewAiInput = {
   readonly findingCount: number;
   readonly findings: readonly ContractReviewAiFindingInput[];
 };
+
+export type ContractReviewFullRedactedAiRedactedClauseInput = {
+  readonly clauseId: string;
+  readonly clauseOrder: number;
+  readonly redactedClauseText: string;
+};
+
+export type ContractReviewFullRedactedAiRuleSignalInput = {
+  readonly riskId: ContractRiskFinding["riskId"];
+  readonly riskLevel: ContractRiskFinding["priority"];
+  readonly category: ContractRiskFinding["category"];
+  readonly clauseId: ContractRiskFinding["clauseId"];
+  readonly ruleTitleZh: string;
+  readonly riskSummaryZh: string;
+  readonly whyItMattersZh: string;
+  readonly legalBases: readonly ContractReviewAiLegalBasisInput[];
+};
+
+export type ContractReviewFullRedactedAiInput = {
+  readonly payloadVersion:
+    typeof CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION;
+  readonly locale: "zh-CN";
+  readonly reviewMode: "full-redacted-contract";
+  readonly redactedClauses:
+    readonly ContractReviewFullRedactedAiRedactedClauseInput[];
+  readonly ruleSignals: readonly ContractReviewFullRedactedAiRuleSignalInput[];
+};
+
+export type ContractReviewFullRedactedAiInputErrorCode =
+  | "empty_contract"
+  | "too_many_clauses"
+  | "clause_too_long"
+  | "total_text_too_long"
+  | "too_many_rule_signals"
+  | "invalid_clause_id"
+  | "invalid_rule_signal";
+
+export class ContractReviewFullRedactedAiInputError extends Error {
+  readonly code: ContractReviewFullRedactedAiInputErrorCode;
+
+  constructor(
+    code: ContractReviewFullRedactedAiInputErrorCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ContractReviewFullRedactedAiInputError";
+    this.code = code;
+  }
+}
 
 type ContractReviewAiRiskMetadata = {
   readonly ruleTitleZh: string;
@@ -152,32 +215,66 @@ export function redactContractClauseExcerpt(value: string) {
     .replace(/(^|[^\d])\d{12,19}(?!\d)/g, "$1[银行卡号已脱敏]");
 }
 
+function normalizeContractClauseLine(value: string) {
+  return value.replace(/[^\S\r\n]+/g, " ").trim();
+}
+
+export function redactContractClauseText(value: string): string {
+  const normalizedText = value
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line) => normalizeContractClauseLine(line))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  if (!normalizedText) {
+    return "";
+  }
+
+  return normalizedText
+    .split("\n")
+    .map((line) => redactContractClauseExcerpt(line))
+    .join("\n")
+    .trim();
+}
+
 function createLegalBasisInput(
   entry: LegalBasisEntry,
+  maxSummaryChars: number =
+    CONTRACT_REVIEW_AI_INPUT_LIMITS.maxLegalBasisSummaryChars,
 ): ContractReviewAiLegalBasisInput {
   return {
     legalBasisId: entry.id,
     legalBasisTitleZh: entry.title,
     legalBasisSummaryZh: truncateText(
       entry.shortSummary,
-      CONTRACT_REVIEW_AI_INPUT_LIMITS.maxLegalBasisSummaryChars,
+      maxSummaryChars,
     ),
     legalBasisSourceType: entry.sourceLevel,
   };
 }
 
+type ContractReviewAiLegalBasisBuildLimits = {
+  readonly maxLegalBases: number;
+  readonly maxLegalBasisSummaryChars: number;
+};
+
 function buildLegalBasesForFinding(
   finding: ContractRiskFinding,
   legalBasisById: ReadonlyMap<string, LegalBasisEntry>,
+  limits: ContractReviewAiLegalBasisBuildLimits = {
+    maxLegalBases:
+      CONTRACT_REVIEW_AI_INPUT_LIMITS.maxLegalBasesPerFinding,
+    maxLegalBasisSummaryChars:
+      CONTRACT_REVIEW_AI_INPUT_LIMITS.maxLegalBasisSummaryChars,
+  },
 ) {
   const seen = new Set<string>();
   const legalBases: ContractReviewAiLegalBasisInput[] = [];
 
   for (const legalBasisId of finding.legalBasisIds) {
-    if (
-      legalBases.length >=
-      CONTRACT_REVIEW_AI_INPUT_LIMITS.maxLegalBasesPerFinding
-    ) {
+    if (legalBases.length >= limits.maxLegalBases) {
       break;
     }
 
@@ -192,10 +289,158 @@ function buildLegalBasesForFinding(
     }
 
     seen.add(legalBasisId);
-    legalBases.push(createLegalBasisInput(entry));
+    legalBases.push(
+      createLegalBasisInput(entry, limits.maxLegalBasisSummaryChars),
+    );
   }
 
   return legalBases;
+}
+
+function throwFullRedactedAiInputError(
+  code: ContractReviewFullRedactedAiInputErrorCode,
+  message: string,
+): never {
+  throw new ContractReviewFullRedactedAiInputError(code, message);
+}
+
+function assertFullRedactedAiInput(
+  condition: unknown,
+  code: ContractReviewFullRedactedAiInputErrorCode,
+  message: string,
+): asserts condition {
+  if (!condition) {
+    throwFullRedactedAiInputError(code, message);
+  }
+}
+
+function getCanonicalClauseId(index: number) {
+  return `clause-${index + 1}`;
+}
+
+function buildFullRedactedClauses(
+  model: ContractReviewModel,
+): readonly ContractReviewFullRedactedAiRedactedClauseInput[] {
+  assertFullRedactedAiInput(
+    model.clauses.length > 0,
+    "empty_contract",
+    "Contract review model must contain at least one clause.",
+  );
+  assertFullRedactedAiInput(
+    model.clauses.length <=
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxRedactedClauseCount,
+    "too_many_clauses",
+    "Contract review model contains too many clauses.",
+  );
+
+  let totalRedactedChars = 0;
+
+  return model.clauses.map((clause, index) => {
+    const clauseId = getCanonicalClauseId(index);
+
+    assertFullRedactedAiInput(
+      clause.id === clauseId,
+      "invalid_clause_id",
+      "Contract clause id must match its canonical order.",
+    );
+
+    const redactedClauseText = redactContractClauseText(clause.text);
+
+    assertFullRedactedAiInput(
+      redactedClauseText.length <=
+        CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxRedactedClauseChars,
+      "clause_too_long",
+      "Redacted contract clause exceeds the per-clause character limit.",
+    );
+
+    totalRedactedChars += redactedClauseText.length;
+
+    assertFullRedactedAiInput(
+      totalRedactedChars <=
+        CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxTotalRedactedChars,
+      "total_text_too_long",
+      "Redacted contract clauses exceed the total character limit.",
+    );
+
+    return {
+      clauseId,
+      clauseOrder: index + 1,
+      redactedClauseText,
+    };
+  });
+}
+
+function buildFullRedactedRuleSignals(
+  model: ContractReviewModel,
+  redactedClauses: readonly ContractReviewFullRedactedAiRedactedClauseInput[],
+): readonly ContractReviewFullRedactedAiRuleSignalInput[] {
+  assertFullRedactedAiInput(
+    model.findings.length <=
+      CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxRuleSignals,
+    "too_many_rule_signals",
+    "Contract review model contains too many rule signals.",
+  );
+
+  const redactedClauseIds = new Set(
+    redactedClauses.map((clause) => clause.clauseId),
+  );
+  const legalBasisById = new Map(
+    model.legalBasisEntries.map((entry) => [entry.id, entry]),
+  );
+
+  return model.findings.map((finding) => {
+    assertFullRedactedAiInput(
+      redactedClauseIds.has(finding.clauseId),
+      "invalid_rule_signal",
+      "Contract risk finding references an unknown clause.",
+    );
+
+    const metadata = contractReviewAiRiskMetadata[finding.riskId];
+
+    assertFullRedactedAiInput(
+      metadata !== undefined,
+      "invalid_rule_signal",
+      "Contract risk finding references unknown risk metadata.",
+    );
+
+    return {
+      riskId: finding.riskId,
+      riskLevel: finding.priority,
+      category: finding.category,
+      clauseId: finding.clauseId,
+      ruleTitleZh: metadata.ruleTitleZh,
+      riskSummaryZh: truncateText(
+        finding.ruleReason,
+        CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxRiskSummaryChars,
+      ),
+      whyItMattersZh: truncateText(
+        metadata.whyItMattersZh,
+        CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxWhyItMattersChars,
+      ),
+      legalBases: buildLegalBasesForFinding(finding, legalBasisById, {
+        maxLegalBases:
+          CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS.maxLegalBasesPerSignal,
+        maxLegalBasisSummaryChars:
+          CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_LIMITS
+            .maxLegalBasisSummaryChars,
+      }),
+    };
+  });
+}
+
+export function buildContractReviewFullRedactedAiInput(
+  model: ContractReviewModel,
+): ContractReviewFullRedactedAiInput {
+  const redactedClauses = buildFullRedactedClauses(model);
+  const ruleSignals = buildFullRedactedRuleSignals(model, redactedClauses);
+
+  return {
+    payloadVersion: CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION,
+    locale: "zh-CN",
+    reviewMode: "full-redacted-contract",
+    redactedClauses,
+    ruleSignals,
+  };
 }
 
 export function buildContractReviewAiInput(
