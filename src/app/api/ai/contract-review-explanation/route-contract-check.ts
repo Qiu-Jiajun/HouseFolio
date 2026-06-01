@@ -546,6 +546,71 @@ function createFullRedactedFixtureInputWithoutRuleSignals():
   });
 }
 
+function assertContractReviewRuntimeProviderConfigurationError(
+  expectedCode:
+    | "missing_configuration"
+    | "invalid_configuration",
+): void {
+  let capturedError: unknown;
+
+  try {
+    getServerConfiguredContractReviewProvider();
+  } catch (error) {
+    capturedError = error;
+  }
+
+  const runtimeError =
+    capturedError && typeof capturedError === "object"
+      ? capturedError as {
+          readonly code?: unknown;
+          readonly status?: unknown;
+          readonly safeMessage?: unknown;
+        }
+      : {};
+
+  assertContractReviewApiRouteCheck(
+    capturedError instanceof Error &&
+      runtimeError.code === expectedCode &&
+      runtimeError.status === 503 &&
+      runtimeError.safeMessage ===
+        "当前 AI 服务配置暂不可用。",
+    `expected runtime provider configuration error ${expectedCode}`,
+  );
+}
+
+async function assertContractReviewRuntimeConfigurationRouteError(
+  expectedCode:
+    | "missing_configuration"
+    | "invalid_configuration",
+): Promise<void> {
+  const response = await POST(
+    createRequest(
+      JSON.stringify(createFullRedactedFixtureInput()),
+    ),
+  );
+
+  const body = await response.json() as {
+    readonly code?: unknown;
+    readonly error?: unknown;
+  };
+
+  assertContractReviewApiRouteCheck(
+    response.status === 503,
+    `expected runtime configuration route error ${expectedCode} to return HTTP 503`,
+  );
+
+  assertContractReviewApiRouteCheck(
+    response.headers.get("cache-control") === "no-store",
+    `expected runtime configuration route error ${expectedCode} to remain no-store`,
+  );
+
+  assertContractReviewApiRouteCheck(
+    body.code === expectedCode &&
+      body.error === "当前 AI 服务配置暂不可用。",
+    `expected safe runtime configuration route error ${expectedCode}`,
+  );
+}
+
 async function assertContractReviewRuntimeProviderSelection():
   Promise<void> {
   const originalProviderName =
@@ -554,25 +619,32 @@ async function assertContractReviewRuntimeProviderSelection():
   try {
     delete process.env.CONTRACT_REVIEW_AI_PROVIDER;
 
-    assertContractReviewApiRouteCheck(
-      getServerConfiguredContractReviewProvider() ===
-        contractReviewMockProvider,
-      "expected missing CONTRACT_REVIEW_AI_PROVIDER to select mock",
+    assertContractReviewRuntimeProviderConfigurationError(
+      "missing_configuration",
+    );
+
+    await assertContractReviewRuntimeConfigurationRouteError(
+      "missing_configuration",
     );
 
     for (const value of [
       "",
-      "mock",
       "unsupported",
       "DEEPSEEK",
       " deepseek ",
     ]) {
       process.env.CONTRACT_REVIEW_AI_PROVIDER = value;
 
-      assertContractReviewApiRouteCheck(
-        getServerConfiguredContractReviewProvider() ===
-          contractReviewMockProvider,
-        "expected non-exact provider selector to use mock",
+      const expectedCode = value
+        ? "invalid_configuration"
+        : "missing_configuration";
+
+      assertContractReviewRuntimeProviderConfigurationError(
+        expectedCode,
+      );
+
+      await assertContractReviewRuntimeConfigurationRouteError(
+        expectedCode,
       );
     }
 
@@ -584,7 +656,16 @@ async function assertContractReviewRuntimeProviderSelection():
       "expected exact deepseek selector to use DeepSeek provider",
     );
 
+    process.env.CONTRACT_REVIEW_AI_PROVIDER = "mock";
+
+    assertContractReviewApiRouteCheck(
+      getServerConfiguredContractReviewProvider() ===
+        contractReviewMockProvider,
+      "expected exact mock selector to use mock provider",
+    );
+
     const legacyInput = createFixtureInput();
+
     const legacyOutput =
       await contractReviewMockProvider
         .generateContractReviewExplanation(legacyInput);
@@ -604,6 +685,7 @@ async function assertContractReviewRuntimeProviderSelection():
 
     const fullRedactedInput =
       createFullRedactedFixtureInput();
+
     const fullRedactedOutput =
       await contractReviewMockProvider
         .generateFullRedactedContractReviewExplanation(
@@ -655,11 +737,10 @@ async function assertContractReviewRuntimeProviderSelection():
       "expected mock output to allow ruleSignals = []",
     );
 
-    process.env.CONTRACT_REVIEW_AI_PROVIDER = "mock";
-
     const routeResponse = await POST(
       createRequest(JSON.stringify(fullRedactedInput)),
     );
+
     const routeBody = await routeResponse.json() as unknown;
 
     assertContractReviewApiRouteCheck(
@@ -685,6 +766,7 @@ async function assertContractReviewRuntimeProviderSelection():
     }
   }
 }
+
 function expectGuardInvalid(
   value: unknown,
   message: string,

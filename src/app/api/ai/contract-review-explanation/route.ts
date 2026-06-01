@@ -46,9 +46,24 @@ type ContractReviewExplanationRouteProvider = Pick<
 
 export function getServerConfiguredContractReviewProvider():
   ContractReviewExplanationRouteProvider {
-  return process.env.CONTRACT_REVIEW_AI_PROVIDER === "deepseek"
-    ? contractReviewDeepSeekProvider
-    : contractReviewMockProvider;
+  const providerName =
+    process.env.CONTRACT_REVIEW_AI_PROVIDER;
+
+  if (providerName === "deepseek") {
+    return contractReviewDeepSeekProvider;
+  }
+
+  if (providerName === "mock") {
+    return contractReviewMockProvider;
+  }
+
+  throw new ContractReviewApiRequestError(
+    providerName
+      ? "invalid_configuration"
+      : "missing_configuration",
+    503,
+    "当前 AI 服务配置暂不可用。",
+  );
 }
 
 type ContractReviewExplanationApiErrorCode =
@@ -348,8 +363,7 @@ export async function POST(
 
 async function handleContractReviewExplanationPost(
   request: Request,
-  provider: ContractReviewExplanationRouteProvider =
-    getServerConfiguredContractReviewProvider(),
+  provider?: ContractReviewExplanationRouteProvider,
 ): Promise<
   NextResponse<
     | ContractReviewExplanationRouteOutput
@@ -357,17 +371,20 @@ async function handleContractReviewExplanationPost(
   >
 > {
   try {
+    const resolvedProvider =
+      provider ?? getServerConfiguredContractReviewProvider();
+
     const body = await readJsonBody(request);
     const requestInput =
       parseAndSanitizeContractReviewExplanationRequest(body);
 
     const output =
       requestInput.mode === "full-redacted-contract"
-        ? await provider
+        ? await resolvedProvider
             .generateFullRedactedContractReviewExplanation(
               requestInput.input,
             )
-        : await provider
+        : await resolvedProvider
             .generateContractReviewExplanation(
               requestInput.input,
             );
