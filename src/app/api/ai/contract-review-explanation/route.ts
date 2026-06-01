@@ -4,6 +4,7 @@ import {
   contractReviewDeepSeekProvider,
   type ContractReviewDeepSeekProvider,
 } from "@/lib/ai/contract-review-deepseek-provider";
+import { contractReviewMockProvider } from "@/lib/ai/contract-review-mock-provider";
 import {
   CONTRACT_REVIEW_AI_INPUT_VERSION,
   CONTRACT_REVIEW_FULL_REDACTED_AI_INPUT_VERSION,
@@ -42,6 +43,13 @@ type ContractReviewExplanationRouteProvider = Pick<
   | "generateContractReviewExplanation"
   | "generateFullRedactedContractReviewExplanation"
 >;
+
+export function getServerConfiguredContractReviewProvider():
+  ContractReviewExplanationRouteProvider {
+  return process.env.CONTRACT_REVIEW_AI_PROVIDER === "deepseek"
+    ? contractReviewDeepSeekProvider
+    : contractReviewMockProvider;
+}
 
 type ContractReviewExplanationApiErrorCode =
   | "unsupported_media_type"
@@ -341,7 +349,7 @@ export async function POST(
 async function handleContractReviewExplanationPost(
   request: Request,
   provider: ContractReviewExplanationRouteProvider =
-    contractReviewDeepSeekProvider,
+    getServerConfiguredContractReviewProvider(),
 ): Promise<
   NextResponse<
     | ContractReviewExplanationRouteOutput

@@ -1,5 +1,9 @@
-import { POST } from "@/app/api/ai/contract-review-explanation/route";
+import {
+  POST,
+  getServerConfiguredContractReviewProvider,
+} from "@/app/api/ai/contract-review-explanation/route";
 import { contractReviewDeepSeekProvider } from "@/lib/ai/contract-review-deepseek-provider";
+import { contractReviewMockProvider } from "@/lib/ai/contract-review-mock-provider";
 import {
   buildContractReviewFullRedactedAiInput,
   CONTRACT_REVIEW_AI_INPUT_LIMITS,
@@ -175,6 +179,10 @@ async function withMockedContractReviewProvider<T>(
     legacyCallCount: 0,
     fullRedactedCallCount: 0,
   };
+  const originalProviderName =
+    process.env.CONTRACT_REVIEW_AI_PROVIDER;
+
+  process.env.CONTRACT_REVIEW_AI_PROVIDER = "deepseek";
 
   try {
     Object.defineProperty(
@@ -235,6 +243,13 @@ async function withMockedContractReviewProvider<T>(
         contractReviewDeepSeekProvider as
           ContractReviewDeepSeekProviderMethodShadow
       ).generateFullRedactedContractReviewExplanation;
+    }
+
+    if (originalProviderName === undefined) {
+      delete process.env.CONTRACT_REVIEW_AI_PROVIDER;
+    } else {
+      process.env.CONTRACT_REVIEW_AI_PROVIDER =
+        originalProviderName;
     }
   }
 }
@@ -531,6 +546,145 @@ function createFullRedactedFixtureInputWithoutRuleSignals():
   });
 }
 
+async function assertContractReviewRuntimeProviderSelection():
+  Promise<void> {
+  const originalProviderName =
+    process.env.CONTRACT_REVIEW_AI_PROVIDER;
+
+  try {
+    delete process.env.CONTRACT_REVIEW_AI_PROVIDER;
+
+    assertContractReviewApiRouteCheck(
+      getServerConfiguredContractReviewProvider() ===
+        contractReviewMockProvider,
+      "expected missing CONTRACT_REVIEW_AI_PROVIDER to select mock",
+    );
+
+    for (const value of [
+      "",
+      "mock",
+      "unsupported",
+      "DEEPSEEK",
+      " deepseek ",
+    ]) {
+      process.env.CONTRACT_REVIEW_AI_PROVIDER = value;
+
+      assertContractReviewApiRouteCheck(
+        getServerConfiguredContractReviewProvider() ===
+          contractReviewMockProvider,
+        "expected non-exact provider selector to use mock",
+      );
+    }
+
+    process.env.CONTRACT_REVIEW_AI_PROVIDER = "deepseek";
+
+    assertContractReviewApiRouteCheck(
+      getServerConfiguredContractReviewProvider() ===
+        contractReviewDeepSeekProvider,
+      "expected exact deepseek selector to use DeepSeek provider",
+    );
+
+    const legacyInput = createFixtureInput();
+    const legacyOutput =
+      await contractReviewMockProvider
+        .generateContractReviewExplanation(legacyInput);
+
+    assertContractReviewApiRouteCheck(
+      legacyOutput.findingExplanations.length ===
+        legacyInput.findings.length &&
+        legacyOutput.findingExplanations.every(
+          (explanation, index) =>
+            explanation.riskId ===
+              legacyInput.findings[index]?.riskId &&
+            explanation.riskLevel ===
+              legacyInput.findings[index]?.riskLevel,
+        ),
+      "expected mock legacy output to preserve L2 risk metadata",
+    );
+
+    const fullRedactedInput =
+      createFullRedactedFixtureInput();
+    const fullRedactedOutput =
+      await contractReviewMockProvider
+        .generateFullRedactedContractReviewExplanation(
+          fullRedactedInput,
+        );
+
+    assertContractReviewApiRouteCheck(
+      fullRedactedOutput.ruleSignalExplanations.length ===
+        fullRedactedInput.ruleSignals.length &&
+        fullRedactedOutput.ruleSignalExplanations.every(
+          (explanation, index) =>
+            explanation.riskId ===
+              fullRedactedInput.ruleSignals[index]?.riskId &&
+            explanation.clauseId ===
+              fullRedactedInput.ruleSignals[index]?.clauseId &&
+            explanation.riskLevel ===
+              fullRedactedInput.ruleSignals[index]?.riskLevel,
+        ),
+      "expected mock full-redacted output to preserve L2 risk metadata",
+    );
+
+    assertContractReviewApiRouteCheck(
+      fullRedactedOutput.supplementalAttentionItems.length === 1 &&
+        fullRedactedOutput.supplementalAttentionItems.every(
+          (item) =>
+            !Object.prototype.hasOwnProperty.call(
+              item,
+              "riskLevel",
+            ),
+        ),
+      "expected supplemental attention items not to expose riskLevel",
+    );
+
+    assertContractReviewApiRouteCheck(
+      !JSON.stringify(fullRedactedOutput).includes(
+        "reasoning_content",
+      ),
+      "expected mock output not to expose reasoning_content",
+    );
+
+    const noSignalsOutput =
+      await contractReviewMockProvider
+        .generateFullRedactedContractReviewExplanation(
+          createFullRedactedFixtureInputWithoutRuleSignals(),
+        );
+
+    assertContractReviewApiRouteCheck(
+      noSignalsOutput.ruleSignalExplanations.length === 0,
+      "expected mock output to allow ruleSignals = []",
+    );
+
+    process.env.CONTRACT_REVIEW_AI_PROVIDER = "mock";
+
+    const routeResponse = await POST(
+      createRequest(JSON.stringify(fullRedactedInput)),
+    );
+    const routeBody = await routeResponse.json() as unknown;
+
+    assertContractReviewApiRouteCheck(
+      routeResponse.status === 200,
+      "expected mock-selected route request to return HTTP 200",
+    );
+
+    assertContractReviewApiRouteCheck(
+      routeResponse.headers.get("cache-control") === "no-store",
+      "expected mock-selected route request to remain no-store",
+    );
+
+    assertContractReviewApiRouteCheck(
+      !JSON.stringify(routeBody).includes("reasoning_content"),
+      "expected mock-selected route response not to expose reasoning_content",
+    );
+  } finally {
+    if (originalProviderName === undefined) {
+      delete process.env.CONTRACT_REVIEW_AI_PROVIDER;
+    } else {
+      process.env.CONTRACT_REVIEW_AI_PROVIDER =
+        originalProviderName;
+    }
+  }
+}
 function expectGuardInvalid(
   value: unknown,
   message: string,
@@ -630,6 +784,8 @@ async function expectRouteError(
 }
 
 export async function runContractReviewApiRouteChecks(): Promise<void> {
+
+  await assertContractReviewRuntimeProviderSelection();
   const validInput = createFixtureInput();
 
   const sanitized =
