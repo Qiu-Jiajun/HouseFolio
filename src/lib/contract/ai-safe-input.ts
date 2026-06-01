@@ -178,6 +178,10 @@ export function redactContractClauseExcerpt(value: string) {
       "$1[姓名已脱敏]",
     )
     .replace(
+      /((?:出租|租赁)给(?:承租人|乙方))[\u4e00-\u9fa5·]{2,4}(?=[，,、；;\s]*(?:联系电话|联系方式|手机号|手机号码|身份证号|证件号码|住址|地址|签字))/g,
+      "$1[姓名已脱敏]",
+    )
+    .replace(
       /((?:微信号?|wxid|QQ号?|联系方式)\s*[:：]\s*)[A-Za-z0-9_-]{4,40}/gi,
       "$1[联系方式已脱敏]",
     )
@@ -203,6 +207,10 @@ export function redactContractClauseExcerpt(value: string) {
     )
     .replace(
       /\d+\s*(?:号楼|栋|幢)\s*\d+\s*单元\s*\d+\s*(?:室|房间号)/g,
+      "[房屋地址已脱敏]",
+    )
+    .replace(
+      /\d+\s*(?:号楼|栋|幢)\s*\d+\s*(?:室|房间号)/g,
       "[房屋地址已脱敏]",
     )
     .replace(

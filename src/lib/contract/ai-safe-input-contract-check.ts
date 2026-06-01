@@ -167,6 +167,44 @@ function assertTextRedacted(
   );
 }
 
+function assertTextPreserved(
+  input: string,
+  expectedText: string,
+  unexpectedMask: string,
+) {
+  const output = redactContractClauseExcerpt(input);
+
+  assertAiSafeInputCheck(
+    output.includes(expectedText),
+    `expected redacted output to preserve ${expectedText}`,
+  );
+
+  assertAiSafeInputCheck(
+    !output.includes(unexpectedMask),
+    `expected redacted output not to include ${unexpectedMask}`,
+  );
+}
+
+function assertTextSegmentsPreserved(
+  input: string,
+  expectedTexts: string[],
+  unexpectedMask: string,
+) {
+  const output = redactContractClauseExcerpt(input);
+
+  expectedTexts.forEach((expectedText) => {
+    assertAiSafeInputCheck(
+      output.includes(expectedText),
+      `expected redacted output to preserve ${expectedText}`,
+    );
+  });
+
+  assertAiSafeInputCheck(
+    !output.includes(unexpectedMask),
+    `expected redacted output not to include ${unexpectedMask}`,
+  );
+}
+
 export function runContractReviewAiSafeInputChecks(): void {
   assertAiSafeInputCheck(
     CONTRACT_REVIEW_AI_INPUT_VERSION === "contract-review-ai-safe-v1",
@@ -199,6 +237,26 @@ export function runContractReviewAiSafeInputChecks(): void {
     "[姓名已脱敏]",
   );
   assertTextRedacted(
+    "出租人姓名：阿不都热依木",
+    "阿不都热依木",
+    "[姓名已脱敏]",
+  );
+  assertTextRedacted(
+    "房屋出租给承租人张三，联系电话为 13800138000。",
+    "张三",
+    "[姓名已脱敏]",
+  );
+  assertTextRedacted(
+    "出租人姓名：王五",
+    "王五",
+    "[姓名已脱敏]",
+  );
+  assertTextRedacted(
+    "联系人：赵六",
+    "赵六",
+    "[姓名已脱敏]",
+  );
+  assertTextRedacted(
     "合同编号：HF-2026-0001",
     "HF-2026-0001",
     "[合同编号已脱敏]",
@@ -213,6 +271,116 @@ export function runContractReviewAiSafeInputChecks(): void {
     "张三",
     "[签字信息已脱敏]",
   );
+  assertTextRedacted(
+    "房屋位于北京市朝阳区测试小区 1 号楼 101 室。",
+    "1 号楼 101 室",
+    "[房屋地址已脱敏]",
+  );
+  assertTextRedacted(
+    "房屋位于北京市朝阳区测试小区1号楼101室。",
+    "1号楼101室",
+    "[房屋地址已脱敏]",
+  );
+  assertTextRedacted(
+    "房屋位于北京市朝阳区测试小区 2 栋 302 室。",
+    "2 栋 302 室",
+    "[房屋地址已脱敏]",
+  );
+  assertTextRedacted(
+    "房屋位于北京市朝阳区测试小区3幢402室。",
+    "3幢402室",
+    "[房屋地址已脱敏]",
+  );
+
+  const observedPrivacyFixture =
+    "第一条：出租人将位于北京市朝阳区测试小区 1 号楼 101 室的房屋出租给承租人张三，联系电话为 13800138000。";
+  const observedPrivacyRedacted =
+    redactContractClauseExcerpt(observedPrivacyFixture);
+
+  [
+    "张三",
+    "1 号楼 101 室",
+    "13800138000",
+  ].forEach((forbiddenText) => {
+    assertAiSafeInputCheck(
+      !observedPrivacyRedacted.includes(forbiddenText),
+      `expected observed privacy fixture to remove ${forbiddenText}`,
+    );
+  });
+
+  [
+    "[姓名已脱敏]",
+    "[房屋地址已脱敏]",
+    "[手机号已脱敏]",
+  ].forEach((expectedMask) => {
+    assertAiSafeInputCheck(
+      observedPrivacyRedacted.includes(expectedMask),
+      `expected observed privacy fixture to include ${expectedMask}`,
+    );
+  });
+
+  assertAiSafeInputCheck(
+    observedPrivacyRedacted.includes("北京市朝阳区测试小区"),
+    "expected observed privacy fixture to preserve coarse locality",
+  );
+
+  [
+    "甲方：负责维修和承担费用。",
+    "甲方：负责维修。",
+    "乙方：承担水电费用。",
+    "乙方：按时付款。",
+    "出租人：应当及时处理故障。",
+    "出租人：负责修缮。",
+    "承租人：承担费用。",
+    "出租人张贴公告。",
+    "出租人陈述如下。",
+    "承租人负责维修和承担费用。",
+    "出租人有权在必要时进入房屋检查。",
+    "承租人应当按时支付租金。",
+  ].forEach((ordinaryPhrase) => {
+    assertTextPreserved(
+      ordinaryPhrase,
+      ordinaryPhrase,
+      "[姓名已脱敏]",
+    );
+  });
+
+  [
+    {
+      input: "出租人负责维修，联系电话为 13800138000。",
+      expectedTexts: ["出租人负责维修"],
+    },
+    {
+      input: "承租人承担费用，联系方式另行约定。",
+      expectedTexts: ["承租人承担费用"],
+    },
+    {
+      input: "甲方及时处理，联系电话为 13800138000。",
+      expectedTexts: ["甲方及时处理"],
+    },
+    {
+      input: "乙方按时付款，联系方式为微信沟通。",
+      expectedTexts: ["乙方按时付款"],
+    },
+  ].forEach(({ input, expectedTexts }) => {
+    assertTextSegmentsPreserved(
+      input,
+      expectedTexts,
+      "[姓名已脱敏]",
+    );
+  });
+
+  [
+    "押金人民币6000元。",
+    "租赁期限为一年。",
+    "每月租金为5000元。",
+  ].forEach((ordinaryNumberPhrase) => {
+    assertTextPreserved(
+      ordinaryNumberPhrase,
+      ordinaryNumberPhrase,
+      "[房屋地址已脱敏]",
+    );
+  });
 
   const canonicalPolicyBasis = getCanonicalLegalBasisEntry(
     "lease_stability_policy_clearance_context",
@@ -575,6 +743,51 @@ export function runContractReviewAiSafeInputChecks(): void {
       `expected full redacted text to include ${expectedMask}`,
     );
   });
+
+  const observedFullRedactedInput =
+    buildContractReviewFullRedactedAiInput(
+      buildContractReviewModel({
+        clauses: [
+          {
+            id: "clause-1",
+            title: "条款 1",
+            text: observedPrivacyFixture,
+          },
+        ],
+        findings: [],
+        resolvedLegalBasisEntries: [],
+      }),
+    );
+  const observedFullRedactedText =
+    observedFullRedactedInput.redactedClauses[0]
+      ?.redactedClauseText ?? "";
+
+  [
+    "张三",
+    "1 号楼 101 室",
+    "13800138000",
+  ].forEach((forbiddenText) => {
+    assertAiSafeInputCheck(
+      !observedFullRedactedText.includes(forbiddenText),
+      `expected observed full redacted text to remove ${forbiddenText}`,
+    );
+  });
+
+  [
+    "[姓名已脱敏]",
+    "[房屋地址已脱敏]",
+    "[手机号已脱敏]",
+  ].forEach((expectedMask) => {
+    assertAiSafeInputCheck(
+      observedFullRedactedText.includes(expectedMask),
+      `expected observed full redacted text to include ${expectedMask}`,
+    );
+  });
+
+  assertAiSafeInputCheck(
+    observedFullRedactedText.includes("北京市朝阳区测试小区"),
+    "expected observed full redacted text to preserve coarse locality",
+  );
 
   assertHasExactKeys(
     emptyRuleSignalsInput,

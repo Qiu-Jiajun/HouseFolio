@@ -1221,6 +1221,97 @@ export async function runContractReviewApiRouteChecks(): Promise<void> {
     "expected full-redacted prompt boundary neutralization",
   );
 
+  const observedPrivacyFixture =
+    "第一条：出租人将位于北京市朝阳区测试小区 1 号楼 101 室的房屋出租给承租人张三，联系电话为 13800138000。";
+  const observedLeakyFullRedactedInput =
+    createFullRedactedFixtureInput({
+      redactedClauses: [
+        createFullRedactedFixtureClause({
+          text: observedPrivacyFixture,
+        }),
+      ],
+      ruleSignals: [],
+    });
+  const sanitizedObservedFullRedacted =
+    parseAndSanitizeContractReviewFullRedactedAiInput(
+      observedLeakyFullRedactedInput,
+    );
+  const sanitizedObservedText =
+    sanitizedObservedFullRedacted.redactedClauses[0]
+      ?.redactedClauseText ?? "";
+
+  [
+    "张三",
+    "1 号楼 101 室",
+    "13800138000",
+  ].forEach((forbiddenText) => {
+    assertContractReviewApiRouteCheck(
+      !sanitizedObservedText.includes(forbiddenText),
+      `expected server-side full-redacted sanitize to remove ${forbiddenText}`,
+    );
+  });
+
+  [
+    "[姓名已脱敏]",
+    "[房屋地址已脱敏]",
+    "[手机号已脱敏]",
+  ].forEach((expectedMask) => {
+    assertContractReviewApiRouteCheck(
+      sanitizedObservedText.includes(expectedMask),
+      `expected server-side full-redacted sanitize to include ${expectedMask}`,
+    );
+  });
+
+  assertContractReviewApiRouteCheck(
+    sanitizedObservedText.includes("北京市朝阳区测试小区"),
+    "expected server-side full-redacted sanitize to preserve coarse locality",
+  );
+
+  await withMockedContractReviewProvider(
+    createLegacyMockOutput(createFixtureInput()),
+    createFullRedactedMockOutput(sanitizedObservedFullRedacted),
+    async (state) => {
+      const response = await POST(
+        createRequest(
+          JSON.stringify(observedLeakyFullRedactedInput),
+        ),
+      );
+
+      assertContractReviewApiRouteCheck(
+        response.status === 200,
+        `expected observed full-redacted route HTTP 200, received ${response.status}`,
+      );
+
+      assertContractReviewApiRouteCheck(
+        state.legacyCallCount === 0 &&
+          state.fullRedactedCallCount === 1,
+        "expected observed full-redacted payload to call only full-redacted provider",
+      );
+
+      const capturedObservedText =
+        state.capturedFullRedactedInput
+          ?.redactedClauses[0]
+          ?.redactedClauseText ?? "";
+
+      [
+        "张三",
+        "1 号楼 101 室",
+        "13800138000",
+      ].forEach((forbiddenText) => {
+        assertContractReviewApiRouteCheck(
+          !capturedObservedText.includes(forbiddenText),
+          `expected observed provider input to remove ${forbiddenText}`,
+        );
+      });
+
+      assertContractReviewApiRouteCheck(
+        JSON.stringify(state.capturedFullRedactedInput) ===
+          JSON.stringify(sanitizedObservedFullRedacted),
+        "expected observed full-redacted provider input to be server-sanitized",
+      );
+    },
+  );
+
   const fullRedactedNoSignals =
     parseAndSanitizeContractReviewFullRedactedAiInput(
       createFullRedactedFixtureInputWithoutRuleSignals(),
