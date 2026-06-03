@@ -4,10 +4,18 @@
 
 本文档是 HouseFolio Phase 10B-1-2B-1-F0-4B-2 的 docs-only 最终 bootstrap 执行计划。
 
+H1 修正说明：
+
+    经本机只读核验，D:\Python\python.exe 为 Python 3.13.7 x64。
+    后续先使用现有 Python 3.13.7 做隔离 venv 兼容性探针。
+    Python 3.12.x x64 仅在明确 cp313 兼容性失败时作为 side-by-side fallback 单独评审。
+    当前不下载、不安装 Python 3.12。
+
 它用于：
 
     固化独立 scratch conversion workspace 的后续创建边界
-    固化 Python 3.12 primary candidate 与 Python 3.13 secondary candidate
+    固化现有 Python 3.13.7 x64 作为第一优先兼容性探针
+    将 Python 3.12.x x64 side-by-side 保留为仅在必要时启用的 fallback
     固化 PaddleOCR ONNX 官方插件路线
     固化 PaddleX、PaddlePaddle 与 Paddle2ONNX 已确认 artifact ledger
     固化代理 allowlist 缺口
@@ -124,9 +132,11 @@ Phase 10B-1-2B-1-F0-4B-1-F0-1 已确认：
 
 Windows CPU conversion spike 候选步骤：
 
-    隔离 Python 3.12.x x64
+    现有 Python 3.13.7 x64
+    → 使用明确路径 D:\Python\python.exe
     → 独立 conversion scratch
     → 隔离 venv
+    → 先观察 cp313 环境中的 PaddleX plugin 真实解析结果
     → 受控安装 PaddlePaddle CPU
     → 受控安装 PaddleX
     → paddlex --install paddle2onnx
@@ -177,59 +187,90 @@ fallback：
 
 # 4. Python 策略
 
-## 4.1 Primary candidate
-
-    Python
-    → 3.12.x x64 isolated
-
-原因：
-
-    Paddle2ONNX 2.1.0
-    → 存在 Windows cp312 wheel
-
-    PaddlePaddle 3.3.1
-    → 存在 Windows cp312 wheel
-
-    独立 scratch
-    → 可以避免污染系统 Python
-
-状态：
-
-    PRIMARY_CANDIDATE
-
-注意：
-
-    仍未批准安装 Python 3.12。
-    仍未批准创建 venv。
-
-## 4.2 Secondary candidate
+## 4.1 第一优先兼容性探针
 
 当前本机：
 
-    Python
+    Python executable
     → D:\Python\python.exe
-    → 3.13.7 x64
 
-支持证据：
+    Python version
+    → 3.13.7
 
-    PaddleX 3.6.1
-    → 支持 Python 3.13
+    Architecture
+    → 64bit AMD64
 
-    PaddlePaddle 3.3.1
-    → 存在 Windows cp313 wheel
+已通过 PowerShell 只读核验：
 
-阻塞：
+    python --version
+    → Python 3.13.7
 
-    Paddle2ONNX 2.1.0
-    → 未列出 Windows cp313 wheel
+    sys.executable
+    → D:\Python\python.exe
 
 状态：
 
-    SECONDARY_CANDIDATE
+    PRIMARY_COMPATIBILITY_PROBE
 
-不得作为唯一执行环境。
+处理原则：
 
-## 4.3 系统 Python 保护规则
+    后续优先使用明确路径 D:\Python\python.exe
+    在独立 scratch 中创建隔离 venv
+    不依赖 WindowsApps alias
+    不安装依赖到系统 Python
+    不修改 PATH
+    不修改 PowerShell profile
+    先观察 PaddleX plugin 在 cp313 环境中的真实解析结果
+
+## 4.2 Python 3.12 fallback
+
+候选：
+
+    Python 3.12.x x64 side-by-side
+
+状态：
+
+    FALLBACK_ONLY_IF_REQUIRED
+
+只有在受控 bootstrap 中出现明确 cp313 兼容性失败时，才允许：
+
+    单独 docs-only 评审
+    side-by-side 安装 Python 3.12
+    指定独立安装目录
+    避免覆盖 Python 3.13
+    避免修改 PATH
+    使用独立 scratch venv
+
+不得现在下载或安装 Python 3.12。
+
+## 4.3 WindowsApps alias
+
+where.exe python 同时显示：
+
+    D:\Python\python.exe
+    C:\Users\renzh\AppData\Local\Microsoft\WindowsApps\python.exe
+
+当前：
+
+    D:\Python\python.exe
+    → 排在第一位
+    → python --version 正确返回 3.13.7
+
+因此：
+
+    当前 alias 不构成阻塞
+    不需要修改 PATH
+    不需要关闭 Windows App Execution Alias
+
+后续脚本应优先使用：
+
+    D:\Python\python.exe
+
+不得依赖模糊的：
+
+    python
+
+## 4.4 系统 Python 保护规则
 
 禁止：
 
@@ -243,9 +284,6 @@ fallback：
 所有转换依赖必须：
 
     安装到独立 scratch venv
-
----
-
 # 5. 已确认 artifact ledger
 
 ## 5.1 PaddleX
@@ -327,11 +365,13 @@ fallback：
 
 因此：
 
-    Python 3.12.x x64
-    → primary candidate
+    现有 D:\Python\python.exe
+    → Python 3.13.7 x64
+    → PRIMARY_COMPATIBILITY_PROBE
 
-    Python 3.13.7 x64
-    → secondary candidate
+    Python 3.12.x x64 side-by-side
+    → FALLBACK_ONLY_IF_REQUIRED
+    → 仅在明确 cp313 兼容性失败时单独评审
 
 ---
 
@@ -553,8 +593,9 @@ fallback：
     再次核验正式仓库 clean
     核验 browser-local scratch 完整
     核验 conversion scratch 不存在
-    核验 Python 3.12 是否存在
-    决定是否需要单独安装 Python 3.12
+    核验 D:\Python\python.exe 是否仍为 Python 3.13.7 x64
+    核验是否可优先用现有 Python 3.13.7 创建隔离 venv
+    只有明确 cp313 兼容性失败时，才决定是否单独规划 Python 3.12 side-by-side 安装
     决定 stable / nightly PaddlePaddle 路线
     决定 validation-only package 范围
     决定代理 allowlist 是否已满足
@@ -599,9 +640,10 @@ fallback：
 
 目标：
 
-    创建隔离 Python 3.12 venv
+    优先使用 D:\Python\python.exe 创建隔离 Python 3.13 venv
     升级或锁定 pip
     记录 Python、pip 与 venv evidence
+    只有明确 cp313 兼容性失败时，才另行评审 Python 3.12 side-by-side fallback
 
 禁止：
 
@@ -733,7 +775,7 @@ fallback：
     → PROVISIONALLY_DEFINED
 
     T1 Python strategy
-    → READY_FOR_F0_4C_0
+    → READY_FOR_F0_4C_0_WITH_PY313_PRIMARY_PROBE
 
     T2 PaddleX
     → READY_FOR_F0_4C_0
@@ -812,11 +854,12 @@ fallback：
     PHASE_10B_1_2B_1_F0_4B_2_RESULT
     → PLAN_READY_WITH_GATES
 
-    PYTHON_PRIMARY_CANDIDATE
-    → Python 3.12.x x64 isolated
+    PYTHON_PRIMARY_COMPATIBILITY_PROBE
+    → existing D:\Python\python.exe
+    → Python 3.13.7 x64
 
-    PYTHON_SECONDARY_CANDIDATE
-    → existing Python 3.13.7 x64
+    PYTHON_FALLBACK_ONLY_IF_REQUIRED
+    → Python 3.12.x x64 side-by-side isolated
 
     PREFERRED_OFFICIAL_ROUTE
     → PaddleOCR ONNX docs
