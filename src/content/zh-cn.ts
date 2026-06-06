@@ -456,6 +456,7 @@ export const zhCN = {
       "overallRating": "看房后总体评分",
       "preVisitMemo": "看房前提醒",
       "postVisitImpression": "看房后感受",
+      "plannedViewingAt": "预计看房时间",
       "viewedAt": "实际看房时间"
     },
     "placeholders": {
@@ -542,8 +543,13 @@ export const zhCN = {
       "recordSummary": "提醒或感受",
       "emptyMemo": "还没有填写看房提醒或感受。",
       "viewedAt": "看房时间",
+      "plannedViewingAt": "预计看房时间",
+      "actualViewedAt": "实际看房时间",
+      "originalPlannedViewingAt": "原计划看房时间",
+      "noPlannedViewingAt": "尚未设置预计看房时间",
+      "noActualViewedAt": "尚未记录实际看房时间",
       "noViewedAt": "尚未记录实际看房时间",
-      "viewedAtPickerLabel": "选择实际看房时间",
+      "viewedAtPickerLabel": "选择看房时间",
       "viewedAtTimeLabel": "具体时间",
       "viewedAtDateLabel": "看房日期",
       "applyViewedAt": "确认时间",
@@ -568,6 +574,7 @@ export const zhCN = {
         "5 - 很高"
       ],
       "photoSummaryPending": "本机首图来自该房源详情页的照片资料。复杂照片管理继续在详情页完成。",
+      "photoSummaryPlanned": "本机首图来自该房源详情页的照片资料。预计看房时间：",
       "photoSummaryViewed": "本机首图来自该房源详情页的照片资料。已记录看房时间：",
       "fields": {
         "status": "状态",
@@ -575,6 +582,7 @@ export const zhCN = {
         "overallRating": "看房后总体评分",
         "preVisitMemo": "看房前提醒",
         "postVisitImpression": "看房后感受",
+        "plannedViewingAt": "预计看房时间",
         "viewedAt": "实际看房时间"
       },
       "placeholders": {

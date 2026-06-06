@@ -143,12 +143,46 @@ function getDecisionStatusLabel(listing: Listing): string | null {
   return statusText[listing.status];
 }
 
-function formatViewedAt(value: string | undefined): string {
-  if (!value) {
-    return copy.card.noViewedAt;
+function formatDateTime(value: string | undefined, emptyLabel: string): string {
+  return value ? value.replace("T", " ") : emptyLabel;
+}
+
+function getCardTimeState(
+  record: ListingViewingRecord | null,
+  group: ViewingGroup,
+): {
+  emptyLabel: string;
+  field: "plannedViewingAt" | "viewedAt";
+  label: string;
+  value: string | undefined;
+} {
+  if (group === "viewed") {
+    return {
+      emptyLabel: copy.card.noActualViewedAt,
+      field: "viewedAt",
+      label: copy.card.actualViewedAt,
+      value: record?.viewedAt,
+    };
   }
 
-  return value.replace("T", " ");
+  if (group === "rejected" && record?.viewedAt) {
+    return {
+      emptyLabel: copy.card.noActualViewedAt,
+      field: "viewedAt",
+      label: copy.card.actualViewedAt,
+      value: record.viewedAt,
+    };
+  }
+
+  return {
+    emptyLabel: copy.card.noPlannedViewingAt,
+    field: "plannedViewingAt",
+    label:
+      group === "rejected"
+        ? copy.card.originalPlannedViewingAt
+        : copy.card.plannedViewingAt,
+    value: record?.plannedViewingAt,
+  };
 }
 
 function getCurrentLocalDateTimeMinute(): string {
@@ -279,10 +313,14 @@ function ViewingRating({
 }
 
 function ViewingTimeControl({
+  emptyLabel,
+  label,
   value,
   onChange,
   onOpenChange,
 }: {
+  emptyLabel: string;
+  label: string;
   value: string | undefined;
   onChange: (value: string | undefined) => void;
   onOpenChange?: (isOpen: boolean) => void;
@@ -317,7 +355,8 @@ function ViewingTimeControl({
         className="block w-full rounded-2xl border border-[#d9cdb9] bg-white/80 px-5 py-4 text-left text-sm text-[#5f5a50] transition hover:border-[#b7346d] hover:bg-white"
         aria-expanded={isOpen}
       >
-        {formatViewedAt(value)}
+        <span className="block text-xs text-[#82786a]">{label}</span>
+        <span className="mt-1 block">{formatDateTime(value, emptyLabel)}</span>
       </button>
 
       {isOpen ? (
@@ -523,6 +562,7 @@ export function ViewingLogWorkbench() {
   const [overallRating, setOverallRating] = useState("");
   const [preVisitMemo, setPreVisitMemo] = useState("");
   const [postVisitImpression, setPostVisitImpression] = useState("");
+  const [plannedViewingAt, setPlannedViewingAt] = useState("");
   const [viewedAt, setViewedAt] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [openTimeListingId, setOpenTimeListingId] = useState<string | null>(
@@ -588,6 +628,7 @@ export function ViewingLogWorkbench() {
     setOverallRating(record?.overallRating?.toString() ?? "");
     setPreVisitMemo(record?.preVisitMemo ?? "");
     setPostVisitImpression(record?.postVisitImpression ?? "");
+    setPlannedViewingAt(record?.plannedViewingAt ?? "");
     setViewedAt(record?.viewedAt ?? "");
     setSavedMessage("");
   }
@@ -615,13 +656,14 @@ export function ViewingLogWorkbench() {
     setRecords(getListingViewingRecords());
   }
 
-  function handleCardViewedAtChange(
+  function handleCardTimeChange(
     listing: Listing,
+    field: "plannedViewingAt" | "viewedAt",
     value: string | undefined,
   ) {
     saveListingViewingRecord({
       listingId: listing.id,
-      viewedAt: value,
+      [field]: value,
     });
 
     setRecords(getListingViewingRecords());
@@ -693,6 +735,7 @@ export function ViewingLogWorkbench() {
       overallRating: toOptionalRating(overallRating),
       preVisitMemo: preVisitMemo.trim() || undefined,
       postVisitImpression: postVisitImpression.trim() || undefined,
+      plannedViewingAt: plannedViewingAt || undefined,
       viewedAt: viewedAt || undefined,
     });
 
@@ -818,6 +861,7 @@ export function ViewingLogWorkbench() {
               <div className="space-y-4 overflow-visible">
                 {section.rows.map(({ listing, record, group }) => {
                   const decisionStatusLabel = getDecisionStatusLabel(listing);
+                  const timeState = getCardTimeState(record, group);
 
                   return (
                     <article
@@ -834,9 +878,15 @@ export function ViewingLogWorkbench() {
                           title={listing.title}
                         />
                         <ViewingTimeControl
-                          value={record?.viewedAt}
+                          emptyLabel={timeState.emptyLabel}
+                          label={timeState.label}
+                          value={timeState.value}
                           onChange={(value) =>
-                            handleCardViewedAtChange(listing, value)
+                            handleCardTimeChange(
+                              listing,
+                              timeState.field,
+                              value,
+                            )
                           }
                           onOpenChange={(isOpen) =>
                             setOpenTimeListingId(isOpen ? listing.id : null)
@@ -983,7 +1033,9 @@ export function ViewingLogWorkbench() {
               <p className="text-sm leading-6 text-[#6f675c]">
                 {selectedRecord?.viewedAt
                   ? `${copy.drawer.photoSummaryViewed}${selectedRecord.viewedAt}`
-                  : copy.drawer.photoSummaryPending}
+                  : selectedRecord?.plannedViewingAt
+                    ? `${copy.drawer.photoSummaryPlanned}${selectedRecord.plannedViewingAt}`
+                    : copy.drawer.photoSummaryPending}
               </p>
             </div>
 
@@ -1021,6 +1073,18 @@ export function ViewingLogWorkbench() {
                   onChange={setOverallRating}
                 />
               </div>
+
+              <label className="block">
+                <span className="text-sm text-[#5d584d]">
+                  {copy.drawer.fields.plannedViewingAt}
+                </span>
+                <input
+                  type="datetime-local"
+                  value={plannedViewingAt}
+                  onChange={(event) => setPlannedViewingAt(event.target.value)}
+                  className="mt-2 w-full rounded-2xl border border-[#ddd2c0] bg-white px-4 py-3 text-sm text-[#282417] outline-none focus:border-[#8a8f55] focus:ring-2 focus:ring-[#d8deb5]"
+                />
+              </label>
 
               <label className="block">
                 <span className="text-sm text-[#5d584d]">

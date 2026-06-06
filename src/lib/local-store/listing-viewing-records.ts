@@ -50,6 +50,7 @@ function normalizeListingViewingRecord(
     overallRating: normalizeRating(value.overallRating),
     preVisitMemo: normalizeOptionalString(value.preVisitMemo),
     postVisitImpression: normalizeOptionalString(value.postVisitImpression),
+    plannedViewingAt: normalizeOptionalString(value.plannedViewingAt),
     viewedAt: normalizeOptionalString(value.viewedAt),
     updatedAt:
       normalizeOptionalString(value.updatedAt) ?? new Date(0).toISOString(),
@@ -144,6 +145,10 @@ function mergeListingViewingRecord(
 
   if ("postVisitImpression" in nextRecord) {
     mergedRecord.postVisitImpression = nextRecord.postVisitImpression;
+  }
+
+  if ("plannedViewingAt" in nextRecord) {
+    mergedRecord.plannedViewingAt = nextRecord.plannedViewingAt;
   }
 
   if ("viewedAt" in nextRecord) {

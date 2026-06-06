@@ -63,6 +63,7 @@ export function ListingViewingRecordPanel({
   const [overallRating, setOverallRating] = useState("");
   const [preVisitMemo, setPreVisitMemo] = useState("");
   const [postVisitImpression, setPostVisitImpression] = useState("");
+  const [plannedViewingAt, setPlannedViewingAt] = useState("");
   const [viewedAt, setViewedAt] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
 
@@ -73,6 +74,7 @@ export function ListingViewingRecordPanel({
     setOverallRating(record?.overallRating?.toString() ?? "");
     setPreVisitMemo(record?.preVisitMemo ?? "");
     setPostVisitImpression(record?.postVisitImpression ?? "");
+    setPlannedViewingAt(record?.plannedViewingAt ?? "");
     setViewedAt(record?.viewedAt ?? "");
     setSavedMessage("");
   }, [listingId]);
@@ -86,6 +88,7 @@ export function ListingViewingRecordPanel({
       overallRating: toOptionalRating(overallRating),
       preVisitMemo: preVisitMemo.trim() || undefined,
       postVisitImpression: postVisitImpression.trim() || undefined,
+      plannedViewingAt: plannedViewingAt || undefined,
       viewedAt: viewedAt || undefined,
     });
 
@@ -118,6 +121,18 @@ export function ListingViewingRecordPanel({
             onChange={setOverallRating}
           />
         </div>
+
+        <label className="block">
+          <span className="text-sm text-slate-300">
+            {copy.fields.plannedViewingAt}
+          </span>
+          <input
+            type="datetime-local"
+            value={plannedViewingAt}
+            onChange={(event) => setPlannedViewingAt(event.target.value)}
+            className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
+          />
+        </label>
 
         <label className="block">
           <span className="text-sm text-slate-300">

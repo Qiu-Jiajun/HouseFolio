@@ -24,6 +24,7 @@ const wrappedDataJson = JSON.stringify({
       {
         listingId: "listing-001",
         expectedRating: 4,
+        plannedViewingAt: "2026-06-06T09:00",
         updatedAt: new Date().toISOString(),
       },
     ],

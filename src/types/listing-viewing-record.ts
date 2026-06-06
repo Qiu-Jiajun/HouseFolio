@@ -4,6 +4,7 @@ export type ListingViewingRecord = {
   overallRating?: number;
   preVisitMemo?: string;
   postVisitImpression?: string;
+  plannedViewingAt?: string;
   viewedAt?: string;
   updatedAt: string;
 };
