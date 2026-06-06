@@ -542,6 +542,8 @@ export const zhCN = {
       "commute": "通勤摘要",
       "recordSummary": "提醒或感受",
       "emptyMemo": "还没有填写看房提醒或感受。",
+      "expandMemo": "展开全文",
+      "collapseMemo": "收起",
       "viewedAt": "看房时间",
       "plannedViewingAt": "预计看房时间",
       "actualViewedAt": "实际看房时间",

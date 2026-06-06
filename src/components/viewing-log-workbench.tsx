@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ListingCardCoverPhoto } from "@/components/listing-card-cover-photo";
 import { zhCN } from "@/content/zh-cn";
 import { getAllClientListings } from "@/lib/local-store/listing-lookup";
@@ -473,23 +473,53 @@ function CardMemoControl({
   onChange: (value: string | undefined) => void;
 }) {
   const [value, setValue] = useState(getCardMemoValue(record, group));
+  const [isExpanded, setIsExpanded] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setValue(getCardMemoValue(record, group));
+    setIsExpanded(false);
   }, [group, record]);
 
+  useEffect(() => {
+    const textarea = textareaRef.current;
+
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = isExpanded ? "auto" : "4.5rem";
+
+    if (isExpanded) {
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [isExpanded, value]);
+
   return (
-    <label className="block rounded-2xl bg-white/80 p-4">
-      <span className="text-xs text-[#82786a]">{copy.card.recordSummary}</span>
+    <div className="block rounded-2xl border border-[#eadfcd] bg-white/85 p-4 transition focus-within:border-[#d8cdbc]">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs text-[#82786a]">{copy.card.recordSummary}</span>
+        <button
+          type="button"
+          onClick={() => setIsExpanded((current) => !current)}
+          className="rounded-full border border-[#d8cdbc] bg-[#fffaf2] px-3 py-1 text-xs font-medium text-[#6a5f50] transition hover:bg-[#f4eadb]"
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? copy.card.collapseMemo : copy.card.expandMemo}
+        </button>
+      </div>
       <textarea
+        ref={textareaRef}
         value={value}
         onChange={(event) => setValue(event.target.value)}
+        onClick={() => setIsExpanded(true)}
+        onFocus={() => setIsExpanded(true)}
         onBlur={() => onChange(value.trim() || undefined)}
-        rows={2}
+        rows={3}
         placeholder={copy.card.emptyMemo}
-        className="mt-2 min-h-12 w-full resize-none bg-transparent text-sm leading-6 text-[#514b40] outline-none placeholder:text-[#6f675c]"
+        className="mt-2 w-full resize-none overflow-hidden bg-transparent text-sm leading-6 text-[#514b40] outline-none placeholder:text-[#6f675c]"
       />
-    </label>
+    </div>
   );
 }
 
@@ -939,24 +969,7 @@ export function ViewingLogWorkbench() {
                           {listing.district} / {listing.addressHint}
                         </p>
 
-                        <div className="mt-5 grid gap-3 md:grid-cols-3">
-                          <div className="rounded-2xl bg-white/80 p-4">
-                            <p className="text-xs text-[#82786a]">
-                              {copy.card.rent}
-                            </p>
-                            <p className="mt-2 text-xl font-semibold text-[#272318]">
-                              {zhCN.common.currencyCny}
-                              {listing.rent}
-                            </p>
-                          </div>
-                          <div className="rounded-2xl bg-white/80 p-4">
-                            <p className="text-xs text-[#82786a]">
-                              {copy.card.commute}
-                            </p>
-                            <p className="mt-2 text-xl font-semibold text-[#272318]">
-                              {formatCommute(listing)}
-                            </p>
-                          </div>
+                        <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1fr)_13rem] lg:items-start">
                           <CardMemoControl
                             group={group}
                             record={record}
@@ -964,6 +977,25 @@ export function ViewingLogWorkbench() {
                               handleCardMemoChange(listing, record, value)
                             }
                           />
+                          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                            <div className="rounded-2xl border border-[#eadfcd] bg-white/75 px-4 py-3">
+                              <p className="text-xs text-[#82786a]">
+                                {copy.card.rent}
+                              </p>
+                              <p className="mt-1 text-base font-semibold leading-6 text-[#272318]">
+                                {zhCN.common.currencyCny}
+                                {listing.rent}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border border-[#eadfcd] bg-white/75 px-4 py-3">
+                              <p className="text-xs text-[#82786a]">
+                                {copy.card.commute}
+                              </p>
+                              <p className="mt-1 text-base font-semibold leading-6 text-[#272318]">
+                                {formatCommute(listing)}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

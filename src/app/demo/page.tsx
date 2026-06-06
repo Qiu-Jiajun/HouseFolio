@@ -161,21 +161,21 @@ export default function DemoPage() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="rounded-2xl bg-white/[0.04] p-3">
-                        <p className="text-xs text-slate-500">租金</p>
-                        <p className="mt-1 text-sm font-semibold text-white">
+                      <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-3">
+                        <p className="text-xs text-[#7a7163]">租金</p>
+                        <p className="mt-1 text-sm font-semibold text-[#242114]">
                           {formatRent(listing.rentMonthly)}
                         </p>
                       </div>
-                      <div className="rounded-2xl bg-white/[0.04] p-3">
-                        <p className="text-xs text-slate-500">面积</p>
-                        <p className="mt-1 text-sm font-semibold text-white">
+                      <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-3">
+                        <p className="text-xs text-[#7a7163]">面积</p>
+                        <p className="mt-1 text-sm font-semibold text-[#242114]">
                           {listing.areaSqm}㎡
                         </p>
                       </div>
-                      <div className="rounded-2xl bg-white/[0.04] p-3">
-                        <p className="text-xs text-slate-500">户型</p>
-                        <p className="mt-1 text-sm font-semibold text-white">
+                      <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-3">
+                        <p className="text-xs text-[#7a7163]">户型</p>
+                        <p className="mt-1 text-sm font-semibold text-[#242114]">
                           {listing.layout}
                         </p>
                       </div>
@@ -237,42 +237,42 @@ export default function DemoPage() {
                     </div>
 
                     <div className="grid gap-3 text-sm leading-6 md:grid-cols-2">
-                      <div className="rounded-2xl bg-white/[0.04] p-4">
-                        <p className="text-xs font-semibold text-slate-400">主要优势</p>
-                        <p className="mt-2 text-slate-200">{listing.primaryStrength}</p>
+                      <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-4">
+                        <p className="text-xs font-semibold text-[#6f675c]">主要优势</p>
+                        <p className="mt-2 text-[#514a3f]">{listing.primaryStrength}</p>
                       </div>
-                      <div className="rounded-2xl bg-white/[0.04] p-4">
-                        <p className="text-xs font-semibold text-slate-400">主要短板</p>
-                        <p className="mt-2 text-slate-200">{listing.primaryWeakness}</p>
+                      <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-4">
+                        <p className="text-xs font-semibold text-[#6f675c]">主要短板</p>
+                        <p className="mt-2 text-[#514a3f]">{listing.primaryWeakness}</p>
                       </div>
                     </div>
 
                     {aiSummary ? (
-                      <div className="mt-auto rounded-2xl border border-violet-300/20 bg-violet-300/[0.07] p-4">
+                      <div className="mt-auto rounded-2xl border border-[#d8c7e6] bg-[#f5effa] p-4">
                         <div className="flex items-center justify-between gap-3">
-                          <p className="text-sm font-semibold text-violet-100">
+                          <p className="text-sm font-semibold text-[#5a3f73]">
                             L3 解释预览
                           </p>
-                          <span className="rounded-full bg-violet-300/10 px-3 py-1 text-xs text-violet-100">
+                          <span className="rounded-full border border-[#cbb2df] bg-[#fffaff] px-3 py-1 text-xs font-medium text-[#654d7a]">
                             预生成文本
                           </span>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-violet-50/90">
+                        <p className="mt-3 text-sm leading-6 text-[#4f4558]">
                           {aiSummary.summary}
                         </p>
 
                         <div className="mt-4">
-                          <p className="text-xs font-semibold text-violet-100/80">
+                          <p className="text-xs font-semibold text-[#6a527c]">
                             看房 checklist
                           </p>
-                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-violet-50/80">
+                          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-[#55485f]">
                             {aiSummary.checklist.map((item) => (
                               <li key={item}>{item}</li>
                             ))}
                           </ul>
                         </div>
 
-                        <p className="mt-4 text-xs leading-5 text-violet-100/70">
+                        <p className="mt-4 text-xs leading-5 text-[#6a5a72]">
                           {aiSummary.disclaimer}
                         </p>
                       </div>
@@ -284,15 +284,15 @@ export default function DemoPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-violet-300/20 bg-violet-300/[0.06] p-6">
+        <section className="rounded-3xl border border-[#d8c7e6] bg-[#f6f0fa] p-6 shadow-sm">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-violet-200">L3 AI 解释层演示</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
+              <p className="text-sm font-semibold text-[#6b5582]">L3 AI 解释层演示</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#2a2231]">
                 把结构化结果翻译成人话建议
               </h2>
             </div>
-            <p className="max-w-2xl text-sm leading-6 text-violet-50/80">
+            <p className="max-w-2xl text-sm leading-6 text-[#5a5060]">
               本区域展示的是预生成演示文本，用于说明未来 AI 辅助解释的产品方向。当前页面不调用任何模型服务。
             </p>
           </div>
@@ -306,19 +306,19 @@ export default function DemoPage() {
               return (
                 <div
                   key={item.listingId}
-                  className="rounded-2xl border border-violet-300/20 bg-slate-950/50 p-5"
+                  className="rounded-2xl border border-[#d8c7e6] bg-[#fffaff] p-5"
                 >
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-[#2a2231]">
                     {listing?.title ?? "演示房源"}
                   </p>
-                  <p className="mt-3 text-sm leading-6 text-violet-50/85">
+                  <p className="mt-3 text-sm leading-6 text-[#4f4558]">
                     {item.summary}
                   </p>
                   <div className="mt-4">
-                    <p className="text-xs font-semibold text-violet-100/80">
+                    <p className="text-xs font-semibold text-[#6a527c]">
                       Trade-off
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-violet-50/75">
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-[#55485f]">
                       {item.tradeoffs.map((tradeoff) => (
                         <li key={tradeoff}>{tradeoff}</li>
                       ))}
