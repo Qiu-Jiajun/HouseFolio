@@ -281,9 +281,11 @@ function ViewingRating({
 function ViewingTimeControl({
   value,
   onChange,
+  onOpenChange,
 }: {
   value: string | undefined;
   onChange: (value: string | undefined) => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const initialDateTime = value ?? getCurrentLocalDateTimeMinute();
@@ -296,17 +298,19 @@ function ViewingTimeControl({
     setDraftDate(nextDateTime.slice(0, 10));
     setDraftTime(nextDateTime.slice(11, 16));
     setIsOpen(true);
+    onOpenChange?.(true);
   }
 
   function applyPickerValue() {
     if (draftDate && draftTime) {
       onChange(`${draftDate}T${draftTime}`);
       setIsOpen(false);
+      onOpenChange?.(false);
     }
   }
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         type="button"
         onClick={openPicker}
@@ -317,7 +321,7 @@ function ViewingTimeControl({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-full z-20 mt-2 w-72 rounded-2xl border border-[#d8cdbc] bg-[#fffaf2] p-4 shadow-[0_18px_55px_rgba(74,57,35,0.20)]">
+        <div className="absolute left-0 top-full z-[80] mt-2 w-72 max-w-[calc(100vw-3rem)] rounded-2xl border border-[#d8cdbc] bg-[#fffaf2] p-4 shadow-[0_18px_55px_rgba(74,57,35,0.20)]">
           <label className="block">
             <span className="text-xs font-medium text-[#5d584d]">
               {copy.card.viewedAtTimeLabel}
@@ -354,6 +358,7 @@ function ViewingTimeControl({
               onClick={() => {
                 onChange(undefined);
                 setIsOpen(false);
+                onOpenChange?.(false);
               }}
               className="rounded-full border border-[#d8cdbc] bg-white px-4 py-2 text-xs font-medium text-[#4f5131]"
             >
@@ -520,6 +525,9 @@ export function ViewingLogWorkbench() {
   const [postVisitImpression, setPostVisitImpression] = useState("");
   const [viewedAt, setViewedAt] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
+  const [openTimeListingId, setOpenTimeListingId] = useState<string | null>(
+    null,
+  );
 
   function refreshData() {
     setListings(getAllClientListings());
@@ -787,12 +795,12 @@ export function ViewingLogWorkbench() {
           </p>
         </section>
       ) : (
-        <section className="space-y-6">
+        <section className="space-y-6 overflow-visible">
           {groupedRows.map((section) => (
             <div
               key={section.group}
               className={[
-                "rounded-[2rem] border p-4 sm:p-5",
+                "overflow-visible rounded-[2rem] border p-4 sm:p-5",
                 groupAccentClassName(section.group),
               ].join(" ")}
             >
@@ -807,7 +815,7 @@ export function ViewingLogWorkbench() {
                 </span>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-visible">
                 {section.rows.map(({ listing, record, group }) => {
                   const decisionStatusLabel = getDecisionStatusLabel(listing);
 
@@ -815,7 +823,8 @@ export function ViewingLogWorkbench() {
                     <article
                       key={listing.id}
                       className={[
-                        "grid gap-5 rounded-[1.5rem] border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(96,74,45,0.10)] lg:grid-cols-[14rem_1fr_auto]",
+                        "relative grid overflow-visible gap-5 rounded-[1.5rem] border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(96,74,45,0.10)] lg:grid-cols-[14rem_1fr_auto]",
+                        openTimeListingId === listing.id ? "z-40" : "z-0",
                         groupClassName(group),
                       ].join(" ")}
                     >
@@ -828,6 +837,9 @@ export function ViewingLogWorkbench() {
                           value={record?.viewedAt}
                           onChange={(value) =>
                             handleCardViewedAtChange(listing, value)
+                          }
+                          onOpenChange={(isOpen) =>
+                            setOpenTimeListingId(isOpen ? listing.id : null)
                           }
                         />
                       </div>
