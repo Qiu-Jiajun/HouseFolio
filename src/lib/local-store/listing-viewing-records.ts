@@ -16,7 +16,11 @@ function normalizeRating(value: unknown): number | undefined {
     return undefined;
   }
 
-  if (!Number.isInteger(value) || value < 1 || value > 5) {
+  if (!Number.isFinite(value) || value < 1 || value > 5) {
+    return undefined;
+  }
+
+  if (!Number.isInteger(value)) {
     return undefined;
   }
 

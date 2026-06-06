@@ -532,6 +532,8 @@ export const zhCN = {
       "viewed": "已看房",
       "rejected": "已排除"
     },
+    "groupCountPrefix": "共 ",
+    "groupCountSuffix": " 套",
     "card": {
       "expectedRating": "期待值",
       "overallRating": "总体评分",
@@ -540,7 +542,18 @@ export const zhCN = {
       "recordSummary": "提醒或感受",
       "emptyMemo": "还没有填写看房提醒或感受。",
       "viewedAt": "看房时间",
-      "noViewedAt": "尚未记录实际看房时间"
+      "noViewedAt": "尚未记录实际看房时间",
+      "viewedAtPickerLabel": "选择实际看房时间",
+      "viewedAtTimeLabel": "具体时间",
+      "viewedAtDateLabel": "看房日期",
+      "applyViewedAt": "确认时间",
+      "clearViewedAt": "清除时间",
+      "statusPickerLabel": "修改看房状态",
+      "markViewed": "标记为已看房",
+      "markPending": "标记为待看房",
+      "incrementRating": "选择整数评分",
+      "ratingSliderLabel": "选择整数评分",
+      "clearRating": "清空"
     },
     "drawer": {
       "eyebrow": "快捷编辑",

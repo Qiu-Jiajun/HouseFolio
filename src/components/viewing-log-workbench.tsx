@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { ListingCardCoverPhoto } from "@/components/listing-card-cover-photo";
 import { zhCN } from "@/content/zh-cn";
 import { getAllClientListings } from "@/lib/local-store/listing-lookup";
@@ -19,6 +19,11 @@ import type { ListingViewingRecord } from "@/types/listing-viewing-record";
 type ViewingGroup = "pending" | "viewed" | "rejected";
 type GroupFilter = "all" | ViewingGroup;
 type SortKey = "createdAtDesc" | "rentAsc" | "rentDesc" | "viewedAtDesc";
+type ViewingLogRow = {
+  listing: Listing;
+  record: ListingViewingRecord | null;
+  group: ViewingGroup;
+};
 
 const copy = zhCN.viewingLog;
 const statusText = zhCN.common.listingStatus;
@@ -29,6 +34,8 @@ const statusOptions: ListingStatus[] = [
   "shortlisted",
   "rejected",
 ];
+const viewingGroupOptions: ViewingGroup[] = ["pending", "viewed", "rejected"];
+const ratingOptionValues = Array.from({ length: 5 }, (_, index) => index + 1);
 
 function toViewingGroup(
   listing: Listing,
@@ -57,41 +64,103 @@ function toOptionalRating(value: string): number | undefined {
   }
 
   const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 5
+  return Number.isFinite(parsed) &&
+    parsed >= 1 &&
+    parsed <= 5 &&
+    Number.isInteger(parsed)
     ? parsed
     : undefined;
 }
 
-function getRecordSummary(record: ListingViewingRecord | null): string {
+function getCardMemoValue(
+  record: ListingViewingRecord | null,
+  _group: ViewingGroup,
+): string {
   if (!record) {
-    return copy.card.emptyMemo;
+    return "";
   }
 
-  return (
-    record.postVisitImpression || record.preVisitMemo || copy.card.emptyMemo
-  );
+  if (record.viewedAt) {
+    return record.postVisitImpression ?? "";
+  }
+
+  return record.preVisitMemo ?? "";
 }
 
 function groupClassName(group: ViewingGroup): string {
   if (group === "viewed") {
-    return "border-emerald-200 bg-emerald-50";
+    return "border-[#d4e0c7] bg-[#f2f7ed]";
   }
 
   if (group === "rejected") {
-    return "border-slate-200 bg-slate-100 opacity-80";
+    return "border-[#d8c3b7] bg-[#f5eee9]";
   }
 
-  return "border-sky-100 bg-[#f8fbff]";
+  return "border-[#f0bdd1] bg-[#fff4f8]";
 }
 
-function sortViewingLogRows(
-  rows: {
-    listing: Listing;
-    record: ListingViewingRecord | null;
-    group: ViewingGroup;
-  }[],
-  sortKey: SortKey,
-) {
+function groupAccentClassName(group: ViewingGroup): string {
+  if (group === "viewed") {
+    return "border-[#d4e0c7] bg-[#eef5e8] text-[#3f5632]";
+  }
+
+  if (group === "rejected") {
+    return "border-[#d8c3b7] bg-[#f7eee8] text-[#6b4f45]";
+  }
+
+  return "border-[#efb9cf] bg-[#fff1f7] text-[#84234d]";
+}
+
+function groupBadgeClassName(group: ViewingGroup): string {
+  if (group === "viewed") {
+    return "bg-[#52673d] text-[#fffaf2]";
+  }
+
+  if (group === "rejected") {
+    return "bg-[#876252] text-[#fffaf2]";
+  }
+
+  return "bg-[#b7346d] text-[#fffaf2]";
+}
+
+function decisionBadgeClassName(group: ViewingGroup): string {
+  if (group === "viewed") {
+    return "bg-white/80 text-[#51623c]";
+  }
+
+  if (group === "rejected") {
+    return "bg-white/75 text-[#72584d]";
+  }
+
+  return "bg-white/80 text-[#7a4f61]";
+}
+
+function getDecisionStatusLabel(listing: Listing): string | null {
+  if (listing.status === "visited" || listing.status === "rejected") {
+    return null;
+  }
+
+  return statusText[listing.status];
+}
+
+function formatViewedAt(value: string | undefined): string {
+  if (!value) {
+    return copy.card.noViewedAt;
+  }
+
+  return value.replace("T", " ");
+}
+
+function getCurrentLocalDateTimeMinute(): string {
+  const now = new Date();
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+
+  return new Date(now.getTime() - timezoneOffsetMs)
+    .toISOString()
+    .slice(0, 16);
+}
+
+function sortViewingLogRows(rows: ViewingLogRow[], sortKey: SortKey) {
   return [...rows].sort((a, b) => {
     if (sortKey === "rentAsc") {
       return a.listing.rent - b.listing.rent;
@@ -109,21 +178,274 @@ function sortViewingLogRows(
   });
 }
 
+function getGroupedRows(rows: ViewingLogRow[]): {
+  group: ViewingGroup;
+  rows: ViewingLogRow[];
+}[] {
+  const groupOrder: ViewingGroup[] = ["pending", "viewed", "rejected"];
+
+  return groupOrder
+    .map((group) => ({
+      group,
+      rows: rows.filter((row) => row.group === group),
+    }))
+    .filter((section) => section.rows.length > 0);
+}
+
+function StarRatingControl({
+  label,
+  value,
+  onChange,
+  icon,
+  filledClassName,
+  emptyClassName,
+}: {
+  label: string;
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
+  icon: string;
+  filledClassName: string;
+  emptyClassName: string;
+}) {
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const displayValue = hoverValue ?? value ?? 0;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-full border border-[#ded6c8] bg-white px-3 py-1.5">
+      <span className="text-xs font-medium text-[#4c5130]">
+        {label}: {formatRating(value)}
+      </span>
+      <div
+        className="flex items-center gap-1"
+        onMouseLeave={() => setHoverValue(null)}
+        role="radiogroup"
+        aria-label={copy.card.incrementRating}
+      >
+        {[1, 2, 3, 4, 5].map((ratingValue) => (
+          <button
+            key={ratingValue}
+            type="button"
+            onClick={() => onChange(ratingValue)}
+            onMouseEnter={() => setHoverValue(ratingValue)}
+            className={[
+              "grid h-8 w-7 place-items-center text-2xl leading-none transition hover:scale-110",
+              displayValue >= ratingValue ? filledClassName : emptyClassName,
+            ].join(" ")}
+            aria-checked={value === ratingValue}
+            aria-label={`${label} ${ratingValue}/5`}
+            role="radio"
+          >
+            {icon}
+          </button>
+        ))}
+      </div>
+      {value ? (
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="text-xs text-[#82786a] underline decoration-[#c8bca9] underline-offset-2 hover:text-[#4f5131]"
+        >
+          {copy.card.clearRating}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function ViewingRating({
   group,
   record,
+  onChange,
 }: {
   group: ViewingGroup;
   record: ListingViewingRecord | null;
+  onChange: (value: number | undefined) => void;
 }) {
   const showsOverall = group === "viewed" || Boolean(record?.viewedAt);
   const label = showsOverall ? copy.card.overallRating : copy.card.expectedRating;
   const value = showsOverall ? record?.overallRating : record?.expectedRating;
+  const icon = showsOverall ? "★" : "♥";
 
   return (
-    <span className="rounded-full border border-[#ded6c8] bg-white px-3 py-1 text-xs font-medium text-[#4c5130]">
-      {label}: {formatRating(value)}
-    </span>
+    <StarRatingControl
+      label={label}
+      value={value}
+      onChange={onChange}
+      icon={icon}
+      filledClassName={showsOverall ? "text-[#d9a441]" : "text-[#b7346d]"}
+      emptyClassName={showsOverall ? "text-[#d6cfc2]" : "text-[#e6c7d5]"}
+    />
+  );
+}
+
+function ViewingTimeControl({
+  value,
+  onChange,
+}: {
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const initialDateTime = value ?? getCurrentLocalDateTimeMinute();
+  const [draftDate, setDraftDate] = useState(initialDateTime.slice(0, 10));
+  const [draftTime, setDraftTime] = useState(initialDateTime.slice(11, 16));
+
+  function openPicker() {
+    const nextDateTime = value ?? getCurrentLocalDateTimeMinute();
+
+    setDraftDate(nextDateTime.slice(0, 10));
+    setDraftTime(nextDateTime.slice(11, 16));
+    setIsOpen(true);
+  }
+
+  function applyPickerValue() {
+    if (draftDate && draftTime) {
+      onChange(`${draftDate}T${draftTime}`);
+      setIsOpen(false);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={openPicker}
+        className="block w-full rounded-2xl border border-[#d9cdb9] bg-white/80 px-5 py-4 text-left text-sm text-[#5f5a50] transition hover:border-[#b7346d] hover:bg-white"
+        aria-expanded={isOpen}
+      >
+        {formatViewedAt(value)}
+      </button>
+
+      {isOpen ? (
+        <div className="absolute left-0 top-full z-20 mt-2 w-72 rounded-2xl border border-[#d8cdbc] bg-[#fffaf2] p-4 shadow-[0_18px_55px_rgba(74,57,35,0.20)]">
+          <label className="block">
+            <span className="text-xs font-medium text-[#5d584d]">
+              {copy.card.viewedAtTimeLabel}
+            </span>
+            <input
+              type="time"
+              value={draftTime}
+              onChange={(event) => setDraftTime(event.target.value)}
+              step="60"
+              className="mt-2 w-full rounded-xl border border-[#ddd2c0] bg-white px-3 py-2 text-sm text-[#282417] outline-none focus:border-[#8a8f55]"
+            />
+          </label>
+          <label className="mt-3 block">
+            <span className="text-xs font-medium text-[#5d584d]">
+              {copy.card.viewedAtDateLabel}
+            </span>
+            <input
+              type="date"
+              value={draftDate}
+              onChange={(event) => setDraftDate(event.target.value)}
+              className="mt-2 w-full rounded-xl border border-[#ddd2c0] bg-white px-3 py-2 text-sm text-[#282417] outline-none focus:border-[#8a8f55]"
+            />
+          </label>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={applyPickerValue}
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-xs font-medium text-white"
+            >
+              {copy.card.applyViewedAt}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onChange(undefined);
+                setIsOpen(false);
+              }}
+              className="rounded-full border border-[#d8cdbc] bg-white px-4 py-2 text-xs font-medium text-[#4f5131]"
+            >
+              {copy.card.clearViewedAt}
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ViewingStatusPicker({
+  group,
+  onChange,
+}: {
+  group: ViewingGroup;
+  onChange: (group: ViewingGroup) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+        className={[
+          "rounded-full px-3 py-1 pr-7 text-xs font-medium outline-none transition",
+          groupBadgeClassName(group),
+          "hover:shadow-[0_0_0_3px_rgba(183,52,109,0.16)] focus-visible:ring-2 focus-visible:ring-[#b7346d]/35",
+        ].join(" ")}
+        aria-expanded={isOpen}
+        aria-label={copy.card.statusPickerLabel}
+      >
+        {copy.groupLabels[group]}
+      </button>
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.65rem] text-white">
+        v
+      </span>
+
+      {isOpen ? (
+        <div className="absolute left-0 top-full z-20 mt-2 grid min-w-28 gap-1 rounded-2xl border border-[#d8cdbc] bg-white p-2 shadow-[0_16px_45px_rgba(74,57,35,0.18)]">
+          {viewingGroupOptions.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => {
+                onChange(option);
+                setIsOpen(false);
+              }}
+              className={[
+                "rounded-full px-3 py-1.5 text-left text-xs font-medium transition",
+                groupBadgeClassName(option),
+                option === group ? "ring-2 ring-white/80" : "opacity-90",
+              ].join(" ")}
+            >
+              {copy.groupLabels[option]}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function CardMemoControl({
+  group,
+  record,
+  onChange,
+}: {
+  group: ViewingGroup;
+  record: ListingViewingRecord | null;
+  onChange: (value: string | undefined) => void;
+}) {
+  const [value, setValue] = useState(getCardMemoValue(record, group));
+
+  useEffect(() => {
+    setValue(getCardMemoValue(record, group));
+  }, [group, record]);
+
+  return (
+    <label className="block rounded-2xl bg-white/80 p-4">
+      <span className="text-xs text-[#82786a]">{copy.card.recordSummary}</span>
+      <textarea
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onBlur={() => onChange(value.trim() || undefined)}
+        rows={2}
+        placeholder={copy.card.emptyMemo}
+        className="mt-2 min-h-12 w-full resize-none bg-transparent text-sm leading-6 text-[#514b40] outline-none placeholder:text-[#6f675c]"
+      />
+    </label>
   );
 }
 
@@ -145,9 +467,9 @@ function RatingSelect({
         className="mt-2 w-full rounded-2xl border border-[#ddd2c0] bg-white px-4 py-3 text-sm text-[#282417] outline-none focus:border-[#8a8f55] focus:ring-2 focus:ring-[#d8deb5]"
       >
         <option value="">{copy.drawer.ratingEmpty}</option>
-        {copy.drawer.ratingOptions.map((option, index) => (
-          <option key={option} value={index + 1}>
-            {option}
+        {ratingOptionValues.map((option) => (
+          <option key={option} value={option}>
+            {option} / 5
           </option>
         ))}
       </select>
@@ -231,6 +553,8 @@ export function ViewingLogWorkbench() {
     );
   }, [groupFilter, listings, recordByListingId, sortKey]);
 
+  const groupedRows = useMemo(() => getGroupedRows(rows), [rows]);
+
   const groupCounts = useMemo(() => {
     return listings.reduce(
       (counts, listing) => {
@@ -263,6 +587,85 @@ export function ViewingLogWorkbench() {
   function closeDrawer() {
     setSelectedListing(null);
     setSavedMessage("");
+  }
+
+  function handleCardRatingChange(
+    listing: Listing,
+    record: ListingViewingRecord | null,
+    group: ViewingGroup,
+    value: number | undefined,
+  ) {
+    const shouldSaveOverall = group === "viewed" || Boolean(record?.viewedAt);
+
+    saveListingViewingRecord({
+      listingId: listing.id,
+      ...(shouldSaveOverall
+        ? { overallRating: value }
+        : { expectedRating: value }),
+    });
+
+    setRecords(getListingViewingRecords());
+  }
+
+  function handleCardViewedAtChange(
+    listing: Listing,
+    value: string | undefined,
+  ) {
+    saveListingViewingRecord({
+      listingId: listing.id,
+      viewedAt: value,
+    });
+
+    setRecords(getListingViewingRecords());
+  }
+
+  function handleCardMemoChange(
+    listing: Listing,
+    record: ListingViewingRecord | null,
+    value: string | undefined,
+  ) {
+    saveListingViewingRecord({
+      listingId: listing.id,
+      ...(record?.viewedAt
+        ? { postVisitImpression: value }
+        : { preVisitMemo: value }),
+    });
+
+    setRecords(getListingViewingRecords());
+  }
+
+  function handleViewingGroupChange(
+    listing: Listing,
+    record: ListingViewingRecord | null,
+    nextGroup: ViewingGroup,
+  ) {
+    if (nextGroup === "viewed") {
+      saveListingViewingRecord({
+        listingId: listing.id,
+        viewedAt: record?.viewedAt ?? getCurrentLocalDateTimeMinute(),
+      });
+
+      if (listing.status !== "visited" && listing.status !== "shortlisted") {
+        saveListingStatus(listing.id, "visited");
+      }
+    }
+
+    if (nextGroup === "pending") {
+      saveListingViewingRecord({
+        listingId: listing.id,
+        viewedAt: undefined,
+      });
+
+      if (listing.status === "visited" || listing.status === "rejected") {
+        saveListingStatus(listing.id, "watching");
+      }
+    }
+
+    if (nextGroup === "rejected") {
+      saveListingStatus(listing.id, "rejected");
+    }
+
+    refreshData();
   }
 
   function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -384,90 +787,144 @@ export function ViewingLogWorkbench() {
           </p>
         </section>
       ) : (
-        <section className="space-y-4">
-          {rows.map(({ listing, record, group }) => (
-            <article
-              key={listing.id}
+        <section className="space-y-6">
+          {groupedRows.map((section) => (
+            <div
+              key={section.group}
               className={[
-                "grid gap-5 rounded-[1.5rem] border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(96,74,45,0.10)] lg:grid-cols-[14rem_1fr_auto]",
-                groupClassName(group),
+                "rounded-[2rem] border p-4 sm:p-5",
+                groupAccentClassName(section.group),
               ].join(" ")}
             >
-              <div>
-                <ListingCardCoverPhoto
-                  listingId={listing.id}
-                  title={listing.title}
-                />
-                <div className="rounded-2xl border border-[#e2d8ca] bg-white/75 p-4 text-sm text-[#5f5a50]">
-                  {record?.viewedAt
-                    ? `${copy.card.viewedAt}: ${record.viewedAt}`
-                    : copy.card.noViewedAt}
-                </div>
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-white px-3 py-1 text-xs text-[#5f6240]">
-                    {copy.groupLabels[group]}
-                  </span>
-                  <span className="rounded-full bg-white px-3 py-1 text-xs text-[#6d6842]">
-                    {statusText[listing.status]}
-                  </span>
-                  <ViewingRating group={group} record={record} />
-                </div>
-
-                <h2 className="mt-3 text-2xl font-semibold leading-8 text-[#272318]">
-                  {listing.title}
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-xl font-semibold">
+                  {copy.groupLabels[section.group]}
                 </h2>
-                <p className="mt-1 text-sm text-[#81786a]">
-                  {listing.district} / {listing.addressHint}
-                </p>
-
-                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                  <div className="rounded-2xl bg-white/80 p-4">
-                    <p className="text-xs text-[#82786a]">
-                      {copy.card.rent}
-                    </p>
-                    <p className="mt-2 text-xl font-semibold text-[#272318]">
-                      {zhCN.common.currencyCny}
-                      {listing.rent}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-white/80 p-4">
-                    <p className="text-xs text-[#82786a]">
-                      {copy.card.commute}
-                    </p>
-                    <p className="mt-2 text-xl font-semibold text-[#272318]">
-                      {formatCommute(listing)}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-white/80 p-4">
-                    <p className="text-xs text-[#82786a]">
-                      {copy.card.recordSummary}
-                    </p>
-                    <p className="mt-2 max-h-12 overflow-hidden text-sm leading-6 text-[#514b40]">
-                      {getRecordSummary(record)}
-                    </p>
-                  </div>
-                </div>
+                <span className="rounded-full bg-white/80 px-3 py-1 text-sm">
+                  {copy.groupCountPrefix}
+                  {section.rows.length}
+                  {copy.groupCountSuffix}
+                </span>
               </div>
 
-              <div className="flex flex-wrap content-start gap-3 lg:w-32 lg:flex-col">
-                <button
-                  type="button"
-                  onClick={() => openDrawer(listing)}
-                  className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936]"
-                >
-                  {copy.actions.editRecord}
-                </button>
-                <Link
-                  href={`/portfolio/${listing.id}`}
-                  className="rounded-full border border-[#d8cdbc] bg-white/80 px-4 py-2 text-center text-sm font-medium text-[#4f5131] transition hover:border-[#b8ad8c]"
-                >
-                  {copy.actions.viewDetail}
-                </Link>
+              <div className="space-y-4">
+                {section.rows.map(({ listing, record, group }) => {
+                  const decisionStatusLabel = getDecisionStatusLabel(listing);
+
+                  return (
+                    <article
+                      key={listing.id}
+                      className={[
+                        "grid gap-5 rounded-[1.5rem] border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(96,74,45,0.10)] lg:grid-cols-[14rem_1fr_auto]",
+                        groupClassName(group),
+                      ].join(" ")}
+                    >
+                      <div>
+                        <ListingCardCoverPhoto
+                          listingId={listing.id}
+                          title={listing.title}
+                        />
+                        <ViewingTimeControl
+                          value={record?.viewedAt}
+                          onChange={(value) =>
+                            handleCardViewedAtChange(listing, value)
+                          }
+                        />
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <ViewingStatusPicker
+                            group={group}
+                            onChange={(nextGroup) =>
+                              handleViewingGroupChange(
+                                listing,
+                                record,
+                                nextGroup,
+                              )
+                            }
+                          />
+                          {decisionStatusLabel ? (
+                            <span
+                              className={[
+                                "rounded-full px-3 py-1 text-xs",
+                                decisionBadgeClassName(group),
+                              ].join(" ")}
+                            >
+                              {decisionStatusLabel}
+                            </span>
+                          ) : null}
+                          {group !== "rejected" ? (
+                            <ViewingRating
+                              group={group}
+                              record={record}
+                              onChange={(value) =>
+                                handleCardRatingChange(
+                                  listing,
+                                  record,
+                                  group,
+                                  value,
+                                )
+                              }
+                            />
+                          ) : null}
+                        </div>
+
+                        <h2 className="mt-3 text-2xl font-semibold leading-8 text-[#272318]">
+                          {listing.title}
+                        </h2>
+                        <p className="mt-1 text-sm text-[#81786a]">
+                          {listing.district} / {listing.addressHint}
+                        </p>
+
+                        <div className="mt-5 grid gap-3 md:grid-cols-3">
+                          <div className="rounded-2xl bg-white/80 p-4">
+                            <p className="text-xs text-[#82786a]">
+                              {copy.card.rent}
+                            </p>
+                            <p className="mt-2 text-xl font-semibold text-[#272318]">
+                              {zhCN.common.currencyCny}
+                              {listing.rent}
+                            </p>
+                          </div>
+                          <div className="rounded-2xl bg-white/80 p-4">
+                            <p className="text-xs text-[#82786a]">
+                              {copy.card.commute}
+                            </p>
+                            <p className="mt-2 text-xl font-semibold text-[#272318]">
+                              {formatCommute(listing)}
+                            </p>
+                          </div>
+                          <CardMemoControl
+                            group={group}
+                            record={record}
+                            onChange={(value) =>
+                              handleCardMemoChange(listing, record, value)
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap content-start gap-3 lg:w-32 lg:flex-col">
+                        <button
+                          type="button"
+                          onClick={() => openDrawer(listing)}
+                          className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936]"
+                        >
+                          {copy.actions.editRecord}
+                        </button>
+                        <Link
+                          href={`/portfolio/${listing.id}`}
+                          className="rounded-full border border-[#d8cdbc] bg-white/80 px-4 py-2 text-center text-sm font-medium text-[#4f5131] transition hover:border-[#b8ad8c]"
+                        >
+                          {copy.actions.viewDetail}
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
-            </article>
+            </div>
           ))}
         </section>
       )}

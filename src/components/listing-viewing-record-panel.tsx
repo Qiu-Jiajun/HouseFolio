@@ -12,6 +12,7 @@ type ListingViewingRecordPanelProps = {
 };
 
 const copy = zhCN.listingViewingRecordPanel;
+const ratingOptionValues = Array.from({ length: 5 }, (_, index) => index + 1);
 
 function toOptionalRating(value: string): number | undefined {
   if (!value) {
@@ -19,7 +20,10 @@ function toOptionalRating(value: string): number | undefined {
   }
 
   const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 5
+  return Number.isFinite(parsed) &&
+    parsed >= 1 &&
+    parsed <= 5 &&
+    Number.isInteger(parsed)
     ? parsed
     : undefined;
 }
@@ -42,9 +46,9 @@ function RatingSelect({
         className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
       >
         <option value="">{copy.ratingEmpty}</option>
-        {copy.ratingOptions.map((option, index) => (
-          <option key={option} value={index + 1}>
-            {option}
+        {ratingOptionValues.map((option) => (
+          <option key={option} value={option}>
+            {option} / 5
           </option>
         ))}
       </select>
