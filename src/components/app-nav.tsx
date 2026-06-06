@@ -11,8 +11,12 @@ const navItems = [
     label: zhCN.nav.portfolio,
   },
   {
-    href: "/portfolio/new",
-    label: zhCN.nav.addListing,
+    href: "/compare",
+    label: zhCN.nav.compare,
+  },
+  {
+    href: "/viewing-log",
+    label: zhCN.nav.viewingLog,
   },
   {
     href: "/contract-review",

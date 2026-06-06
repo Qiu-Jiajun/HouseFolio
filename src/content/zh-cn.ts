@@ -48,6 +48,8 @@ export const zhCN = {
     "brand": "HouseFolio",
     "home": "首页",
     "portfolio": "候选房源",
+    "compare": "辅助比较",
+    "viewingLog": "看房记录",
     "addListing": "添加房源",
     "contractReview": "签约前检查",
     "settings": "设置"
@@ -437,6 +439,148 @@ export const zhCN = {
       "empty": "还没有笔记。"
     }
   },
+  "listingViewingRecordPanel": {
+    "title": "看房计划与记录",
+    "description": "记录看房前的期待、提醒，以及看房后的总体评分和真实感受。这些字段与看房记录页使用同一份本机记录。",
+    "savedMessage": "看房计划与记录已保存到本地。",
+    "ratingEmpty": "暂不填写",
+    "ratingOptions": [
+      "1 - 很低",
+      "2 - 偏低",
+      "3 - 一般",
+      "4 - 较高",
+      "5 - 很高"
+    ],
+    "fields": {
+      "expectedRating": "看房前期待值",
+      "overallRating": "看房后总体评分",
+      "preVisitMemo": "看房前提醒",
+      "postVisitImpression": "看房后感受",
+      "viewedAt": "实际看房时间"
+    },
+    "placeholders": {
+      "preVisitMemo": "例如：确认电梯、噪音、采光和押金规则。不要填写敏感信息。",
+      "postVisitImpression": "例如：整体比照片更小，但通勤稳定；厨房状态需要再确认。"
+    },
+    "saveButton": "保存看房记录"
+  },
+  "viewingLog": {
+    "eyebrow": "HouseFolio · 看房记录",
+    "title": "看房计划与记录",
+    "description": "把看房前的提醒、现场照片和真实感受放在一起，帮助你更有条理地回顾候选房源。",
+    "actions": {
+      "addListing": "新增房源",
+      "editRecord": "编辑记录",
+      "viewDetail": "进入详情"
+    },
+    "controls": {
+      "filter": "筛选",
+      "sort": "排序方式",
+      "groupOptions": [
+        {
+          "value": "all",
+          "label": "全部"
+        },
+        {
+          "value": "pending",
+          "label": "待看房"
+        },
+        {
+          "value": "viewed",
+          "label": "已看房"
+        },
+        {
+          "value": "rejected",
+          "label": "已排除"
+        }
+      ],
+      "sortOptions": [
+        {
+          "value": "createdAtDesc",
+          "label": "最近添加优先"
+        },
+        {
+          "value": "rentAsc",
+          "label": "租金从低到高"
+        },
+        {
+          "value": "rentDesc",
+          "label": "租金从高到低"
+        },
+        {
+          "value": "viewedAtDesc",
+          "label": "最近看房优先"
+        }
+      ]
+    },
+    "groups": [
+      {
+        "value": "pending",
+        "label": "待看房"
+      },
+      {
+        "value": "viewed",
+        "label": "已看房"
+      },
+      {
+        "value": "rejected",
+        "label": "已排除"
+      }
+    ],
+    "groupLabels": {
+      "pending": "待看房",
+      "viewed": "已看房",
+      "rejected": "已排除"
+    },
+    "card": {
+      "expectedRating": "期待值",
+      "overallRating": "总体评分",
+      "rent": "租金",
+      "commute": "通勤摘要",
+      "recordSummary": "提醒或感受",
+      "emptyMemo": "还没有填写看房提醒或感受。",
+      "viewedAt": "看房时间",
+      "noViewedAt": "尚未记录实际看房时间"
+    },
+    "drawer": {
+      "eyebrow": "快捷编辑",
+      "close": "关闭",
+      "savedMessage": "看房记录已保存到本地。",
+      "ratingEmpty": "暂不填写",
+      "ratingOptions": [
+        "1 - 很低",
+        "2 - 偏低",
+        "3 - 一般",
+        "4 - 较高",
+        "5 - 很高"
+      ],
+      "photoSummaryPending": "本机首图来自该房源详情页的照片资料。复杂照片管理继续在详情页完成。",
+      "photoSummaryViewed": "本机首图来自该房源详情页的照片资料。已记录看房时间：",
+      "fields": {
+        "status": "状态",
+        "expectedRating": "看房前期待值",
+        "overallRating": "看房后总体评分",
+        "preVisitMemo": "看房前提醒",
+        "postVisitImpression": "看房后感受",
+        "viewedAt": "实际看房时间"
+      },
+      "placeholders": {
+        "preVisitMemo": "例如：确认电梯、噪音、采光和押金规则。不要填写敏感信息。",
+        "postVisitImpression": "例如：整体比照片更小，但通勤稳定；厨房状态需要再确认。"
+      },
+      "subjectiveRatings": {
+        "title": "已有细分感受",
+        "light": "采光",
+        "quiet": "安静",
+        "decoration": "装修"
+      },
+      "saveButton": "保存记录"
+    },
+    "empty": {
+      "title": "当前筛选下没有房源",
+      "description": "你可以切换筛选条件，或先新增候选房源后再记录看房计划。"
+    }
+  },
   "workLocationSettingsPanel": {
     "title": "工作/学习地点（通勤锚点）",
     "description": "工作/学习地点是后续 L1 LBS 通勤分析的输入。它可以是本人公司、伴侣公司、学校、孩子学校或其他高频目的地。当前阶段仅保存到浏览器本地，不接高德、不地理编码、不计算通勤。",
@@ -499,6 +643,7 @@ export const zhCN = {
       "housefolio:listing-notes": "房源笔记",
       "housefolio:listing-ratings": "主观评分",
       "housefolio:listing-status-overrides": "房源状态覆盖",
+      "housefolio:listing-viewing-records": "看房计划与记录",
       "housefolio:work-locations": "工作/学习地点（通勤锚点）",
       "housefolio:commute-results": "参考通勤结果"
     },
@@ -514,14 +659,14 @@ export const zhCN = {
     },
     "importJson": {
       "title": "导入本地 JSON",
-      "description": "从你之前导出的 HouseFolio JSON 文件中恢复本机结构化数据。导入会覆盖当前本机保存的房源、笔记、评分、状态、通勤锚点和通勤结果，但不会恢复看房照片。",
+      "description": "从你之前导出的 HouseFolio JSON 文件中恢复本机结构化数据。导入会覆盖当前本机保存的房源、笔记、评分、状态、看房计划、通勤锚点和通勤结果，但不会恢复看房照片。",
       "warning": "导入前建议先导出当前本机数据作为备份。JSON 导入只恢复结构化数据，不包含本机照片文件。",
       "fileLabel": "选择 HouseFolio JSON 文件",
       "noFileSelected": "尚未选择文件。",
       "selectedFilePrefix": "已选择：",
       "action": "导入 HouseFolio JSON",
       "importing": "正在导入…",
-      "confirmMessage": "导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？",
+      "confirmMessage": "导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、看房计划、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？",
       "recognizedKeys": "识别到的可导入数据项",
       "ignoredKeys": "将被忽略的未知数据项",
       "importedKeys": "已导入数据项",

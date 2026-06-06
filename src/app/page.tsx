@@ -6,8 +6,8 @@ const copy = zhCN.home.referenceHero;
 
 const navItems = [
   { label: copy.navItems[0], href: "/portfolio", icon: "home" },
-  { label: copy.navItems[1], href: "/portfolio", icon: "compare" },
-  { label: copy.navItems[2], href: "/portfolio", icon: "note" },
+  { label: copy.navItems[1], href: "/compare", icon: "compare" },
+  { label: copy.navItems[2], href: "/viewing-log", icon: "note" },
   { label: copy.navItems[3], href: "/contract-review", icon: "shield" },
   { label: copy.navItems[4], href: "/settings", icon: "settings" },
 ] as const;

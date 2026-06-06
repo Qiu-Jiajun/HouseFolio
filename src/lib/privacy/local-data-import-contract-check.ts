@@ -20,6 +20,13 @@ const wrappedDataJson = JSON.stringify({
     "housefolio:listing-notes": {
       "listing-001": "测试笔记",
     },
+    "housefolio:listing-viewing-records": [
+      {
+        listingId: "listing-001",
+        expectedRating: 4,
+        updatedAt: new Date().toISOString(),
+      },
+    ],
   },
 });
 

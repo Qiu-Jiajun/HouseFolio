@@ -5,6 +5,7 @@ import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { ListingStatusPanel } from "@/components/listing-status-panel";
 import { ListingCommutePanel } from "@/components/listing-commute-panel";
 import { ListingPhotoPanel } from "@/components/listing-photo-panel";
+import { ListingViewingRecordPanel } from "@/components/listing-viewing-record-panel";
 import { zhCN } from "@/content/zh-cn";
 import type { ScoreBreakdown } from "@/lib/algorithm/score";
 import {
@@ -251,6 +252,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             refreshListingState(listing.id);
           }}
         />
+
+        <ListingViewingRecordPanel listingId={listing.id} />
 
         <ListingPhotoPanel
           listingId={listing.id}

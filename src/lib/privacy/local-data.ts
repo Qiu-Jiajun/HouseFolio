@@ -32,6 +32,10 @@ export const HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
     label: "Listing status overrides",
   },
   {
+    key: "housefolio:listing-viewing-records",
+    label: "Listing viewing records",
+  },
+  {
     key: "housefolio:work-locations",
     label: "Work/study locations and commute anchors",
   },

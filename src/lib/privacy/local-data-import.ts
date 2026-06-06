@@ -3,6 +3,7 @@ export const IMPORTABLE_HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
   "housefolio:listing-notes",
   "housefolio:listing-ratings",
   "housefolio:listing-status-overrides",
+  "housefolio:listing-viewing-records",
   "housefolio:work-locations",
   "housefolio:commute-results",
 ] as const;
