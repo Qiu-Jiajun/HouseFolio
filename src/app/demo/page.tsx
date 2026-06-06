@@ -58,11 +58,11 @@ export default function DemoPage() {
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 py-2">
         <section className="rounded-[2rem] border border-[#e6ddcf] bg-[#fffaf2] p-8 shadow-[0_24px_80px_rgba(92,74,48,0.10)]">
-          <p className="text-sm font-semibold text-amber-200">演示模式</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white md:text-5xl">
+          <p className="text-sm font-semibold text-[#7c642c]">演示模式</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[#242114] md:text-5xl">
             用虚构 Portfolio 快速理解 HouseFolio 的找房决策流程
           </h1>
-          <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-200 md:text-base">
+          <p className="mt-5 max-w-3xl text-sm leading-7 text-[#5f584b] md:text-base">
             这是一个只读演示页。所有房源、通勤锚点、图片占位和分析文本均为虚构内容，
             不代表真实可租房源，不提供租赁建议，也不会读取或修改你的真实本机数据。
           </p>
@@ -72,23 +72,23 @@ export default function DemoPage() {
           {demoStats.map((item) => (
             <div
               key={item.label}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
+              className="rounded-2xl border border-[#e6ddcf] bg-[#fffaf2] p-5 shadow-sm"
             >
-              <p className="text-sm text-slate-400">{item.label}</p>
-              <p className="mt-3 text-3xl font-semibold text-white">{item.value}</p>
+              <p className="text-sm text-[#6f675c]">{item.label}</p>
+              <p className="mt-3 text-3xl font-semibold text-[#242114]">{item.value}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+        <section className="rounded-3xl border border-[#e6ddcf] bg-[#fffaf2] p-6 shadow-sm">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-emerald-200">演示通勤锚点</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
+              <p className="text-sm font-semibold text-[#566936]">演示通勤锚点</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#242114]">
                 用工作/学习地点解释空间折中
               </h2>
             </div>
-            <p className="max-w-2xl text-sm leading-6 text-slate-300">
+            <p className="max-w-2xl text-sm leading-6 text-[#5f584b]">
               Demo 使用 2 个虚构通勤锚点，模拟应届毕业生或共同居住者需要在多个目的地之间做取舍的场景。
             </p>
           </div>
@@ -97,16 +97,16 @@ export default function DemoPage() {
             {demoModeData.workLocations.map((anchor) => (
               <div
                 key={anchor.id}
-                className="rounded-2xl border border-white/10 bg-slate-950/50 p-5"
+                className="rounded-2xl border border-[#d9e2cd] bg-[#f3f8ee] p-5"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <p className="font-semibold text-white">{anchor.name}</p>
-                  <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs text-emerald-200">
+                  <p className="font-semibold text-[#243322]">{anchor.name}</p>
+                  <span className="rounded-full border border-[#9fb889] bg-[#fbfff7] px-3 py-1 text-xs font-medium text-[#40572b]">
                     {anchor.priorityLabel}
                   </span>
                 </div>
-                <p className="mt-3 text-sm text-slate-300">{anchor.addressHint}</p>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-3 text-sm text-[#4f5f46]">{anchor.addressHint}</p>
+                <p className="mt-2 text-xs text-[#66735b]">
                   类型：{anchor.anchorType === "work" ? "工作地点" : "学习/共同居住锚点"}
                 </p>
               </div>
@@ -114,15 +114,15 @@ export default function DemoPage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+        <section className="rounded-3xl border border-[#e6ddcf] bg-[#fffaf2] p-6 shadow-sm">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-sky-200">Demo Portfolio</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
+              <p className="text-sm font-semibold text-[#506b83]">Demo Portfolio</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#242114]">
                 3 套虚构房源的辅助比较
               </h2>
             </div>
-            <p className="max-w-2xl text-sm leading-6 text-slate-300">
+            <p className="max-w-2xl text-sm leading-6 text-[#5f584b]">
               当前按参考评分展示。参考评分只用于辅助比较和维度拆解，不代表最终决定。
             </p>
           </div>
@@ -151,7 +151,7 @@ export default function DemoPage() {
                         <h3 className="text-lg font-semibold leading-7 text-white">
                           {listing.title}
                         </h3>
-                        <span className="shrink-0 rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs text-sky-200">
+                        <span className="shrink-0 rounded-full border border-[#8aa8bd] bg-[#eff6fb] px-3 py-1 text-xs font-medium text-[#294b63]">
                           {statusLabel[listing.status]}
                         </span>
                       </div>
@@ -181,29 +181,29 @@ export default function DemoPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                      <p className="text-xs text-slate-500">地址线索</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                    <div className="rounded-2xl border border-[#e1d8c8] bg-[#fffaf2] p-4">
+                      <p className="text-xs text-[#7a7163]">地址线索</p>
+                      <p className="mt-2 text-sm leading-6 text-[#514a3f]">
                         {listing.addressHint}
                       </p>
                     </div>
 
-                    <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-4">
+                    <div className="rounded-2xl border border-[#b8ccb0] bg-[#eef7ea] p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-emerald-100">
+                        <p className="text-sm font-semibold text-[#25452f]">
                           L1 通勤摘要
                         </p>
-                        <span className="rounded-full bg-emerald-300/10 px-3 py-1 text-xs text-emerald-200">
+                        <span className="rounded-full border border-[#94b487] bg-[#fbfff7] px-3 py-1 text-xs font-medium text-[#405d33]">
                           {listing.commuteSourceLabel}
                         </span>
                       </div>
                       <div className="mt-3 flex flex-col gap-2">
                         {commutes.map((commute) => (
                           <div key={`${commute.listingId}-${commute.anchorId}`}>
-                            <p className="text-sm text-white">
+                            <p className="text-sm font-medium text-[#26382b]">
                               {commute.anchorName}：约 {commute.durationMinutes} 分钟
                             </p>
-                            <p className="mt-1 text-xs leading-5 text-emerald-100/80">
+                            <p className="mt-1 text-xs leading-5 text-[#4f6955]">
                               {commute.summary}
                             </p>
                           </div>
@@ -211,23 +211,23 @@ export default function DemoPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.06] p-4">
+                    <div className="rounded-2xl border border-[#b8c9d6] bg-[#eef4f8] p-4">
                       <div className="flex items-end justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-sky-100">
+                          <p className="text-sm font-semibold text-[#22384b]">
                             L2 参考评分
                           </p>
-                          <p className="mt-1 text-xs text-sky-100/80">
+                          <p className="mt-1 text-xs leading-5 text-[#43576b]">
                             {listing.referenceScoreNote}
                           </p>
                         </div>
-                        <p className="text-4xl font-semibold text-white">
+                        <p className="text-4xl font-semibold text-[#172536]">
                           {listing.referenceScore}
                         </p>
                       </div>
 
                       {score ? (
-                        <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-slate-200">
+                        <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-medium text-[#31465a]">
                           <p>租金：{score.rentContribution}</p>
                           <p>面积：{score.areaContribution}</p>
                           <p>通勤：{score.commuteContribution}</p>
@@ -331,31 +331,31 @@ export default function DemoPage() {
         </section>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-semibold text-slate-100">L1 空间关系</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+          <div className="rounded-2xl border border-[#e6ddcf] bg-[#fffaf2] p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[#566936]">L1 空间关系</p>
+            <p className="mt-3 text-sm leading-6 text-[#5f584b]">
               Demo 使用预置通勤摘要解释房源与工作/学习地点之间的关系，不实时调用地图服务。
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-semibold text-slate-100">L2 参考评分</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+          <div className="rounded-2xl border border-[#e6ddcf] bg-[#fffaf2] p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[#506b83]">L2 参考评分</p>
+            <p className="mt-3 text-sm leading-6 text-[#5f584b]">
               Demo 展示参考评分与维度拆解，但它只用于辅助比较，不代表最终决定。
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-sm font-semibold text-slate-100">L3 人话解释</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+          <div className="rounded-2xl border border-[#e6ddcf] bg-[#fffaf2] p-5 shadow-sm">
+            <p className="text-sm font-semibold text-[#6b5582]">L3 人话解释</p>
+            <p className="mt-3 text-sm leading-6 text-[#5f584b]">
               Demo 展示预生成分析文本，用来说明 AI 如何把结构化结果转化为条件化建议。
             </p>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-          <h2 className="text-xl font-semibold text-white">数据隔离说明</h2>
-          <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-300 md:grid-cols-2">
+        <section className="rounded-3xl border border-[#e6ddcf] bg-[#fffaf2] p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-[#242114]">数据隔离说明</h2>
+          <div className="mt-4 grid gap-3 text-sm leading-6 text-[#5f584b] md:grid-cols-2">
             <p>本页面只读取项目内置的虚构静态数据。</p>
             <p>本页面不读取真实房源、真实笔记、真实照片或真实通勤结果。</p>
             <p>本页面不写入任何真实用户数据。</p>
@@ -363,10 +363,10 @@ export default function DemoPage() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-6 md:flex-row md:items-center md:justify-between">
+        <section className="flex flex-col gap-3 rounded-3xl border border-[#e6ddcf] bg-[#fffaf2] p-6 shadow-sm md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-white">进入真实模式</h2>
-            <p className="mt-2 text-sm text-slate-300">
+            <h2 className="text-xl font-semibold text-[#242114]">进入真实模式</h2>
+            <p className="mt-2 text-sm text-[#5f584b]">
               真实模式下，你添加的房源、笔记、评分和通勤结果会保存在当前浏览器本机。
             </p>
           </div>
@@ -374,13 +374,13 @@ export default function DemoPage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link
               href="/"
-              className="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-slate-100 transition hover:border-white/40 hover:bg-white/10"
+              className="rounded-full border border-[#d8cdbc] px-5 py-3 text-center text-sm font-medium text-[#4f5131] transition hover:border-[#b8ad8c] hover:bg-white"
             >
               返回首页
             </Link>
             <Link
               href="/portfolio"
-              className="rounded-full bg-white px-5 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
+              className="rounded-full bg-[#727a3f] px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#606936]"
             >
               进入真实 Portfolio
             </Link>
