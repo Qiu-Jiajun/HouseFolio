@@ -31,6 +31,7 @@ type ApiErrorCode =
   | "invalid_input"
   | "generation_failed"
   | "missing_provider_configuration"
+  | "invalid_provider_configuration"
   | "provider_unavailable"
   | "provider_timeout"
   | "provider_rate_limited"
@@ -477,8 +478,38 @@ function parseCompareExplanationInput(
   };
 }
 
-function getServerConfiguredProviderName(): CompareExplanationProviderName {
-  return process.env.AI_COMPARE_PROVIDER === "deepseek" ? "deepseek" : "mock";
+export type CompareExplanationProviderConfigurationErrorCode =
+  | "missing_provider_configuration"
+  | "invalid_provider_configuration";
+
+export class CompareExplanationProviderConfigurationError extends Error {
+  readonly code: CompareExplanationProviderConfigurationErrorCode;
+  readonly safeMessage: string;
+
+  constructor(
+    code: CompareExplanationProviderConfigurationErrorCode,
+    safeMessage: string,
+  ) {
+    super(safeMessage);
+    this.name = "CompareExplanationProviderConfigurationError";
+    this.code = code;
+    this.safeMessage = safeMessage;
+  }
+}
+
+export function getServerConfiguredProviderName(): CompareExplanationProviderName {
+  const providerName = process.env.AI_COMPARE_PROVIDER;
+
+  if (providerName === "deepseek" || providerName === "mock") {
+    return providerName;
+  }
+
+  throw new CompareExplanationProviderConfigurationError(
+    providerName
+      ? "invalid_provider_configuration"
+      : "missing_provider_configuration",
+    "当前 AI 服务配置暂不可用。",
+  );
 }
 
 async function generateRouteOutput(
@@ -509,6 +540,10 @@ async function generateRouteOutput(
 }
 
 function mapGenerationError(error: unknown): NextResponse<ApiErrorResponse> {
+  if (error instanceof CompareExplanationProviderConfigurationError) {
+    return jsonError(error.code, error.safeMessage, 503);
+  }
+
   if (error instanceof DeepSeekProviderError) {
     switch (error.code) {
       case "missing_configuration":

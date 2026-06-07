@@ -6,6 +6,10 @@ import type {
   CompareExplanationSubjectiveSummary,
 } from "@/types/ai-compare-explanation";
 import type { CompareExplanationProviderName } from "@/lib/ai/provider";
+import {
+  CompareExplanationProviderConfigurationError,
+  getServerConfiguredProviderName,
+} from "@/app/api/ai/compare-explanation/route";
 import type {
   CompareExplanationApiErrorResponse,
   CompareExplanationApiRequest,
@@ -152,3 +156,103 @@ type _ApiResponseIsExpectedUnion = Assert<
 type _LegacyApiResponseAliasMatchesCurrentResponse = Assert<
   IsSame<MockCompareExplanationApiResponse, CompareExplanationApiResponse>
 >;
+function assertCompareExplanationRouteCheck(
+  condition: unknown,
+  message: string,
+): asserts condition {
+  if (!condition) {
+    throw new Error(
+      `Compare explanation API route check failed: ${message}`,
+    );
+  }
+}
+
+function withAiCompareProvider(
+  value: string | undefined,
+  callback: () => void,
+): void {
+  const originalProviderName = process.env.AI_COMPARE_PROVIDER;
+
+  if (value === undefined) {
+    delete process.env.AI_COMPARE_PROVIDER;
+  } else {
+    process.env.AI_COMPARE_PROVIDER = value;
+  }
+
+  try {
+    callback();
+  } finally {
+    if (originalProviderName === undefined) {
+      delete process.env.AI_COMPARE_PROVIDER;
+    } else {
+      process.env.AI_COMPARE_PROVIDER = originalProviderName;
+    }
+  }
+}
+
+function expectConfiguredProvider(
+  value: string,
+  expectedProvider: CompareExplanationProviderName,
+): void {
+  withAiCompareProvider(value, () => {
+    assertCompareExplanationRouteCheck(
+      getServerConfiguredProviderName() === expectedProvider,
+      `expected ${value} to resolve ${expectedProvider}`,
+    );
+  });
+}
+
+function expectProviderConfigurationError(
+  value: string | undefined,
+  expectedCode:
+    | "missing_provider_configuration"
+    | "invalid_provider_configuration",
+): void {
+  withAiCompareProvider(value, () => {
+    let capturedError: unknown;
+
+    try {
+      getServerConfiguredProviderName();
+    } catch (error) {
+      capturedError = error;
+    }
+
+    assertCompareExplanationRouteCheck(
+      capturedError instanceof
+        CompareExplanationProviderConfigurationError,
+      `expected ${String(value)} to throw configuration error`,
+    );
+
+    assertCompareExplanationRouteCheck(
+      capturedError.code === expectedCode,
+      `expected ${String(value)} to throw ${expectedCode}`,
+    );
+  });
+}
+
+export function runCompareExplanationApiRouteChecks(): void {
+  expectConfiguredProvider("deepseek", "deepseek");
+  expectConfiguredProvider("mock", "mock");
+
+  expectProviderConfigurationError(
+    undefined,
+    "missing_provider_configuration",
+  );
+  expectProviderConfigurationError("", "missing_provider_configuration");
+  expectProviderConfigurationError(
+    "unknown",
+    "invalid_provider_configuration",
+  );
+  expectProviderConfigurationError(
+    "DEEPSEEK",
+    "invalid_provider_configuration",
+  );
+  expectProviderConfigurationError(
+    " deepseek ",
+    "invalid_provider_configuration",
+  );
+}
+
+export const compareExplanationApiRouteContractCheck = {
+  runner: runCompareExplanationApiRouteChecks,
+} as const;
