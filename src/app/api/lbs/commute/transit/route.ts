@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { calculateCommute, geocodeAddress } from "@/lib/lbs/service";
+import { LbsProviderConfigurationError } from "@/lib/lbs/registry";
 import type { SaveCommuteResultInput } from "@/types/commute-result";
 import type { WorkLocation } from "@/types/work-location";
 import type {
@@ -51,6 +52,28 @@ function getGenericGeocodeFailureReason(): string {
 
 function getGenericAnchorFailureReason(): string {
   return "Unable to calculate transit commute for this commute anchor.";
+}
+
+function getGenericConfigurationFailureReason(): string {
+  return "Commute service configuration is unavailable.";
+}
+
+function createConfigurationFailureResponse(
+  listing: TransitCommuteListing,
+  workLocations: WorkLocation[],
+) {
+  const response: TransitCommuteResponseBody = {
+    results: [],
+    failures: workLocations.map((workLocation) =>
+      createFailure(
+        getGenericConfigurationFailureReason(),
+        listing,
+        workLocation,
+      ),
+    ),
+  };
+
+  return NextResponse.json(response, { status: 503 });
 }
 
 function createFailure(
@@ -137,6 +160,13 @@ export async function POST(request: Request) {
       city,
     });
   } catch (error) {
+    if (error instanceof LbsProviderConfigurationError) {
+      return createConfigurationFailureResponse(
+        listing,
+        validWorkLocations,
+      );
+    }
+
     const response: TransitCommuteResponseBody = {
       results,
       failures: validWorkLocations.map((workLocation) =>
@@ -164,6 +194,13 @@ export async function POST(request: Request) {
 
       results.push(createSaveInput(listing, workLocation, commute));
     } catch (error) {
+      if (error instanceof LbsProviderConfigurationError) {
+        return createConfigurationFailureResponse(
+          listing,
+          validWorkLocations,
+        );
+      }
+
       failures.push(
         createFailure(getGenericAnchorFailureReason(), listing, workLocation),
       );

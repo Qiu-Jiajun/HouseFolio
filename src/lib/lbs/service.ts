@@ -9,36 +9,36 @@ import type {
   SearchNearbyPoiResult,
 } from "./provider";
 
-const resolvedLbsProvider = resolveLbsProvider();
-const activeLbsProvider = resolvedLbsProvider.provider;
-const lbsRuntimeConfig = resolvedLbsProvider.runtimeConfig;
+function resolveActiveLbsProvider(): LbsProvider {
+  return resolveLbsProvider().provider;
+}
 
 export function getLbsProvider(): LbsProvider {
-  return activeLbsProvider;
+  return resolveActiveLbsProvider();
 }
 
 export function getLbsConfigSnapshot() {
-  return lbsRuntimeConfig;
+  return resolveLbsProvider().runtimeConfig;
 }
 
 export async function geocodeAddress(
   input: GeocodeAddressInput,
 ): Promise<GeocodeAddressResult> {
-  return activeLbsProvider.geocodeAddress(input);
+  return resolveActiveLbsProvider().geocodeAddress(input);
 }
 
 export async function calculateCommute(
   input: CalculateCommuteInput,
 ): Promise<CalculateCommuteResult> {
-  return activeLbsProvider.calculateCommute(input);
+  return resolveActiveLbsProvider().calculateCommute(input);
 }
 
 export async function searchNearbyPoi(
   input: SearchNearbyPoiInput,
 ): Promise<SearchNearbyPoiResult> {
-  return activeLbsProvider.searchNearbyPoi(input);
+  return resolveActiveLbsProvider().searchNearbyPoi(input);
 }
 
 export function isUsingMockLbsProvider(): boolean {
-  return activeLbsProvider.name === "mock";
+  return resolveActiveLbsProvider().name === "mock";
 }
