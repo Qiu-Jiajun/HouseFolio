@@ -88,6 +88,7 @@ export const DEFAULT_CONTRACT_REVIEW_DEEPSEEK_MODEL: ContractReviewDeepSeekModel
 const DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 const DEFAULT_TIMEOUT_MS = 20000;
 const DEFAULT_MAX_TOKENS = 6000;
+const MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS = 2;
 
 const allowedModels = new Set<ContractReviewDeepSeekModel>([
   "deepseek-v4-flash",
@@ -180,6 +181,13 @@ function invalidResponse(): never {
     "invalid_response",
     "本次 AI 响应未通过安全校验，请稍后重试。",
   );
+}
+
+class ContractReviewFullRedactedTransportJsonParseError extends Error {
+  constructor() {
+    super("DeepSeek full-redacted transport JSON parse failed.");
+    this.name = "ContractReviewFullRedactedTransportJsonParseError";
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -668,7 +676,7 @@ async function parseDeepSeekFullRedactedTransportResponse(
   try {
     data = await response.json();
   } catch {
-    return invalidResponse();
+    throw new ContractReviewFullRedactedTransportJsonParseError();
   }
 
   if (!isRecord(data) || !Array.isArray(data.choices) || data.choices.length !== 1) {
@@ -799,43 +807,75 @@ async function callDeepSeekFullRedactedChatCompletion(
   try {
     const prompt = buildContractReviewFullRedactedExplanationPrompt(input);
 
-    const response = await fetcher(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${secretKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: prompt.messages,
-        response_format: {
-          type: "json_object",
+    for (
+      let attempt = 1;
+      attempt <=
+        MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS;
+      attempt += 1
+    ) {
+      const response = await fetcher(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${secretKey}`,
         },
-        thinking: {
-          type: "enabled",
-        },
-        reasoning_effort: "high",
-        stream: false,
-        max_tokens: maxTokens,
-      }),
-      signal: controller.signal,
-    });
+        body: JSON.stringify({
+          model,
+          messages: prompt.messages,
+          response_format: {
+            type: "json_object",
+          },
+          thinking: {
+            type: "enabled",
+          },
+          reasoning_effort: "high",
+          stream: false,
+          max_tokens: maxTokens,
+        }),
+        signal: controller.signal,
+      });
 
-    if (response.status === 429) {
-      throw new ContractReviewDeepSeekProviderError(
-        "rate_limited",
-        "请求过于频繁，请稍后再试。",
-      );
+      if (response.status === 429) {
+        throw new ContractReviewDeepSeekProviderError(
+          "rate_limited",
+          "请求过于频繁，请稍后再试。",
+        );
+      }
+
+      if (!response.ok) {
+        throw new ContractReviewDeepSeekProviderError(
+          "request_failed",
+          "AI 服务暂时不可用，请稍后重试。",
+        );
+      }
+
+      try {
+        return await parseDeepSeekFullRedactedTransportResponse(
+          response,
+          input,
+        );
+      } catch (error) {
+        if (
+          error instanceof
+            ContractReviewFullRedactedTransportJsonParseError &&
+          attempt <
+            MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS
+        ) {
+          continue;
+        }
+
+        if (
+          error instanceof
+            ContractReviewFullRedactedTransportJsonParseError
+        ) {
+          return invalidResponse();
+        }
+
+        throw error;
+      }
     }
 
-    if (!response.ok) {
-      throw new ContractReviewDeepSeekProviderError(
-        "request_failed",
-        "AI 服务暂时不可用，请稍后重试。",
-      );
-    }
-
-    return await parseDeepSeekFullRedactedTransportResponse(response, input);
+    return invalidResponse();
   } catch (error) {
     if (error instanceof ContractReviewDeepSeekProviderError) {
       throw error;

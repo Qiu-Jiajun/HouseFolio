@@ -264,6 +264,15 @@ function createJsonResponse(value: unknown, status = 200): Response {
   });
 }
 
+function createInvalidJsonTransportResponse(): Response {
+  return new Response("{invalid json", {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 function createTransportResponse(
   content: string,
   finishReason = "stop",
@@ -1184,6 +1193,83 @@ export async function runContractReviewDeepSeekProviderChecks(): Promise<void> {
         ),
       }).generateContractReviewExplanation(input),
     "invalid_response",
+  );
+
+  let fullRedactedTransportRetryCallCount = 0;
+
+  const fullRedactedTransportRetryProvider =
+    createContractReviewDeepSeekProvider({
+      secretKey: "fixture-secret",
+      fetcher: createFixtureFetcher(async () => {
+        fullRedactedTransportRetryCallCount += 1;
+
+        if (fullRedactedTransportRetryCallCount === 1) {
+          return createInvalidJsonTransportResponse();
+        }
+
+        return createTransportResponse(validFullRedactedContent);
+      }),
+    });
+
+  const fullRedactedTransportRetryOutput =
+    await fullRedactedTransportRetryProvider
+      .generateFullRedactedContractReviewExplanation(
+        fullRedactedInput,
+      );
+
+  assertContractReviewDeepSeekCheck(
+    fullRedactedTransportRetryCallCount === 2,
+    "expected one bounded retry after transport JSON parse failure",
+  );
+
+  assertContractReviewDeepSeekCheck(
+    fullRedactedTransportRetryOutput.outputVersion ===
+      CONTRACT_REVIEW_FULL_REDACTED_EXPLANATION_OUTPUT_VERSION,
+    "expected bounded retry to return valid full-redacted output",
+  );
+
+  let exhaustedFullRedactedTransportRetryCallCount = 0;
+
+  await expectProviderErrorCode(
+    () =>
+      createContractReviewDeepSeekProvider({
+        secretKey: "fixture-secret",
+        fetcher: createFixtureFetcher(async () => {
+          exhaustedFullRedactedTransportRetryCallCount += 1;
+
+          return createInvalidJsonTransportResponse();
+        }),
+      }).generateFullRedactedContractReviewExplanation(
+        fullRedactedInput,
+      ),
+    "invalid_response",
+  );
+
+  assertContractReviewDeepSeekCheck(
+    exhaustedFullRedactedTransportRetryCallCount === 2,
+    "expected exhausted transport JSON parse retry to stop after two attempts",
+  );
+
+  let fullRedactedSchemaFailureCallCount = 0;
+
+  await expectProviderErrorCode(
+    () =>
+      createContractReviewDeepSeekProvider({
+        secretKey: "fixture-secret",
+        fetcher: createFixtureFetcher(async () => {
+          fullRedactedSchemaFailureCallCount += 1;
+
+          return createTransportResponse("{invalid json");
+        }),
+      }).generateFullRedactedContractReviewExplanation(
+        fullRedactedInput,
+      ),
+    "invalid_response",
+  );
+
+  assertContractReviewDeepSeekCheck(
+    fullRedactedSchemaFailureCallCount === 1,
+    "expected schema JSON parse failure not to retry",
   );
 }
 
