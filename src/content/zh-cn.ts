@@ -311,18 +311,22 @@ export const zhCN = {
     },
     "l1": {
       "title": "L1 LBS 空间分析",
-      "description": "后续这里会展示通勤时间、生活圈评分、地图位置和周边 POI 统计。当前数值仍是占位或 mock 输出。",
+      "description": "这里展示通勤时间、已保存的参考通勤结果，以及后续可扩展的生活圈和地图信息。公共交通参考通勤会在你主动点击后通过服务端调用高德计算；生活圈评分和地图可视化仍待后续完善。",
       "commuteTime": "通勤时间",
       "commuteSource": {
         "listing": "默认参考值",
         "cachedTransit": "本地通勤结果"
       },
       "lifeCircleScore": "生活圈评分",
-      "mapStatus": "地图状态",
-      "notConnected": "未接入",
+      "commuteStatus": {
+        "title": "高德参考通勤",
+        "notCalculated": "尚未计算",
+        "localResultAvailable": "已有本地参考结果",
+        "amapCalculated": "已生成"
+      },
       "cachedCommuteResults": "已保存的参考通勤结果",
       "emptyCommuteResults": "尚未计算参考通勤",
-      "emptyCommuteDescription": "后续可通过手动按钮计算公共交通等参考通勤。当前阶段仅展示本地已保存的通勤摘要。",
+      "emptyCommuteDescription": "可通过手动按钮计算公共交通参考通勤。结果仅在你主动触发后生成，并保存到浏览器本地。",
       "storedAt": "计算时间",
       "resultAnchor": "通勤锚点",
       "resultMode": "方式",
@@ -606,7 +610,7 @@ export const zhCN = {
   },
   "workLocationSettingsPanel": {
     "title": "工作/学习地点（通勤锚点）",
-    "description": "工作/学习地点是后续 L1 LBS 通勤分析的输入。它可以是本人公司、伴侣公司、学校、孩子学校或其他高频目的地。当前阶段仅保存到浏览器本地，不接高德、不地理编码、不计算通勤。",
+    "description": "工作/学习地点是 L1 LBS 通勤分析的输入。它可以是本人公司、伴侣公司、学校、孩子学校或其他高频目的地。通勤锚点保存在浏览器本地；当你在房源详情页主动点击计算时，系统会通过服务端调用高德完成地理编码和公共交通参考通勤计算。",
     "form": {
       "name": {
         "label": "地点名称 *",
@@ -677,7 +681,7 @@ export const zhCN = {
         "HouseFolio 不发布公共房源库。",
         "HouseFolio 不撮合租赁交易。",
         "当前作品集预览版 数据仅保存在浏览器 localStorage。",
-        "当前尚未接入 AI、地图 API、云数据库或云存储。"
+        "当前版本支持服务端 AI 合同风险提示和高德参考通勤；结构化数据仍主要保存在浏览器本地，尚未接入云数据库或云存储。"
       ]
     },
     "importJson": {

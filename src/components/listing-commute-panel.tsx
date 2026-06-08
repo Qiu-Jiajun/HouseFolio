@@ -113,6 +113,13 @@ export function ListingCommutePanel({
   const canCalculateTransit =
     hasListingAddress && hasWorkLocations && !isCalculating;
   const commuteSourceText = formatCommuteSource(commuteSource);
+  const commuteResultStatusText = commuteResults.some(
+    (result) => result.provider === "amap" && !result.isMock,
+  )
+    ? zhCN.listingDetailView.l1.commuteStatus.amapCalculated
+    : commuteResults.length > 0
+      ? zhCN.listingDetailView.l1.commuteStatus.localResultAvailable
+      : zhCN.listingDetailView.l1.commuteStatus.notCalculated;
 
   useEffect(() => {
     setCommuteResults(reloadCommuteResults(listingId));
@@ -233,10 +240,10 @@ export function ListingCommutePanel({
 
         <div className="rounded-xl bg-slate-950 p-4">
           <p className="text-sm text-slate-500">
-            {zhCN.listingDetailView.l1.mapStatus}
+            {zhCN.listingDetailView.l1.commuteStatus.title}
           </p>
           <p className="mt-2 text-2xl font-semibold tracking-tight text-white">
-            {zhCN.listingDetailView.l1.notConnected}
+            {commuteResultStatusText}
           </p>
         </div>
       </div>
