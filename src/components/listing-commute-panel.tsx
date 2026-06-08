@@ -280,7 +280,7 @@ export function ListingCommutePanel({
         ) : null}
 
         {hasListingAddress && !hasWorkLocations ? (
-          <p className="mt-3 text-sm leading-6 text-amber-300">
+          <p className="mt-3 rounded-lg border border-red-300/20 bg-[#5f241f] px-3 py-2 text-sm font-medium leading-6 text-[#fff7ed] shadow-sm">
             {zhCN.listingDetailView.l1.noWorkLocations}
           </p>
         ) : null}

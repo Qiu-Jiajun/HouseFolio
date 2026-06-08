@@ -343,7 +343,7 @@ export const zhCN = {
       "calculateSucceeded": "参考通勤结果已保存到本地。",
       "calculatePartiallySucceeded": "部分参考通勤结果已保存到本地，少数锚点可能暂时无法计算。",
       "calculateFailed": "参考通勤计算失败，请稍后重试。你也可以检查房源地址线索或通勤锚点是否足够清楚。",
-      "noWorkLocations": "请先到 Settings 添加工作/学习地点（通勤锚点）。",
+      "noWorkLocations": "请先到设置添加工作/学习地点（通勤锚点）。",
       "noWorkLocationsDescription": "当前还没有可用于计算的工作/学习地点。请先到 Settings 添加至少一个通勤锚点，例如公司、学校或伴侣公司附近。",
       "missingListingAddress": "当前房源缺少可用于计算的地址线索。",
       "missingListingAddressDescription": "当前房源没有可用于地理编码的地址线索，因此暂时不能计算通勤。请先补充小区、地铁站、商圈或街道级地址。",
