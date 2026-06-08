@@ -6,6 +6,7 @@ export const IMPORTABLE_HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
   "housefolio:listing-viewing-records",
   "housefolio:work-locations",
   "housefolio:commute-results",
+  "housefolio:legacy-mock-listings-cleaned-v1",
 ] as const;
 
 export type ImportableHouseFolioLocalStorageKey =

@@ -5,6 +5,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ListingCardCoverPhoto } from "@/components/listing-card-cover-photo";
 import { zhCN } from "@/content/zh-cn";
 import { getAllClientListings } from "@/lib/local-store/listing-lookup";
+import { runLegacyMockListingCleanupOnce } from "@/lib/local-store/legacy-mock-cleanup";
 import { loadListingRatings } from "@/lib/local-store/listing-notes";
 import { saveListingStatus } from "@/lib/local-store/listing-status";
 import {
@@ -605,7 +606,21 @@ export function ViewingLogWorkbench() {
   }
 
   useEffect(() => {
-    refreshData();
+    let isActive = true;
+
+    async function loadViewingLogData() {
+      await runLegacyMockListingCleanupOnce();
+
+      if (isActive) {
+        refreshData();
+      }
+    }
+
+    void loadViewingLogData();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const recordByListingId = useMemo(() => {

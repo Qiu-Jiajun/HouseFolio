@@ -5,17 +5,13 @@ import {
   calculatePortfolioScores,
   getScoreByListingId,
 } from "@/lib/algorithm/score";
-import { mockListings } from "@/lib/db/mock-listings";
 import { loadLocalListings } from "@/lib/local-store/listings";
 import { loadListingRatings } from "@/lib/local-store/listing-notes";
 import { applyListingStatusOverrides } from "@/lib/local-store/listing-status";
 import { getCommuteResultsForListing } from "@/lib/local-store/commute-results";
 
 function getBaseClientListings(): Listing[] {
-  return applyListingStatusOverrides([
-    ...loadLocalListings(),
-    ...mockListings,
-  ]);
+  return applyListingStatusOverrides(loadLocalListings());
 }
 
 function getSubjectiveAverageScore(

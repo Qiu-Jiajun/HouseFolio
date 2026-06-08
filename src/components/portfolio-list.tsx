@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ListingDeleteConfirmationDialog } from "@/components/listing-delete-confirmation-dialog";
 import { ListingCard } from "@/components/listing-card";
 import {
   portfolioCompareSelectionCopy,
@@ -14,6 +15,8 @@ import {
   type ListingStatusFilter,
 } from "@/lib/algorithm/portfolio";
 import { getAllClientListings } from "@/lib/local-store/listing-lookup";
+import { deleteListingCompletely } from "@/lib/local-store/listing-deletion";
+import { runLegacyMockListingCleanupOnce } from "@/lib/local-store/legacy-mock-cleanup";
 import type { Listing, ListingStatus } from "@/types/listing";
 
 const statusOptions: {
@@ -53,10 +56,32 @@ export function PortfolioList() {
     useState<ListingStatusFilter>("all");
   const [sortKey, setSortKey] = useState<ListingSortKey>("createdAtDesc");
   const [selectedListingIds, setSelectedListingIds] = useState<string[]>([]);
+  const [listingIdPendingDeletion, setListingIdPendingDeletion] =
+    useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
-    setListings(getAllClientListings());
+    let isActive = true;
+
+    async function loadListings() {
+      await runLegacyMockListingCleanupOnce();
+
+      if (isActive) {
+        setListings(getAllClientListings());
+      }
+    }
+
+    void loadListings();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
+
+  function refreshListings() {
+    setListings(getAllClientListings());
+  }
 
   const visibleListings = useMemo(() => {
     const filteredListings = filterListingsByStatus(listings, statusFilter);
@@ -99,6 +124,41 @@ export function PortfolioList() {
 
   function clearCompareSelection() {
     setSelectedListingIds([]);
+  }
+
+  function openDeleteDialog(listingId: string) {
+    setDeleteError("");
+    setListingIdPendingDeletion(listingId);
+  }
+
+  function closeDeleteDialog() {
+    if (isDeleting) {
+      return;
+    }
+
+    setListingIdPendingDeletion(null);
+  }
+
+  async function confirmDeleteListing() {
+    if (!listingIdPendingDeletion || isDeleting) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deleteListingCompletely(listingIdPendingDeletion);
+      setSelectedListingIds((current) =>
+        current.filter((id) => id !== listingIdPendingDeletion)
+      );
+      refreshListings();
+      setListingIdPendingDeletion(null);
+    } catch {
+      setDeleteError(zhCN.listingDetailView.dangerZone.error);
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   function goToCompare() {
@@ -264,6 +324,12 @@ export function PortfolioList() {
         </p>
       </div>
 
+      {deleteError ? (
+        <p className="mb-5 rounded-2xl border border-[#8f1f1b] bg-[#fff3ef] px-5 py-4 text-sm leading-6 text-[#7b1f1a]">
+          {deleteError}
+        </p>
+      ) : null}
+
       {visibleListings.length === 0 ? (
         <div className="rounded-[2rem] border border-[#e3dacb] bg-[#fffaf2] p-8 text-center shadow-sm">
           <h2 className="text-2xl font-semibold text-[#282417]">
@@ -294,11 +360,22 @@ export function PortfolioList() {
                 selected={selected}
                 selectionDisabled={selectionDisabled}
                 onToggleSelect={toggleCompareSelection}
+                onDelete={openDeleteDialog}
+                deleteDisabled={isDeleting}
               />
             );
           })}
         </div>
       )}
+
+      <ListingDeleteConfirmationDialog
+        isOpen={listingIdPendingDeletion !== null}
+        isDeleting={isDeleting}
+        onCancel={closeDeleteDialog}
+        onConfirm={() => {
+          void confirmDeleteListing();
+        }}
+      />
     </>
   );
 }

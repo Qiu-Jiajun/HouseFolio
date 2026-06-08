@@ -56,7 +56,7 @@ export const zhCN = {
   },
   "complianceFooter": {
     "title": "HouseFolio 作品集预览版边界说明",
-    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前作品集预览版 仅使用模拟数据与浏览器 localStorage。"
+    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前结构化数据默认保存在浏览器本地。"
   },
   "home": {
     "eyebrow": "HouseFolio · 私人找房决策工作台",
@@ -87,15 +87,15 @@ export const zhCN = {
     ],
     "currentPhase": {
       "title": "当前阶段",
-      "body": "作品集预览版：工作/学习地点（通勤锚点）设置。当前 Demo 仍只使用模拟数据与浏览器 localStorage，尚未接入 Supabase、地图 API 或 AI 服务。"
+      "body": "当前版本以本地优先方式管理候选房源、通勤锚点、看房记录和签约前检查。结构化数据默认保存在浏览器本地。"
     },
     "referenceHero": {
       "script": "Home",
       "titleLine1": "把候选房源整理成",
       "titleLine2": "更安心的租房决策",
       "description": "记录看房信息，比较通勤与预算，并在签约前检查常见合同风险。",
-      "primaryAction": "开始整理候选房源",
-      "secondaryAction": "了解如何辅助比较",
+      "primaryAction": "添加候选房源",
+      "secondaryAction": "查看我的房源",
       "navItems": [
         "候选房源",
         "辅助比较",
@@ -195,7 +195,8 @@ export const zhCN = {
       "cachedTransit": "本地通勤结果"
     },
     "actions": {
-      "viewDetails": "查看详情"
+      "viewDetails": "查看详情",
+      "deleteListing": "删除房源"
     }
   },
   "addListingPage": {
@@ -376,12 +377,25 @@ export const zhCN = {
       "createdAt": "添加日期",
       "currentStatus": "当前状态",
       "dataScope": "数据范围",
-      "dataScopeValue": "本地或 mock 数据，未上传云端。"
+      "dataScopeValue": "本地保存的数据，未上传云端。"
     },
     "complianceBoundary": {
       "title": "合规边界",
-      "body": "当前 Demo 只展示用户主动添加或 mock 的房源信息。它不抓取第三方页面，不发布公共房源库，不撮合交易，也不对房源真实性作背书。"
+      "body": "当前页面只展示你在本机主动保存的房源信息。它不抓取第三方页面，不发布公共房源库，不撮合交易，也不对房源真实性作背书。"
+    },
+    "dangerZone": {
+      "title": "危险操作",
+      "description": "删除后，这套房源将从当前设备中移除。与它关联的笔记、评分、看房记录、通勤结果和本地照片也会一并清除。该操作无法撤销。",
+      "deleteButton": "彻底删除这套房源",
+      "error": "删除失败，请稍后重试。"
     }
+  },
+  "listingDeleteDialog": {
+    "title": "确认彻底删除这套房源？",
+    "description": "删除后，这套房源将从当前设备中移除。与它关联的笔记、评分、看房记录、通勤结果和本地照片也会一并清除。该操作无法撤销。",
+    "cancel": "取消",
+    "confirm": "彻底删除",
+    "deleting": "正在删除……"
   },
   "listingStatusPanel": {
     "title": "房源状态管理",
@@ -644,18 +658,18 @@ export const zhCN = {
   "settings": {
     "eyebrow": "HouseFolio · 作品集预览版K",
     "title": "设置与本地数据",
-    "description": "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面是 Demo 阶段隐私与数据权利能力的基础。"
+    "description": "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面用于管理本机数据权利，不会触发云端同步。"
   },
   "settingsLocalDataPanel": {
     "messages": {
       "exportStarted": "本地 HouseFolio 数据导出已开始。",
-      "clearConfirm": "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？代码中的 mock 房源仍会继续显示。",
+      "clearConfirm": "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？这会移除当前设备保存的房源、笔记、评分、看房记录、通勤结果和本地状态标记。",
       "cleared": "当前浏览器中的 HouseFolio 本地数据已清除。",
       "importStarted": "本地 HouseFolio JSON 导入已开始。"
     },
     "controls": {
       "title": "本地数据控制",
-      "description": "当前作品集预览版 数据仅保存在这个浏览器中。你可以在这里导出或清除本地 HouseFolio 数据。该操作不会影响写在源代码中的 mock 房源，也不会删除任何云端数据，因为当前尚未接入云端存储。",
+      "description": "HouseFolio 数据保存在当前浏览器中。你可以在这里导出或清除本机 HouseFolio 数据；该操作不会影响其他设备，当前也不接入云端同步。",
       "exportJson": "导出本地 JSON",
       "clearLocalData": "清除本机数据",
       "refreshSnapshot": "刷新数据快照"
@@ -672,7 +686,8 @@ export const zhCN = {
       "housefolio:listing-status-overrides": "房源状态覆盖",
       "housefolio:listing-viewing-records": "看房计划与记录",
       "housefolio:work-locations": "工作/学习地点（通勤锚点）",
-      "housefolio:commute-results": "参考通勤结果"
+      "housefolio:commute-results": "参考通勤结果",
+      "housefolio:legacy-mock-listings-cleaned-v1": "历史示例房源清理标记"
     },
     "complianceBoundary": {
       "title": "合规边界",
@@ -680,8 +695,8 @@ export const zhCN = {
         "HouseFolio 不抓取第三方房源页面。",
         "HouseFolio 不发布公共房源库。",
         "HouseFolio 不撮合租赁交易。",
-        "当前作品集预览版 数据仅保存在浏览器 localStorage。",
-        "当前版本支持服务端 AI 合同风险提示和高德参考通勤；结构化数据仍主要保存在浏览器本地，尚未接入云数据库或云存储。"
+        "当前结构化数据保存在浏览器 localStorage。",
+        "清除本机数据只会影响当前设备；当前不接入云数据库或云存储。"
       ]
     },
     "importJson": {

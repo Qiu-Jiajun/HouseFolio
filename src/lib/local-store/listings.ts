@@ -42,3 +42,15 @@ export function clearLocalListings() {
 
   window.localStorage.removeItem(LOCAL_LISTINGS_KEY);
 }
+
+export function deleteLocalListing(listingId: string): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const nextListings = loadLocalListings().filter(
+    (listing) => listing.id !== listingId
+  );
+
+  window.localStorage.setItem(LOCAL_LISTINGS_KEY, JSON.stringify(nextListings));
+}

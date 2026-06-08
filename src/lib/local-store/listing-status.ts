@@ -58,6 +58,21 @@ export function saveListingStatus(listingId: string, status: ListingStatus) {
   );
 }
 
+export function deleteListingStatusOverride(listingId: string): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const nextOverrides = loadListingStatusOverrides().filter(
+    (item) => item.listingId !== listingId
+  );
+
+  window.localStorage.setItem(
+    LOCAL_LISTING_STATUS_KEY,
+    JSON.stringify(nextOverrides)
+  );
+}
+
 export function applyListingStatusOverrides(listings: Listing[]): Listing[] {
   const overrides = loadListingStatusOverrides();
 

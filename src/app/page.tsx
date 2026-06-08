@@ -145,11 +145,11 @@ export default function Home() {
               <span className="whitespace-nowrap">{copy.descriptionRisk}</span>
             </p>
             <div className="mt-9 flex items-center gap-6">
-              <Link href="/portfolio" className="inline-flex h-[64px] items-center gap-3 rounded-[9px] bg-[#7d8654] px-9 text-[20px] font-semibold text-white shadow-[0_14px_24px_rgba(91,98,58,0.2)] transition hover:bg-[#687044]">
+              <Link href="/portfolio/new" className="inline-flex h-[64px] items-center gap-3 rounded-[9px] bg-[#7d8654] px-9 text-[20px] font-semibold text-white shadow-[0_14px_24px_rgba(91,98,58,0.2)] transition hover:bg-[#687044]">
                 <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-white text-[28px] font-light leading-none">+</span>
                 {copy.primaryAction}
               </Link>
-              <Link href="/demo" className="inline-flex h-[64px] items-center gap-4 rounded-[9px] border border-[#d2ccc0] bg-white/60 px-10 text-[20px] font-semibold text-[#2d2d2d] transition hover:bg-white">
+              <Link href="/portfolio" className="inline-flex h-[64px] items-center gap-4 rounded-[9px] border border-[#d2ccc0] bg-white/60 px-10 text-[20px] font-semibold text-[#2d2d2d] transition hover:bg-white">
                 <span className="text-[#8b9469]" aria-hidden="true">
                   <svg viewBox="0 0 24 24" className="h-7 w-7">
                     <path d="M5 18V8h4l3-3h7v13z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />

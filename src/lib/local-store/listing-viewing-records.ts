@@ -191,3 +191,11 @@ export function clearListingViewingRecords(): void {
 
   window.localStorage.removeItem(LISTING_VIEWING_RECORDS_STORAGE_KEY);
 }
+
+export function deleteListingViewingRecord(listingId: string): void {
+  const nextRecords = getListingViewingRecords().filter(
+    (record) => record.listingId !== listingId,
+  );
+
+  saveListingViewingRecords(nextRecords);
+}

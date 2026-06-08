@@ -43,6 +43,10 @@ export const HOUSEFOLIO_LOCAL_STORAGE_KEYS = [
     key: "housefolio:commute-results",
     label: "Commute result summaries",
   },
+  {
+    key: "housefolio:legacy-mock-listings-cleaned-v1",
+    label: "Legacy sample listing cleanup marker",
+  },
 ] as const;
 
 function safeParseJson(raw: string): unknown {

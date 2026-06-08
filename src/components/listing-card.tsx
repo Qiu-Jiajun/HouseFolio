@@ -11,6 +11,8 @@ type ListingCardProps = {
   selected?: boolean;
   selectionDisabled?: boolean;
   onToggleSelect?: (listingId: string) => void;
+  onDelete?: (listingId: string) => void;
+  deleteDisabled?: boolean;
 };
 
 const statusText = zhCN.common.listingStatus;
@@ -39,6 +41,8 @@ export function ListingCard({
   selected = false,
   selectionDisabled = false,
   onToggleSelect,
+  onDelete,
+  deleteDisabled = false,
 }: ListingCardProps) {
   const commuteSourceText = getCommuteSourceText(listing.commuteSource);
 
@@ -164,12 +168,25 @@ export function ListingCard({
         </p>
       </div>
 
-      <a
-        href={`/portfolio/${listing.id}`}
-        className="inline-flex rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936]"
-      >
-        {zhCN.listingCard.actions.viewDetails}
-      </a>
+      <div className="flex flex-wrap gap-3">
+        <a
+          href={`/portfolio/${listing.id}`}
+          className="inline-flex rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8a8f55]"
+        >
+          {zhCN.listingCard.actions.viewDetails}
+        </a>
+
+        {onDelete ? (
+          <button
+            type="button"
+            onClick={() => onDelete(listing.id)}
+            disabled={deleteDisabled}
+            className="inline-flex rounded-full border border-[#8f1f1b] bg-transparent px-4 py-2 text-sm font-medium text-[#8f1f1b] transition hover:bg-[#8f1f1b] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:border-[#b58a86] disabled:text-[#9b706c] disabled:hover:bg-transparent disabled:hover:text-[#9b706c]"
+          >
+            {zhCN.listingCard.actions.deleteListing}
+          </button>
+        ) : null}
+      </div>
     </article>
   );
 }

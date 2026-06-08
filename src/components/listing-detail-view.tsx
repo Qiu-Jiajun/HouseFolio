@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ListingDeleteConfirmationDialog } from "@/components/listing-delete-confirmation-dialog";
 import { ListingNotesPanel } from "@/components/listing-notes-panel";
 import { ListingStatusPanel } from "@/components/listing-status-panel";
 import { ListingCommutePanel } from "@/components/listing-commute-panel";
@@ -12,6 +14,7 @@ import {
   findClientListingById,
   findClientListingScoreById,
 } from "@/lib/local-store/listing-lookup";
+import { deleteListingCompletely } from "@/lib/local-store/listing-deletion";
 import type { Listing } from "@/types/listing";
 
 type ListingDetailViewProps = {
@@ -127,11 +130,15 @@ function ReferenceScorePanel({
 }
 
 export function ListingDetailView({ listingId }: ListingDetailViewProps) {
+  const router = useRouter();
   const [listing, setListing] = useState<Listing | null>(null);
   const [scoreBreakdown, setScoreBreakdown] = useState<
     ScoreBreakdown | undefined
   >(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   function refreshListingState(id: string) {
     const found = findClientListingById(id);
@@ -145,6 +152,33 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     refreshListingState(listingId);
     setIsLoaded(true);
   }, [listingId]);
+
+  function closeDeleteDialog() {
+    if (isDeleting) {
+      return;
+    }
+
+    setDeleteDialogOpen(false);
+  }
+
+  async function confirmDeleteListing() {
+    if (!listing || isDeleting) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deleteListingCompletely(listing.id);
+      router.push("/portfolio");
+      router.refresh();
+    } catch {
+      setDeleteError(zhCN.listingDetailView.dangerZone.error);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   if (!isLoaded) {
     return (
@@ -296,6 +330,35 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             {zhCN.listingDetailView.l3.disabledButton}
           </button>
         </div>
+
+        <div className="rounded-2xl border border-[#8f1f1b] bg-[#fff7f2] p-6">
+          <h2 className="text-2xl font-semibold text-[#241814]">
+            {zhCN.listingDetailView.dangerZone.title}
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-[#4b4037]">
+            {zhCN.listingDetailView.dangerZone.description}
+          </p>
+
+          {deleteError ? (
+            <p className="mt-5 rounded-2xl border border-[#8f1f1b] bg-white px-4 py-3 text-sm leading-6 text-[#7b1f1a]">
+              {deleteError}
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteError("");
+              setDeleteDialogOpen(true);
+            }}
+            disabled={isDeleting}
+            className="mt-6 rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
+          >
+            {isDeleting
+              ? zhCN.listingDeleteDialog.deleting
+              : zhCN.listingDetailView.dangerZone.deleteButton}
+          </button>
+        </div>
       </section>
 
       <aside className="space-y-6">
@@ -351,6 +414,15 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           </p>
         </div>
       </aside>
+
+      <ListingDeleteConfirmationDialog
+        isOpen={deleteDialogOpen}
+        isDeleting={isDeleting}
+        onCancel={closeDeleteDialog}
+        onConfirm={() => {
+          void confirmDeleteListing();
+        }}
+      />
     </div>
   );
 }

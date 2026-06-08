@@ -44,6 +44,14 @@ export function saveListingNote(note: ListingNote) {
   saveAllNotes([note, ...currentNotes]);
 }
 
+export function deleteListingNotes(listingId: string): void {
+  const nextNotes = loadAllNotes().filter(
+    (note) => note.listingId !== listingId
+  );
+
+  saveAllNotes(nextNotes);
+}
+
 function loadAllRatings(): ListingSubjectiveRatings[] {
   if (typeof window === "undefined") {
     return [];
@@ -83,4 +91,12 @@ export function saveListingRatings(nextRatings: ListingSubjectiveRatings) {
   );
 
   saveAllRatings([nextRatings, ...otherRatings]);
+}
+
+export function deleteListingRatings(listingId: string): void {
+  const nextRatings = loadAllRatings().filter(
+    (item) => item.listingId !== listingId
+  );
+
+  saveAllRatings(nextRatings);
 }
