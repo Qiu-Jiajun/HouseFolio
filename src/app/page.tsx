@@ -79,19 +79,19 @@ function CapabilityIcon({ index }: { index: number }) {
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#f6f1e7] text-[#242424]">
-      <section className="mx-auto min-h-screen max-w-[1672px] overflow-hidden rounded-[22px] border border-[#d7d1c8] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(73,57,36,0.14)]">
-        <header className="flex h-[101px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-[52px]">
-          <Link href="/" aria-label="HouseFolio 首页" className="flex h-[64px] items-center gap-2.5">
+      <section className="mx-auto min-h-screen max-w-[1672px] overflow-hidden border border-[#d7d1c8] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(73,57,36,0.14)] sm:rounded-[22px]">
+        <header className="flex h-[80px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-4 sm:px-6 lg:h-[101px] lg:px-[52px]">
+          <Link href="/" aria-label="HouseFolio 首页" className="flex h-[48px] items-center gap-2 sm:h-[56px] sm:gap-2.5 lg:h-[64px]">
             <Image
               src="/images/phase-8a/housefolio-logo-icon-large.png"
               alt=""
               width={1552}
               height={1398}
               priority
-              className="h-[64px] w-auto object-contain"
+              className="h-[48px] w-auto object-contain sm:h-[56px] lg:h-[64px]"
             />
             <span
-              className="text-[32px] leading-none text-black"
+              className="text-[23px] leading-none text-black sm:text-[27px] lg:text-[32px]"
               style={{
                 fontFamily:
                   '"Segoe Script", "Brush Script MT", "Snell Roundhand", "Apple Chancery", Georgia, serif',
@@ -110,7 +110,7 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-[18px]">
+          <div className="hidden items-center gap-[18px] sm:flex">
             <span className="grid h-[52px] w-[52px] place-items-center rounded-full border border-[#e0dbd3] bg-white text-[#7d8654]" aria-hidden="true">
               <svg viewBox="0 0 24 24" className="h-7 w-7">
                 <path d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.6 5.6 4.2 4.2m15.6 15.6-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
@@ -128,28 +128,28 @@ export default function Home() {
         </header>
 
         <section
-          className="relative min-h-[840px] bg-[#fbfaf6] bg-cover bg-center"
+          className="relative min-h-[calc(100vh-80px)] bg-[#fbfaf6] bg-cover bg-center pb-8 lg:min-h-[840px] lg:pb-0"
           style={{
             backgroundImage:
               "url('/images/phase-8a/home-hero-living-room.png')",
           }}
         >
-          <div className="relative z-10 w-[58%] px-[146px] pt-[163px]">
-            <h1 className="font-serif text-[74px] font-black leading-[1.1] tracking-tight text-[#242424]">
+          <div className="relative z-10 w-full px-6 pt-12 sm:px-10 sm:pt-16 lg:w-[58%] lg:px-[146px] lg:pt-[163px]">
+            <h1 className="whitespace-nowrap font-serif text-[clamp(2rem,10vw,3.5rem)] font-black leading-[1.12] tracking-tight text-[#242424] lg:text-[74px] lg:leading-[1.1]">
               {copy.titleLine1}
               <br />
               {copy.titleLine2}
             </h1>
-            <p className="mt-7 w-[780px] max-w-full text-[21px] leading-[1.65] text-[#4c4c4c]">
+            <p className="mt-5 max-w-xl text-[17px] leading-[1.7] text-[#4c4c4c] sm:text-[19px] lg:mt-7 lg:w-[780px] lg:max-w-full lg:text-[21px] lg:leading-[1.65]">
               {copy.descriptionLead}
-              <span className="whitespace-nowrap">{copy.descriptionRisk}</span>
+              <span className="lg:whitespace-nowrap">{copy.descriptionRisk}</span>
             </p>
-            <div className="mt-9 flex items-center gap-6">
-              <Link href="/portfolio/new" className="inline-flex h-[64px] items-center gap-3 rounded-[9px] bg-[#7d8654] px-9 text-[20px] font-semibold text-white shadow-[0_14px_24px_rgba(91,98,58,0.2)] transition hover:bg-[#687044]">
+            <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 lg:mt-9 lg:gap-6">
+              <Link href="/portfolio/new" className="inline-flex h-[56px] items-center justify-center gap-3 rounded-[9px] bg-[#7d8654] px-5 text-[17px] font-semibold text-white shadow-[0_14px_24px_rgba(91,98,58,0.2)] transition hover:bg-[#687044] sm:px-6 lg:h-[64px] lg:px-9 lg:text-[20px]">
                 <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-white text-[28px] font-light leading-none">+</span>
                 {copy.primaryAction}
               </Link>
-              <Link href="/portfolio" className="inline-flex h-[64px] items-center gap-4 rounded-[9px] border border-[#d2ccc0] bg-white/60 px-10 text-[20px] font-semibold text-[#2d2d2d] transition hover:bg-white">
+              <Link href="/portfolio" className="inline-flex h-[56px] items-center justify-center gap-3 rounded-[9px] border border-[#d2ccc0] bg-white/70 px-5 text-[17px] font-semibold text-[#2d2d2d] transition hover:bg-white sm:px-6 lg:h-[64px] lg:gap-4 lg:px-10 lg:text-[20px]">
                 <span className="text-[#8b9469]" aria-hidden="true">
                   <svg viewBox="0 0 24 24" className="h-7 w-7">
                     <path d="M5 18V8h4l3-3h7v13z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
@@ -161,14 +161,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="absolute bottom-[154px] left-[145px] z-20 grid w-[870px] grid-cols-3 rounded-[14px] bg-white/88 px-5 py-4 shadow-[0_18px_44px_rgba(88,67,42,0.11)] backdrop-blur-sm">
+          <div className="relative z-20 mx-6 mt-10 grid gap-2 rounded-[14px] bg-white/88 px-4 py-4 shadow-[0_18px_44px_rgba(88,67,42,0.11)] backdrop-blur-sm sm:mx-10 sm:grid-cols-3 sm:gap-0 lg:absolute lg:bottom-[154px] lg:left-[145px] lg:mx-0 lg:mt-0 lg:w-[870px] lg:px-5">
             {copy.capabilities.map((item, index) => (
               <div
                 key={item.title}
                 className={[
-                  "flex min-w-0 items-center gap-4 px-3",
+                  "flex min-w-0 items-center gap-3 px-1 py-2 sm:gap-4 sm:px-3 sm:py-0",
                   index < copy.capabilities.length - 1
-                    ? "border-r border-[#e4dfd6]"
+                    ? "sm:border-r sm:border-[#e4dfd6]"
                     : "",
                 ].join(" ")}
               >
@@ -183,7 +183,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="absolute bottom-[58px] left-1/2 z-20 flex -translate-x-1/2 items-center gap-5 rounded-full px-8 py-4">
+          <div className="relative z-20 mx-6 mt-5 flex items-center gap-4 rounded-2xl px-1 py-4 sm:mx-10 lg:absolute lg:bottom-[58px] lg:left-1/2 lg:mx-0 lg:mt-0 lg:-translate-x-1/2 lg:gap-5 lg:rounded-full lg:px-8">
             <span className="grid h-[60px] w-[60px] place-items-center rounded-full bg-[#efeee5] text-[#7d8654]" aria-hidden="true">
               <svg viewBox="0 0 24 24" className="h-7 w-7">
                 <path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
@@ -192,8 +192,8 @@ export default function Home() {
               </svg>
             </span>
             <span>
-              <strong className="block text-[21px] font-semibold text-[#242424]">{copy.localFirstTitle}</strong>
-              <span className="mt-2 block text-[17px] text-[#555]">{copy.localFirstBody}</span>
+              <strong className="block text-[17px] font-semibold text-[#242424] sm:text-[19px] lg:text-[21px]">{copy.localFirstTitle}</strong>
+              <span className="mt-1.5 block text-[14px] leading-6 text-[#555] sm:text-[15px] lg:mt-2 lg:text-[17px]">{copy.localFirstBody}</span>
             </span>
           </div>
         </section>
