@@ -87,6 +87,7 @@ export const DEFAULT_CONTRACT_REVIEW_DEEPSEEK_MODEL: ContractReviewDeepSeekModel
 
 const DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 const DEFAULT_TIMEOUT_MS = 20000;
+const DEFAULT_FULL_REDACTED_TIMEOUT_MS = 60000;
 const DEFAULT_MAX_TOKENS = 6000;
 const MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS = 2;
 
@@ -792,7 +793,7 @@ async function callDeepSeekFullRedactedChatCompletion(
   const baseUrl = normalizeBaseUrl(config.baseUrl || DEFAULT_DEEPSEEK_BASE_URL);
   const timeoutMs = getPositiveInteger(
     config.timeoutMs,
-    DEFAULT_TIMEOUT_MS,
+    DEFAULT_FULL_REDACTED_TIMEOUT_MS,
     CONTRACT_REVIEW_DEEPSEEK_PROVIDER_LIMITS.maxTimeoutMs,
   );
   const maxTokens = getPositiveInteger(
@@ -801,8 +802,6 @@ async function callDeepSeekFullRedactedChatCompletion(
     CONTRACT_REVIEW_DEEPSEEK_PROVIDER_LIMITS.maxConfiguredMaxTokens,
   );
   const fetcher = config.fetcher || fetch;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const prompt = buildContractReviewFullRedactedExplanationPrompt(input);
@@ -813,65 +812,72 @@ async function callDeepSeekFullRedactedChatCompletion(
         MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS;
       attempt += 1
     ) {
-      const response = await fetcher(`${baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${secretKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: prompt.messages,
-          response_format: {
-            type: "json_object",
-          },
-          thinking: {
-            type: "enabled",
-          },
-          reasoning_effort: "high",
-          stream: false,
-          max_tokens: maxTokens,
-        }),
-        signal: controller.signal,
-      });
-
-      if (response.status === 429) {
-        throw new ContractReviewDeepSeekProviderError(
-          "rate_limited",
-          "请求过于频繁，请稍后再试。",
-        );
-      }
-
-      if (!response.ok) {
-        throw new ContractReviewDeepSeekProviderError(
-          "request_failed",
-          "AI 服务暂时不可用，请稍后重试。",
-        );
-      }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
-        return await parseDeepSeekFullRedactedTransportResponse(
-          response,
-          input,
-        );
-      } catch (error) {
-        if (
-          error instanceof
-            ContractReviewFullRedactedTransportJsonParseError &&
-          attempt <
-            MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS
-        ) {
-          continue;
+        const response = await fetcher(`${baseUrl}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${secretKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: prompt.messages,
+            response_format: {
+              type: "json_object",
+            },
+            thinking: {
+              type: "enabled",
+            },
+            reasoning_effort: "high",
+            stream: false,
+            max_tokens: maxTokens,
+          }),
+          signal: controller.signal,
+        });
+
+        if (response.status === 429) {
+          throw new ContractReviewDeepSeekProviderError(
+            "rate_limited",
+            "请求过于频繁，请稍后再试。",
+          );
         }
 
-        if (
-          error instanceof
-            ContractReviewFullRedactedTransportJsonParseError
-        ) {
-          return invalidResponse();
+        if (!response.ok) {
+          throw new ContractReviewDeepSeekProviderError(
+            "request_failed",
+            "AI 服务暂时不可用，请稍后重试。",
+          );
         }
 
-        throw error;
+        try {
+          return await parseDeepSeekFullRedactedTransportResponse(
+            response,
+            input,
+          );
+        } catch (error) {
+          if (
+            error instanceof
+              ContractReviewFullRedactedTransportJsonParseError &&
+            attempt <
+              MAX_FULL_REDACTED_TRANSPORT_JSON_PARSE_ATTEMPTS
+          ) {
+            continue;
+          }
+
+          if (
+            error instanceof
+              ContractReviewFullRedactedTransportJsonParseError
+          ) {
+            return invalidResponse();
+          }
+
+          throw error;
+        }
+      } finally {
+        clearTimeout(timeout);
       }
     }
 
@@ -892,8 +898,6 @@ async function callDeepSeekFullRedactedChatCompletion(
       "unknown_failure",
       "AI 服务暂时不可用，请稍后重试。",
     );
-  } finally {
-    clearTimeout(timeout);
   }
 }
 

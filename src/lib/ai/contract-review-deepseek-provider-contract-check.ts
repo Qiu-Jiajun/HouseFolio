@@ -1196,11 +1196,20 @@ export async function runContractReviewDeepSeekProviderChecks(): Promise<void> {
   );
 
   let fullRedactedTransportRetryCallCount = 0;
+  const fullRedactedTransportRetrySignals: AbortSignal[] = [];
 
   const fullRedactedTransportRetryProvider =
     createContractReviewDeepSeekProvider({
       secretKey: "fixture-secret",
-      fetcher: createFixtureFetcher(async () => {
+      fetcher: createFixtureFetcher(async (_request, init) => {
+        const signal = init?.signal;
+
+        assertContractReviewDeepSeekCheck(
+          signal instanceof AbortSignal,
+          "expected bounded retry request signal",
+        );
+
+        fullRedactedTransportRetrySignals.push(signal);
         fullRedactedTransportRetryCallCount += 1;
 
         if (fullRedactedTransportRetryCallCount === 1) {
@@ -1220,6 +1229,13 @@ export async function runContractReviewDeepSeekProviderChecks(): Promise<void> {
   assertContractReviewDeepSeekCheck(
     fullRedactedTransportRetryCallCount === 2,
     "expected one bounded retry after transport JSON parse failure",
+  );
+
+  assertContractReviewDeepSeekCheck(
+    fullRedactedTransportRetrySignals.length === 2 &&
+      fullRedactedTransportRetrySignals[0] !==
+        fullRedactedTransportRetrySignals[1],
+    "expected fresh AbortSignal for each bounded retry attempt",
   );
 
   assertContractReviewDeepSeekCheck(
