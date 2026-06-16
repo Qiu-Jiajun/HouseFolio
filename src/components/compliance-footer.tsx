@@ -10,6 +10,17 @@ export function ComplianceFooter() {
       <p className="mt-3 text-sm leading-6 text-[#746c5f]">
         {zhCN.complianceFooter.body}
       </p>
+
+      <p className="mt-3 text-sm text-[#746c5f]">
+        <a
+          className="font-medium underline underline-offset-4 transition hover:text-[#5f6240]"
+          href={zhCN.complianceFooter.icpUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {zhCN.complianceFooter.icpText}
+        </a>
+      </p>
     </footer>
   );
 }

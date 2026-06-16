@@ -196,6 +196,17 @@ export default function Home() {
               <span className="mt-1.5 block text-[14px] leading-6 text-[#555] sm:text-[15px] lg:mt-2 lg:text-[17px]">{copy.localFirstBody}</span>
             </span>
           </div>
+
+          <div className="relative z-20 mx-6 pb-4 text-center text-xs text-[#8a8173] lg:absolute lg:bottom-5 lg:left-1/2 lg:mx-0 lg:pb-0 lg:-translate-x-1/2">
+            <a
+              href={zhCN.complianceFooter.icpUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-4 transition hover:text-[#5f6240]"
+            >
+              {zhCN.complianceFooter.icpText}
+            </a>
+          </div>
         </section>
       </section>
     </main>

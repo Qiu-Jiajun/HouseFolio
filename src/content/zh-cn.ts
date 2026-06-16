@@ -56,7 +56,9 @@ export const zhCN = {
   },
   "complianceFooter": {
     "title": "HouseFolio 作品集预览版边界说明",
-    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前结构化数据默认保存在浏览器本地。"
+    "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前结构化数据默认保存在浏览器本地。",
+    "icpText": "湘ICP备2026023619号-1",
+    "icpUrl": "https://beian.miit.gov.cn/"
   },
   "home": {
     "eyebrow": "HouseFolio · 私人找房决策工作台",
