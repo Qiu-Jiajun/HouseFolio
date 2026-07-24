@@ -55,7 +55,7 @@ export const zhCN = {
     "settings": "设置"
   },
   "complianceFooter": {
-    "title": "HouseFolio 作品集预览版边界说明",
+    "title": "HouseFolio 产品边界说明",
     "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前结构化数据默认保存在浏览器本地。",
     "icpText": "湘ICP备2026023619号-1",
     "icpUrl": "https://beian.miit.gov.cn/"
@@ -105,6 +105,9 @@ export const zhCN = {
         "签约前检查",
         "设置"
       ],
+      "mobileNavMenuLabel": "首页导航",
+      "mobileNavOpenLabel": "打开导航菜单",
+      "mobileNavCloseLabel": "关闭导航菜单",
       "descriptionLead": "记录看房信息，比较通勤与预算，并在签约前检查",
       "descriptionRisk": "常见合同风险。",
       "capabilities": [
@@ -658,7 +661,7 @@ export const zhCN = {
     "boundary": "请优先使用地铁站、商圈、写字楼、学校附近等模糊位置，不要填写精确门牌号。对于多人共同居住场景，建议添加 2–3 个通勤锚点，便于后续比较不同房源对每个人的通勤影响。"
   },
   "settings": {
-    "eyebrow": "HouseFolio · 作品集预览版K",
+    "eyebrow": "HouseFolio · 设置与本地数据",
     "title": "设置与本地数据",
     "description": "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面用于管理本机数据权利，不会触发云端同步。"
   },
@@ -788,7 +791,7 @@ export const zhCN = {
 } as const;
 
 export const contractReviewCopy = {
-  badge: "Phase 9M-R · 签约前检查",
+  badge: "签约前检查",
   title: "先在本机脱敏合同，再确认是否发送",
   description:
     "粘贴租房合同文本后，HouseFolio 会先在当前页面会话中完成条款切分、本地规则扫描与自动脱敏。只有在你查看完整脱敏预览并主动确认后，系统才会发送脱敏后的合同条款用于 AI 辅助审查。",
@@ -913,7 +916,7 @@ export const contractReviewCopy = {
 } as const;
 
 export const compareRouteCopy = {
-  badge: "Phase 4G-2｜横向比较",
+  badge: "横向比较",
   title: "房源横向比较",
   subtitle: "基于本机候选房源与 URL 中的临时选择结果，展示结构化横向比较、参考评分拆解与辅助说明。",
   noSelectionTitle: "当前还没有选择要比较的房源",
