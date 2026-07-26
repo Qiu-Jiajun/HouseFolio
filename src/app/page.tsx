@@ -115,7 +115,7 @@ export default function Home() {
           />
 
           <div className="relative z-10 w-full px-6 pt-12 sm:px-10 sm:pt-16 lg:w-[58%] lg:px-16 lg:pt-[clamp(64px,15vh,163px)] xl:px-[146px]">
-            <h1 className="whitespace-nowrap font-sans text-[clamp(2rem,10vw,3.5rem)] font-black leading-[1.12] tracking-tight text-[#242424] lg:text-[clamp(42px,calc(5vw-9.6px),74px)] lg:leading-[1.1] xl:w-[590px] xl:text-[74px]">
+            <h1 className="whitespace-nowrap font-serif text-[clamp(2rem,10vw,3.5rem)] font-black leading-[1.12] tracking-tight text-[#242424] lg:text-[clamp(42px,calc(5vw-9.6px),74px)] lg:leading-[1.1] xl:w-[590px] xl:text-[74px]">
               {copy.titleLine1}
               <br />
               {copy.titleLine2}
