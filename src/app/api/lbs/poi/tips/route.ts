@@ -13,6 +13,14 @@ const MIN_KEYWORD_LENGTH = 2;
 const MAX_KEYWORD_LENGTH = 80;
 const MAX_REQUEST_BODY_CHARS = 2_000;
 const CITY_CODE_PATTERN = /^(?:\d{3,4}|\d{6})$/;
+const CITY_ALIASES: Readonly<Record<string, string>> = {
+  北京: "010",
+  北京市: "010",
+};
+
+function normalizeCity(value: string): string {
+  return CITY_ALIASES[value] ?? value;
+}
 
 function createErrorResponse(message: string): LocationSuggestionResponseBody {
   return {
@@ -48,12 +56,13 @@ export async function POST(request: Request) {
 
   const keywords =
     typeof body.keywords === "string" ? body.keywords.trim() : "";
-  const city =
+  const city = normalizeCity(
     body.city === undefined
       ? "010"
       : typeof body.city === "string"
         ? body.city.trim()
-        : "";
+        : "",
+  );
 
   if (
     keywords.length < MIN_KEYWORD_LENGTH ||

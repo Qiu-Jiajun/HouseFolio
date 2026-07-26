@@ -273,9 +273,19 @@ async function run(totalSignal) {
     assert.equal(tips.body.suggestions[0].district, "");
     assertNoSensitiveLbsFields(tips.body);
 
-    const invalidCity = await postJson(origin, "/api/lbs/poi/tips", {
+    const cityAliasTips = await postJson(origin, "/api/lbs/poi/tips", {
       keywords: "望京",
       city: "北京",
+    }, totalSignal);
+    assert.equal(cityAliasTips.status, 200);
+    assert.equal(cityAliasTips.body.provider, "mock");
+    assert.equal(cityAliasTips.body.isMock, true);
+    assert.equal(cityAliasTips.body.suggestions.length, 1);
+    assertNoSensitiveLbsFields(cityAliasTips.body);
+
+    const invalidCity = await postJson(origin, "/api/lbs/poi/tips", {
+      keywords: "望京",
+      city: "not-a-city",
     }, totalSignal);
     assert.equal(invalidCity.status, 400);
 

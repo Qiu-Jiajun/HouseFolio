@@ -83,14 +83,31 @@ async function expectMockSuccess(): Promise<void> {
   });
 }
 
+async function expectBeijingAliasSuccess(): Promise<void> {
+  await withLbsEnvironment("mock", async () => {
+    for (const cityAlias of ["北京", "北京市"]) {
+      const response = await POST(createRequest("望京", cityAlias));
+      const body = (await response.json()) as LocationSuggestionResponseBody;
+
+      assertLocationSuggestionRouteCheck(
+        response.status === 200 &&
+          body.provider === "mock" &&
+          body.suggestions.length === 1,
+        `expected the supported city-name alias ${cityAlias} to be accepted`,
+      );
+      assertNoSensitiveFields(body);
+    }
+  });
+}
+
 async function expectInvalidCityFailure(): Promise<void> {
   await withLbsEnvironment("mock", async () => {
-    const response = await POST(createRequest("望京", "北京"));
+    const response = await POST(createRequest("望京", "not-a-city"));
     const body = (await response.json()) as LocationSuggestionResponseBody;
 
     assertLocationSuggestionRouteCheck(
       response.status === 400 && body.suggestions.length === 0,
-      "expected a non-citycode/adcode city to be rejected",
+      "expected an unsupported city value to be rejected",
     );
     assertNoSensitiveFields(body);
   });
@@ -149,6 +166,7 @@ async function expectConfigurationFailure(): Promise<void> {
 
 export async function runLocationSuggestionRouteChecks(): Promise<void> {
   await expectMockSuccess();
+  await expectBeijingAliasSuccess();
   await expectValidationFailure();
   await expectInvalidCityFailure();
   await expectOversizedBodyFailure();

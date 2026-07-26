@@ -64,7 +64,7 @@ datatype=poi
 citylimit=true
 ```
 
-请求最少 2 字、最多 80 字；城市只接受高德 citycode / adcode；客户端 300ms 防抖并取消过期请求；provider 设置 8 秒超时；最多向页面返回 8 条规范候选。
+请求最少 2 字、最多 80 字；城市接受高德 citycode / adcode，并在 route 边界将受控别名“北京”“北京市”规范化为 citycode `010`；客户端 300ms 防抖并取消过期请求；provider 设置 8 秒超时；最多向页面返回 8 条规范候选。
 
 页面只接收：
 
