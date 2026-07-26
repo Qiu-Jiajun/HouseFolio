@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { zhCN } from "@/content/zh-cn";
+import { LocationSuggestionInput } from "@/components/location-suggestion-input";
 import {
   addWorkLocation,
   deleteWorkLocation,
@@ -22,7 +23,9 @@ export function WorkLocationSettingsPanel() {
   }
 
   useEffect(() => {
-    refreshWorkLocations();
+    const timeoutId = window.setTimeout(refreshWorkLocations, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,19 +111,22 @@ export function WorkLocationSettingsPanel() {
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm text-slate-300">
+        <div className="block">
+          <label
+            htmlFor="work-location-address-hint"
+            className="text-sm text-slate-300"
+          >
             {zhCN.workLocationSettingsPanel.form.addressHint.label}
-          </span>
-          <input
+          </label>
+          <LocationSuggestionInput
+            id="work-location-address-hint"
             value={addressHint}
-            onChange={(event) => setAddressHint(event.target.value)}
+            onValueChange={setAddressHint}
             placeholder={
               zhCN.workLocationSettingsPanel.form.addressHint.placeholder
             }
-            className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
-        </label>
+        </div>
 
         <label className="block md:col-span-2">
           <span className="text-sm text-slate-300">

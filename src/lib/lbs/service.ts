@@ -7,6 +7,8 @@ import type {
   LbsProvider,
   SearchNearbyPoiInput,
   SearchNearbyPoiResult,
+  SuggestLocationsInput,
+  SuggestLocationsResult,
 } from "./provider";
 
 function resolveActiveLbsProvider(): LbsProvider {
@@ -31,6 +33,12 @@ export async function calculateCommute(
   input: CalculateCommuteInput,
 ): Promise<CalculateCommuteResult> {
   return resolveActiveLbsProvider().calculateCommute(input);
+}
+
+export async function suggestLocations(
+  input: SuggestLocationsInput,
+): Promise<SuggestLocationsResult> {
+  return resolveActiveLbsProvider().suggestLocations(input);
 }
 
 export async function searchNearbyPoi(

@@ -9,6 +9,8 @@ import type {
   PoiCategorySummary,
   SearchNearbyPoiInput,
   SearchNearbyPoiResult,
+  SuggestLocationsInput,
+  SuggestLocationsResult,
 } from "./provider";
 
 const DEFAULT_POI_CATEGORIES: PoiCategory[] = [
@@ -98,6 +100,25 @@ export const mockLbsProvider: LbsProvider = {
       precision: input.precision ?? "unknown",
       coordinate: createMockCoordinate(input),
       confidence: 0.7,
+    };
+  },
+
+  async suggestLocations(input: SuggestLocationsInput): Promise<SuggestLocationsResult> {
+    const keywords = input.keywords.trim();
+
+    return {
+      provider: "mock",
+      isMock: true,
+      suggestions: keywords
+        ? [
+            {
+              id: `mock-location-${hashText(keywords)}`,
+              name: keywords,
+              district: "",
+              address: "模拟位置候选",
+            },
+          ]
+        : [],
     };
   },
 

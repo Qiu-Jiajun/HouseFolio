@@ -121,8 +121,10 @@ L1 负责空间关系和通勤相关能力。
 当前已完成：
 
 - 工作 / 学习地点，也就是通勤锚点，本地保存；
-- Detail 页手动计算公共交通参考通勤；
-- `/api/lbs/commute/transit` 服务端 route；
+- `/portfolio/new` 与 Settings 的位置输入支持服务端高德 POI 候选；
+- Detail 页可手动计算公共交通、步行、骑行或驾车参考通勤；
+- `/api/lbs/commute/transit` 兼容型多方式服务端 route；
+- `/api/lbs/poi/tips` 服务端 POI 输入提示 route；
 - LBS provider 封装；
 - commute-results 本地保存；
 - Settings 可查看、导出和清除通勤相关本地数据。
@@ -132,7 +134,8 @@ L1 负责空间关系和通勤相关能力。
 - 页面不直接调用高德 REST API；
 - 不使用 `NEXT_PUBLIC_AMAP_API_KEY`；
 - 不把真实高德 key 暴露到前端；
-- 服务端 route 只返回通勤摘要；
+- 通勤 route 只返回通勤摘要和不含坐标的地址识别摘要；
+- POI 输入提示 route 只返回名称、区域、地址和 POI ID，不返回坐标；
 - 不向客户端返回 coordinate、raw JSON、request URL、polyline、steps 或 apiKey。
 
 ### L2: Algorithm Layer
@@ -267,7 +270,8 @@ Phase 8A 已完成首页 UI/UX 受众匹配改版。
 | `/portfolio/[id]` | Done | 房源详情 |
 | `/compare` | Done | 多房源横向比较 |
 | `/settings` | Done | 本地数据权利与设置 |
-| `/api/lbs/commute/transit` | Done | 服务端 LBS 通勤计算 route |
+| `/api/lbs/commute/transit` | Done | 服务端 LBS 多方式通勤计算兼容 route |
+| `/api/lbs/poi/tips` | Done | 服务端高德 POI 输入提示 route |
 | `/api/ai/compare-explanation` | Done | AI 辅助解释 route，支持 provider selection |
 | `/contract-review` | Planned | 合同风险提示助手，尚未实现 |
 | OCR flow | Planned | 合同照片文字提取，必须先由用户校对文本后再进入 AI 分析 |

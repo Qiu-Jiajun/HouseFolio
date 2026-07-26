@@ -5,7 +5,11 @@ import type {
   PoiCategory,
 } from "./provider";
 
-export type AmapRequestPurpose = "geocode" | "commute" | "nearby_poi";
+export type AmapRequestPurpose =
+  | "geocode"
+  | "input_tips"
+  | "commute"
+  | "nearby_poi";
 
 export interface AmapRequestBoundary {
   provider: "amap";
@@ -35,6 +39,30 @@ export interface AmapGeocodeAdapterOutput {
   boundary: AmapRequestBoundary;
   selectedCandidate: AmapGeocodeCandidateSummary | null;
   candidatesCount: number;
+}
+
+/**
+ * Input tips contract
+ *
+ * The adapter intentionally omits coordinates from its page-facing summary.
+ */
+export interface AmapInputTipsRequestShape {
+  keywords: string;
+  city?: string;
+  cityLimit: boolean;
+  maxResults: number;
+}
+
+export interface AmapInputTipSummary {
+  id: string;
+  name: string;
+  district: string;
+  address: string;
+}
+
+export interface AmapInputTipsAdapterOutput {
+  boundary: AmapRequestBoundary;
+  suggestions: AmapInputTipSummary[];
 }
 
 /**
