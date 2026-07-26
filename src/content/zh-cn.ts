@@ -1162,3 +1162,24 @@ export const compareMockAiExplanationCopy = {
     checklist: "下一步 checklist",
   },
 } as const;
+
+export const locationMapPickerCopy = {
+  triggerLabel: "在地图上选择",
+  dialogTitle: "在地图上选择地标",
+  searchLabel: "搜索地标",
+  searchPlaceholder: "搜索地标，例如望京 SOHO",
+  confirmLabel: "确认使用该地点",
+  manualInputLabel: "使用手动输入",
+  loadingLabel: "正在加载高德地图……",
+  loadErrorTitle: "地图暂时无法加载",
+  loadErrorBody:
+    "地图脚本加载失败或当前域名未获授权。你仍可返回原有文本输入继续填写。",
+  selectedPrefix: "已选：",
+  selectionHint: "搜索并选择一个地标；选中后也可以拖动标记微调位置。",
+  closeLabel: "关闭地图选点",
+} as const;
+
+export const locationMapPrivacyCopy = {
+  workLocation:
+    "地图定位仅用于辅助选择地标，保存的是地标名称与区域，不保存精确坐标。",
+} as const;
