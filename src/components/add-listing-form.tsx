@@ -1,11 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
-import { zhCN } from "@/content/zh-cn";
-import { LocationSuggestionInput } from "@/components/location-suggestion-input";
+import { LocationMapPicker } from "@/components/location-map-picker";
+import {
+  formatSuggestionValue,
+  LocationSuggestionInput,
+  type LocationSelection,
+} from "@/components/location-suggestion-input";
+import { locationMapPickerCopy, zhCN } from "@/content/zh-cn";
 import { saveLocalListing } from "@/lib/local-store/listings";
 import type { Listing, ListingSourcePlatform } from "@/types/listing";
+
+const hasAmapJsApiKey = Boolean(
+  process.env.NEXT_PUBLIC_AMAP_JS_API_KEY?.trim(),
+);
 
 type SourcePlatformOption = {
   label: string;
@@ -144,6 +153,24 @@ export function AddListingForm() {
   const [sourcePlatform, setSourcePlatform] =
     useState<ListingSourcePlatform>("manual");
   const [error, setError] = useState("");
+  const [isLocationMapPickerOpen, setIsLocationMapPickerOpen] =
+    useState(false);
+  const locationMapTriggerRef = useRef<HTMLButtonElement>(null);
+
+  function handleLocationSelect(suggestion: LocationSelection) {
+    setAddressHint(formatSuggestionValue(suggestion));
+
+    if (suggestion.district) {
+      setDistrict(suggestion.district);
+    }
+  }
+
+  function handleLocationMapPickerClose() {
+    setIsLocationMapPickerOpen(false);
+    window.requestAnimationFrame(() => {
+      locationMapTriggerRef.current?.focus();
+    });
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -198,8 +225,9 @@ export function AddListingForm() {
     window.location.href = `/portfolio/${listing.id}`;
   }
 
-  return (
+  return [
     <form
+      key="add-listing-form"
       onSubmit={handleSubmit}
       className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
     >
@@ -323,13 +351,19 @@ export function AddListingForm() {
             id="listing-address-hint"
             value={addressHint}
             onValueChange={setAddressHint}
-            onSuggestionSelect={(suggestion) => {
-              if (suggestion.district) {
-                setDistrict(suggestion.district);
-              }
-            }}
+            onSuggestionSelect={handleLocationSelect}
             placeholder={zhCN.addListingForm.fields.addressHint.placeholder}
           />
+          {hasAmapJsApiKey ? (
+            <button
+              ref={locationMapTriggerRef}
+              type="button"
+              onClick={() => setIsLocationMapPickerOpen(true)}
+              className="mt-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
+            >
+              {locationMapPickerCopy.triggerLabel}
+            </button>
+          ) : null}
         </div>
 
         <label className="block md:col-span-2">
@@ -360,6 +394,16 @@ export function AddListingForm() {
           {zhCN.addListingForm.actions.cancel}
         </Link>
       </div>
-    </form>
-  );
+    </form>,
+
+    hasAmapJsApiKey ? (
+      <LocationMapPicker
+        key="add-listing-map-picker"
+        isOpen={isLocationMapPickerOpen}
+        initialKeyword={addressHint}
+        onSelect={handleLocationSelect}
+        onClose={handleLocationMapPickerClose}
+      />
+    ) : null,
+  ];
 }

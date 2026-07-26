@@ -132,8 +132,9 @@ L1 负责空间关系和通勤相关能力。
 边界：
 
 - 页面不直接调用高德 REST API；
-- 不使用 `NEXT_PUBLIC_AMAP_API_KEY`；
-- 不把真实高德 key 暴露到前端；
+- Web 服务 key 永不前端化；JS API key（`NEXT_PUBLIC_AMAP_JS_API_KEY`）为高德公开型凭据，以域名白名单 + securityJsCode 保护；
+- 不把真实高德 Web 服务 key 暴露到前端；
+- 地图弹层仅辅助选择地标级 POI，坐标不持久化；
 - 通勤 route 只返回通勤摘要和不含坐标的地址识别摘要；
 - POI 输入提示 route 只返回名称、区域、地址和 POI ID，不返回坐标；
 - 不向客户端返回 coordinate、raw JSON、request URL、polyline、steps 或 apiKey。
