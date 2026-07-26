@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { zhCN } from "@/content/zh-cn";
+import { LocationSuggestionInput } from "@/components/location-suggestion-input";
 import { saveLocalListing } from "@/lib/local-store/listings";
 import type { Listing, ListingSourcePlatform } from "@/types/listing";
 
@@ -193,7 +195,7 @@ export function AddListingForm() {
 
     saveLocalListing(listing);
 
-    window.location.href = "/portfolio";
+    window.location.href = `/portfolio/${listing.id}`;
   }
 
   return (
@@ -310,17 +312,25 @@ export function AddListingForm() {
           />
         </label>
 
-        <label className="block md:col-span-2">
-          <span className="text-sm text-slate-300">
+        <div className="block md:col-span-2">
+          <label
+            htmlFor="listing-address-hint"
+            className="text-sm text-slate-300"
+          >
             {zhCN.addListingForm.fields.addressHint.label}
-          </span>
-          <input
+          </label>
+          <LocationSuggestionInput
+            id="listing-address-hint"
             value={addressHint}
-            onChange={(event) => setAddressHint(event.target.value)}
+            onValueChange={setAddressHint}
+            onSuggestionSelect={(suggestion) => {
+              if (suggestion.district) {
+                setDistrict(suggestion.district);
+              }
+            }}
             placeholder={zhCN.addListingForm.fields.addressHint.placeholder}
-            className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-slate-400"
           />
-        </label>
+        </div>
 
         <label className="block md:col-span-2">
           <span className="text-sm text-slate-300">
@@ -343,12 +353,12 @@ export function AddListingForm() {
           {zhCN.addListingForm.actions.save}
         </button>
 
-        <a
+        <Link
           href="/portfolio"
           className="rounded-full border border-slate-700 px-5 py-3 text-sm font-medium text-slate-200 hover:bg-slate-800"
         >
           {zhCN.addListingForm.actions.cancel}
-        </a>
+        </Link>
       </div>
     </form>
   );

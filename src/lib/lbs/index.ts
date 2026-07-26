@@ -8,6 +8,9 @@ export type {
   AmapGeocodeAdapterOutput,
   AmapGeocodeCandidateSummary,
   AmapGeocodeRequestShape,
+  AmapInputTipSummary,
+  AmapInputTipsAdapterOutput,
+  AmapInputTipsRequestShape,
   AmapNearbyPoiAdapterOutput,
   AmapNearbyPoiRequestShape,
   AmapPoiCategoryCountSummary,
@@ -27,10 +30,13 @@ export type {
   LbsProvider,
   LbsProviderName,
   LbsTravelMode,
+  LocationSuggestion,
   PoiCategory,
   PoiCategorySummary,
   SearchNearbyPoiInput,
   SearchNearbyPoiResult,
+  SuggestLocationsInput,
+  SuggestLocationsResult,
 } from "./provider";
 
 export {
@@ -51,6 +57,7 @@ export {
   getLbsProvider,
   isUsingMockLbsProvider,
   searchNearbyPoi,
+  suggestLocations,
 } from "./service";
 export type {
   CalculateAndStoreCommuteResultsInput,

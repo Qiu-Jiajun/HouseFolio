@@ -43,10 +43,32 @@ export interface GeocodeAddressResult {
   confidence: number;
 }
 
+export interface SuggestLocationsInput {
+  keywords: string;
+  city?: string;
+  cityLimit?: boolean;
+  maxResults?: number;
+}
+
+export interface LocationSuggestion {
+  id: string;
+  name: string;
+  district: string;
+  address: string;
+}
+
+export interface SuggestLocationsResult {
+  provider: LbsProviderName;
+  isMock: boolean;
+  suggestions: LocationSuggestion[];
+}
+
 export interface CalculateCommuteInput {
   origin: LbsCoordinate;
   destination: LbsCoordinate;
   mode: LbsTravelMode;
+  city?: string;
+  destinationCity?: string;
   anchorName?: string;
   listingId?: string;
 }
@@ -83,6 +105,7 @@ export interface SearchNearbyPoiResult {
 export interface LbsProvider {
   name: LbsProviderName;
   geocodeAddress(input: GeocodeAddressInput): Promise<GeocodeAddressResult>;
+  suggestLocations(input: SuggestLocationsInput): Promise<SuggestLocationsResult>;
   calculateCommute(input: CalculateCommuteInput): Promise<CalculateCommuteResult>;
   searchNearbyPoi(input: SearchNearbyPoiInput): Promise<SearchNearbyPoiResult>;
 }

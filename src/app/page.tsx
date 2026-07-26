@@ -1,5 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  HomeMobileNav,
+  NavIcon,
+  type HomeNavIconType,
+} from "@/components/home-mobile-nav";
 import { zhCN } from "@/content/zh-cn";
 
 const copy = zhCN.home.referenceHero;
@@ -12,50 +17,11 @@ const navItems = [
   { label: copy.navItems[4], href: "/settings", icon: "settings" },
 ] as const;
 
-function NavIcon({ type }: { type: (typeof navItems)[number]["icon"] }) {
-  if (type === "home") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-        <path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-        <path d="M6.5 10.5V20h11v-9.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-      </svg>
-    );
-  }
-
-  if (type === "compare") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-        <path d="M5 19V9m7 10V5m7 14v-7" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-        <path d="M3 20h18" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-      </svg>
-    );
-  }
-
-  if (type === "note") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-        <path d="M6 4h9l3 3v13H6z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
-        <path d="M14 4v4h4M9 15l5-5 2 2-5 5H9z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
-      </svg>
-    );
-  }
-
-  if (type === "shield") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-        <path d="M12 3.5 19 6v5.5c0 4.2-2.8 7.4-7 9-4.2-1.6-7-4.8-7-9V6z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
-        <path d="m9 12 2 2 4-5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
-      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2.8v2.1m0 14.2v2.1M4.1 4.1l1.5 1.5m12.8 12.8 1.5 1.5M2.8 12h2.1m14.2 0h2.1M4.1 19.9l1.5-1.5M18.4 5.6l1.5-1.5" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-    </svg>
-  );
-}
+const typedNavItems: readonly {
+  label: string;
+  href: string;
+  icon: HomeNavIconType;
+}[] = navItems;
 
 function CapabilityIcon({ index }: { index: number }) {
   const icons = [
@@ -81,17 +47,19 @@ export default function Home() {
     <main className="min-h-screen bg-[#f6f1e7] text-[#242424]">
       <section className="mx-auto min-h-screen max-w-[1672px] overflow-hidden border border-[#d7d1c8] bg-[#fbfaf6] shadow-[0_26px_80px_rgba(73,57,36,0.14)] sm:rounded-[22px]">
         <header className="flex h-[80px] items-center justify-between border-b border-[#ddd7ce] bg-white/95 px-4 sm:px-6 lg:h-[101px] lg:px-[52px]">
-          <Link href="/" aria-label="HouseFolio 首页" className="flex h-[48px] items-center gap-2 sm:h-[56px] sm:gap-2.5 lg:h-[64px]">
+          <Link href="/" aria-label="HouseFolio 首页" className="flex h-[48px] min-w-0 items-center gap-2 sm:h-[56px] sm:gap-2.5 lg:h-[64px]">
             <Image
               src="/images/phase-8a/housefolio-logo-icon-large.png"
               alt=""
-              width={1552}
-              height={1398}
-              priority
-              className="h-[48px] w-auto object-contain sm:h-[56px] lg:h-[64px]"
+              width={64}
+              height={58}
+              sizes="64px"
+              quality={85}
+              loading="eager"
+              className="h-[48px] w-auto shrink-0 object-contain sm:h-[56px] lg:h-[64px]"
             />
             <span
-              className="text-[23px] leading-none text-black sm:text-[27px] lg:text-[32px]"
+              className="whitespace-nowrap text-[20px] leading-none text-black min-[360px]:text-[23px] sm:text-[27px] lg:text-[32px]"
               style={{
                 fontFamily:
                   '"Segoe Script", "Brush Script MT", "Snell Roundhand", "Apple Chancery", Georgia, serif',
@@ -125,17 +93,29 @@ export default function Home() {
             </span>
             <span className="text-3xl leading-none" aria-hidden="true">v</span>
           </div>
+
+          <HomeMobileNav
+            items={typedNavItems}
+            menuLabel={copy.mobileNavMenuLabel}
+            openLabel={copy.mobileNavOpenLabel}
+            closeLabel={copy.mobileNavCloseLabel}
+          />
         </header>
 
-        <section
-          className="relative min-h-[calc(100vh-80px)] bg-[#fbfaf6] bg-cover bg-center pb-8 lg:min-h-[840px] lg:pb-0"
-          style={{
-            backgroundImage:
-              "url('/images/phase-8a/home-hero-living-room.png')",
-          }}
-        >
-          <div className="relative z-10 w-full px-6 pt-12 sm:px-10 sm:pt-16 lg:w-[58%] lg:px-[146px] lg:pt-[163px]">
-            <h1 className="whitespace-nowrap font-serif text-[clamp(2rem,10vw,3.5rem)] font-black leading-[1.12] tracking-tight text-[#242424] lg:text-[74px] lg:leading-[1.1]">
+        <section className="relative flex min-h-[calc(100vh-80px)] flex-col bg-[#fbfaf6] pb-8 lg:min-h-[calc(100vh-101px)]">
+          <Image
+            src="/images/phase-8a/home-hero-living-room.png"
+            alt=""
+            fill
+            preload
+            sizes="(max-width: 1672px) 100vw, 1672px"
+            quality={75}
+            className="object-cover object-center"
+            aria-hidden="true"
+          />
+
+          <div className="relative z-10 w-full px-6 pt-12 sm:px-10 sm:pt-16 lg:w-[58%] lg:px-16 lg:pt-[clamp(64px,15vh,163px)] xl:px-[146px]">
+            <h1 className="whitespace-nowrap font-serif text-[clamp(2rem,10vw,3.5rem)] font-black leading-[1.12] tracking-tight text-[#242424] lg:text-[clamp(42px,calc(5vw-9.6px),74px)] lg:leading-[1.1] xl:w-[590px] xl:text-[74px]">
               {copy.titleLine1}
               <br />
               {copy.titleLine2}
@@ -161,7 +141,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative z-20 mx-6 mt-10 grid gap-2 rounded-[14px] bg-white/88 px-4 py-4 shadow-[0_18px_44px_rgba(88,67,42,0.11)] backdrop-blur-sm sm:mx-10 sm:grid-cols-3 sm:gap-0 lg:absolute lg:bottom-[154px] lg:left-[145px] lg:mx-0 lg:mt-0 lg:w-[870px] lg:px-5">
+          <div className="relative z-20 mx-6 mt-10 grid gap-2 rounded-[14px] bg-white/88 px-4 py-4 shadow-[0_18px_44px_rgba(88,67,42,0.11)] backdrop-blur-sm sm:mx-10 sm:grid-cols-3 sm:gap-0 lg:mx-16 lg:mt-auto lg:max-w-[870px] lg:px-5 xl:mx-[146px]">
             {copy.capabilities.map((item, index) => (
               <div
                 key={item.title}
@@ -183,7 +163,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="relative z-20 mx-6 mt-5 flex items-center gap-4 rounded-2xl px-1 py-4 sm:mx-10 lg:absolute lg:bottom-[58px] lg:left-1/2 lg:mx-0 lg:mt-0 lg:-translate-x-1/2 lg:gap-5 lg:rounded-full lg:px-8">
+          <div className="relative z-20 mx-6 mt-5 flex items-center gap-4 rounded-2xl px-1 py-4 sm:mx-10 lg:mx-auto lg:mt-8 lg:w-fit lg:gap-5 lg:rounded-full lg:px-8">
             <span className="grid h-[60px] w-[60px] place-items-center rounded-full bg-[#efeee5] text-[#7d8654]" aria-hidden="true">
               <svg viewBox="0 0 24 24" className="h-7 w-7">
                 <path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
@@ -197,7 +177,7 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="relative z-20 mx-6 pb-4 text-center text-xs text-[#8a8173] lg:absolute lg:bottom-5 lg:left-1/2 lg:mx-0 lg:pb-0 lg:-translate-x-1/2">
+          <div className="relative z-20 mx-6 mt-6 pb-4 text-center text-xs text-[#8a8173] lg:mx-auto lg:mt-8 lg:pb-0">
             <a
               href={zhCN.complianceFooter.icpUrl}
               target="_blank"

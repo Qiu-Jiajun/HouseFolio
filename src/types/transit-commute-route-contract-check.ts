@@ -1,5 +1,6 @@
 import type { SaveCommuteResultInput } from "@/types/commute-result";
 import type {
+  ResolvedCommuteLocation,
   TransitCommuteFailure,
   TransitCommuteResponseBody,
 } from "@/types/transit-commute-route";
@@ -27,8 +28,11 @@ const routeResultDoesNotExposeForbiddenKeys: AssertNoForbiddenKeys<SaveCommuteRe
 
 const routeFailureDoesNotExposeForbiddenKeys: AssertNoForbiddenKeys<TransitCommuteFailure> = true;
 
+const resolvedLocationDoesNotExposeForbiddenKeys: AssertNoForbiddenKeys<ResolvedCommuteLocation> = true;
+
 const routeResponseDoesNotExposeForbiddenTopLevelKeys: AssertNoForbiddenKeys<TransitCommuteResponseBody> = true;
 
 void routeResultDoesNotExposeForbiddenKeys;
 void routeFailureDoesNotExposeForbiddenKeys;
+void resolvedLocationDoesNotExposeForbiddenKeys;
 void routeResponseDoesNotExposeForbiddenTopLevelKeys;

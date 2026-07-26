@@ -137,6 +137,8 @@ export async function calculateAndStoreCommuteResults(
         origin: listingGeocode.coordinate,
         destination: anchorGeocode.coordinate,
         mode,
+        city,
+        destinationCity: city,
         anchorName: workLocation.name,
         listingId: input.listing.id,
       });

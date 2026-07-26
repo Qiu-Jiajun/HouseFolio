@@ -7,9 +7,13 @@ import {
   upsertCommuteResult,
 } from "@/lib/local-store/commute-results";
 import { loadWorkLocations } from "@/lib/local-store/work-locations";
+import type {
+  LbsTravelMode,
+} from "@/lib/lbs/provider";
 import type { StoredCommuteResult } from "@/types/commute-result";
 import type { ListingCommuteSource } from "@/types/listing";
 import type {
+  ResolvedCommuteLocation,
   TransitCommuteResponseBody,
 } from "@/types/transit-commute-route";
 import type { WorkLocation } from "@/types/work-location";
@@ -66,7 +70,14 @@ function formatCommuteSource(source: ListingCommuteSource | undefined): string |
   return null;
 }
 
-function formatTravelMode(mode: StoredCommuteResult["mode"]): string {
+const TRAVEL_MODES: LbsTravelMode[] = [
+  "transit",
+  "walking",
+  "cycling",
+  "driving",
+];
+
+function formatTravelMode(mode: LbsTravelMode): string {
   if (mode === "transit") {
     return zhCN.listingDetailView.l1.modeTransit;
   }
@@ -86,6 +97,12 @@ function formatTravelMode(mode: StoredCommuteResult["mode"]): string {
   return mode;
 }
 
+function formatPrecision(
+  precision: ResolvedCommuteLocation["precision"],
+): string {
+  return zhCN.listingDetailView.l1.resolvedLocations.precisionLabels[precision];
+}
+
 function reloadCommuteResults(listingId: string): StoredCommuteResult[] {
   return getCommuteResultsForListing(listingId);
 }
@@ -102,16 +119,28 @@ export function ListingCommutePanel({
   const [commuteResults, setCommuteResults] = useState<StoredCommuteResult[]>(
     [],
   );
-  const [workLocationCount, setWorkLocationCount] = useState(0);
+  const [workLocations, setWorkLocations] = useState<WorkLocation[]>([]);
+  const [selectedAnchorIds, setSelectedAnchorIds] = useState<string[]>([]);
+  const [selectedMode, setSelectedMode] =
+    useState<LbsTravelMode>("transit");
+  const [resolvedLocations, setResolvedLocations] = useState<
+    ResolvedCommuteLocation[]
+  >([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const workLocationCount = workLocations.length;
+  const selectedWorkLocations = workLocations.filter((workLocation) =>
+    selectedAnchorIds.includes(workLocation.id),
+  );
   const hasListingAddress = addressHint.trim().length > 0;
   const hasWorkLocations = workLocationCount > 0;
-  const canCalculateTransit =
-    hasListingAddress && hasWorkLocations && !isCalculating;
+  const canCalculateCommute =
+    hasListingAddress &&
+    selectedWorkLocations.length > 0 &&
+    !isCalculating;
   const commuteSourceText = formatCommuteSource(commuteSource);
   const commuteResultStatusText = commuteResults.some(
     (result) => result.provider === "amap" && !result.isMock,
@@ -122,9 +151,18 @@ export function ListingCommutePanel({
       : zhCN.listingDetailView.l1.commuteStatus.notCalculated;
 
   useEffect(() => {
-    setCommuteResults(reloadCommuteResults(listingId));
-    setWorkLocationCount(loadWorkLocations().length);
-    setIsLoaded(true);
+    const timeoutId = window.setTimeout(() => {
+      const loadedWorkLocations = loadWorkLocations();
+
+      setCommuteResults(reloadCommuteResults(listingId));
+      setWorkLocations(loadedWorkLocations);
+      setSelectedAnchorIds(
+        loadedWorkLocations.slice(0, 3).map((workLocation) => workLocation.id),
+      );
+      setIsLoaded(true);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [listingId]);
 
   function getEmptyStateDescription(): string {
@@ -139,20 +177,41 @@ export function ListingCommutePanel({
     return zhCN.listingDetailView.l1.emptyCommuteDescription;
   }
 
-  async function handleCalculateTransitCommute() {
+  function handleAnchorToggle(anchorId: string) {
+    if (selectedAnchorIds.includes(anchorId)) {
+      setSelectedAnchorIds((current) =>
+        current.filter((currentId) => currentId !== anchorId),
+      );
+      setErrorMessage(null);
+      return;
+    }
+
+    if (selectedAnchorIds.length >= 3) {
+      setErrorMessage(zhCN.listingDetailView.l1.anchorSelectionLimit);
+      return;
+    }
+
+    setSelectedAnchorIds((current) => [...current, anchorId]);
+    setErrorMessage(null);
+  }
+
+  async function handleCalculateCommute() {
     setStatusMessage(null);
     setErrorMessage(null);
+    setResolvedLocations([]);
 
     if (!hasListingAddress) {
       setErrorMessage(zhCN.listingDetailView.l1.missingListingAddress);
       return;
     }
 
-    const workLocations: WorkLocation[] = loadWorkLocations();
-    setWorkLocationCount(workLocations.length);
-
     if (workLocations.length === 0) {
       setErrorMessage(zhCN.listingDetailView.l1.noWorkLocations);
+      return;
+    }
+
+    if (selectedWorkLocations.length === 0) {
+      setErrorMessage(zhCN.listingDetailView.l1.selectAtLeastOneAnchor);
       return;
     }
 
@@ -171,12 +230,20 @@ export function ListingCommutePanel({
             addressHint,
             district,
           },
-          workLocations,
+          workLocations: selectedWorkLocations.map(
+            ({ id, name, addressHint: anchorAddressHint }) => ({
+              id,
+              name,
+              addressHint: anchorAddressHint,
+            }),
+          ),
           city: "北京",
+          mode: selectedMode,
         }),
       });
 
       const payload = (await response.json()) as TransitCommuteResponseBody;
+      setResolvedLocations(payload.resolvedLocations ?? []);
 
       if (!response.ok && payload.results.length === 0) {
         setErrorMessage(zhCN.listingDetailView.l1.calculateFailed);
@@ -249,7 +316,114 @@ export function ListingCommutePanel({
       </div>
 
       <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        {hasWorkLocations ? (
+          <fieldset
+            disabled={isCalculating}
+            className="mb-5 border-b border-slate-800 pb-5"
+          >
+            <legend className="text-sm font-medium text-white">
+              {zhCN.listingDetailView.l1.anchorSelectorLabel}
+            </legend>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              {zhCN.listingDetailView.l1.anchorSelectorDescription}
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {workLocations.map((workLocation) => {
+                const isSelected = selectedAnchorIds.includes(workLocation.id);
+                const isSelectionDisabled =
+                  !isSelected && selectedAnchorIds.length >= 3;
+
+                return (
+                  <label
+                    key={workLocation.id}
+                    className={`rounded-xl border p-3 ${
+                      isCalculating || isSelectionDisabled
+                        ? "cursor-not-allowed opacity-60"
+                        : "cursor-pointer"
+                    } ${
+                      isSelected
+                        ? "border-slate-400 bg-slate-800"
+                        : "border-slate-700 bg-slate-900 hover:border-slate-500"
+                    }`}
+                  >
+                    <span className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        disabled={isSelectionDisabled}
+                        onChange={() => handleAnchorToggle(workLocation.id)}
+                        className="mt-1 size-4 accent-white"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-white">
+                          {workLocation.name}
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-400">
+                          {workLocation.addressHint}
+                        </span>
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-xs text-slate-400">
+              {zhCN.listingDetailView.l1.selectedAnchorCountPrefix}
+              {selectedWorkLocations.length}
+              {zhCN.listingDetailView.l1.selectedAnchorCountSuffix}
+            </p>
+          </fieldset>
+        ) : null}
+
+        <fieldset disabled={isCalculating}>
+          <legend className="text-sm font-medium text-white">
+            {zhCN.listingDetailView.l1.modeSelectorLabel}
+          </legend>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {TRAVEL_MODES.map((mode) => {
+              const isSelected = mode === selectedMode;
+
+              return (
+                <label
+                  key={mode}
+                  className={`rounded-full ${
+                    isCalculating
+                      ? "cursor-not-allowed opacity-60"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name={`commute-mode-${listingId}`}
+                    value={mode}
+                    checked={isSelected}
+                    onChange={() => {
+                      setSelectedMode(mode);
+                      setStatusMessage(null);
+                      setErrorMessage(null);
+                      setResolvedLocations([]);
+                    }}
+                    className="peer sr-only"
+                  />
+                  <span
+                    className={`block rounded-full border px-3 py-2 text-center text-xs font-medium transition peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-slate-950 ${
+                      isSelected
+                        ? "border-white bg-white text-slate-950"
+                        : "border-slate-700 text-slate-300 hover:border-slate-500 hover:bg-slate-900"
+                    }`}
+                  >
+                    {formatTravelMode(mode)}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-slate-500">
+            {zhCN.listingDetailView.l1.modeScoringNote}
+          </p>
+        </fieldset>
+
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-4">
           <div>
             <p className="text-sm font-medium text-white">
               {zhCN.listingDetailView.l1.cachedCommuteResults}
@@ -263,13 +437,13 @@ export function ListingCommutePanel({
 
           <button
             type="button"
-            onClick={handleCalculateTransitCommute}
-            disabled={!canCalculateTransit}
+            onClick={handleCalculateCommute}
+            disabled={!canCalculateCommute}
             className="rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-950 hover:bg-slate-200 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
           >
             {isCalculating
               ? zhCN.listingDetailView.l1.calculating
-              : zhCN.listingDetailView.l1.calculateTransitButton}
+              : `${zhCN.listingDetailView.l1.calculateButtonPrefix}${formatTravelMode(selectedMode)}${zhCN.listingDetailView.l1.calculateButtonSuffix}`}
           </button>
         </div>
 
@@ -291,6 +465,68 @@ export function ListingCommutePanel({
 
         {errorMessage ? (
           <p className="mt-3 text-sm text-amber-300">{errorMessage}</p>
+        ) : null}
+
+        {resolvedLocations.length > 0 ? (
+          <div className="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <p className="text-sm font-medium text-white">
+              {zhCN.listingDetailView.l1.resolvedLocations.title}
+            </p>
+            <div className="mt-3 grid gap-3">
+              {resolvedLocations.map((location) => {
+                const confidencePercent = Math.round(
+                  Math.min(Math.max(location.heuristicConfidence, 0), 1) * 100,
+                );
+
+                return (
+                  <div
+                    key={`${location.kind}:${location.id}`}
+                    className="rounded-lg bg-slate-950 px-3 py-3"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-slate-700 px-2 py-1 text-[11px] text-slate-400">
+                        {location.kind === "listing"
+                          ? zhCN.listingDetailView.l1.resolvedLocations.listing
+                          : zhCN.listingDetailView.l1.resolvedLocations.anchor}
+                      </span>
+                      <span className="text-sm font-medium text-white">
+                        {location.name}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-200">
+                      {location.formattedAddress}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      {
+                        zhCN.listingDetailView.l1.resolvedLocations.precision
+                      }
+                      ：{formatPrecision(location.precision)} ·{" "}
+                      {
+                        zhCN.listingDetailView.l1.resolvedLocations
+                          .heuristicConfidence
+                      }
+                      ：{confidencePercent}%
+                    </p>
+                    {location.isMock ? (
+                      <p className="mt-2 text-xs leading-5 text-amber-300">
+                        {
+                          zhCN.listingDetailView.l1.resolvedLocations
+                            .mockNotice
+                        }
+                      </p>
+                    ) : location.heuristicConfidence < 0.75 ? (
+                      <p className="mt-2 text-xs leading-5 text-amber-300">
+                        {
+                          zhCN.listingDetailView.l1.resolvedLocations
+                            .lowConfidenceWarning
+                        }
+                      </p>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         ) : null}
 
         {!isLoaded ? (

@@ -55,7 +55,7 @@ export const zhCN = {
     "settings": "设置"
   },
   "complianceFooter": {
-    "title": "HouseFolio 作品集预览版边界说明",
+    "title": "HouseFolio 产品边界说明",
     "body": "HouseFolio 是一个私人找房决策管理工具。它不抓取第三方房源页面，不发布公共房源库，不撮合租赁交易，也不对房源真实性作背书。当前结构化数据默认保存在浏览器本地。",
     "icpText": "湘ICP备2026023619号-1",
     "icpUrl": "https://beian.miit.gov.cn/"
@@ -105,6 +105,9 @@ export const zhCN = {
         "签约前检查",
         "设置"
       ],
+      "mobileNavMenuLabel": "首页导航",
+      "mobileNavOpenLabel": "打开导航菜单",
+      "mobileNavCloseLabel": "关闭导航菜单",
       "descriptionLead": "记录看房信息，比较通勤与预算，并在签约前检查",
       "descriptionRisk": "常见合同风险。",
       "capabilities": [
@@ -209,9 +212,16 @@ export const zhCN = {
     "title": "新增一套候选房源",
     "description": "这是 HouseFolio 的基础输入层。用户主动添加候选房源后，后续才能进入 L1 通勤与生活圈分析、L2 评分排序、L3 AI 决策建议。"
   },
+  "locationSuggestionInput": {
+    "hint": "输入至少 2 个字后，查询词会经本站服务端发送给高德以获取 POI 候选；选择后仅在本地保存名称和区域，不保存坐标或候选详细地址。",
+    "loading": "正在查询位置候选……",
+    "empty": "没有找到合适的 POI 候选，可继续补充区域或地标名称。",
+    "unavailable": "位置候选暂时不可用，你仍可手动填写位置提示。",
+    "mockNotice": "当前显示的是本地模拟候选，不代表真实高德 POI。"
+  },
   "addListingForm": {
     "title": "添加候选房源",
-    "description": "当前阶段仅保存到浏览器本地，不上传云端。请不要填写手机号、微信号、具体门牌号、身份证号或合同信息。",
+    "description": "房源表单只持久化到浏览器本地；输入位置候选时，查询词会经本站服务端发送给高德。请不要填写手机号、微信号、私人住宅具体门牌号、身份证号或合同信息。",
     "errors": {
       "titleRequired": "请填写房源标题。",
       "validRentRequired": "请填写有效租金。",
@@ -314,11 +324,11 @@ export const zhCN = {
     },
     "l1": {
       "title": "L1 LBS 空间分析",
-      "description": "这里展示通勤时间、已保存的参考通勤结果，以及后续可扩展的生活圈和地图信息。公共交通参考通勤会在你主动点击后通过服务端调用高德计算；生活圈评分和地图可视化仍待后续完善。",
-      "commuteTime": "通勤时间",
+      "description": "这里展示通勤时间、已保存的参考通勤结果，以及后续可扩展的生活圈和地图信息。你可主动选择公共交通、步行、骑行或驾车，并通过服务端调用高德计算；生活圈评分和地图可视化仍待后续完善。",
+      "commuteTime": "评分用公共交通时间",
       "commuteSource": {
         "listing": "默认参考值",
-        "cachedTransit": "本地通勤结果"
+        "cachedTransit": "本地公共交通结果"
       },
       "lifeCircleScore": "生活圈评分",
       "commuteStatus": {
@@ -329,7 +339,7 @@ export const zhCN = {
       },
       "cachedCommuteResults": "已保存的参考通勤结果",
       "emptyCommuteResults": "尚未计算参考通勤",
-      "emptyCommuteDescription": "可通过手动按钮计算公共交通参考通勤。结果仅在你主动触发后生成，并保存到浏览器本地。",
+      "emptyCommuteDescription": "选择一种出行方式后即可手动计算参考通勤。结果仅在你主动触发后生成，并保存到浏览器本地。",
       "storedAt": "计算时间",
       "resultAnchor": "通勤锚点",
       "resultMode": "方式",
@@ -339,9 +349,19 @@ export const zhCN = {
       "modeWalking": "步行",
       "modeCycling": "骑行",
       "modeDriving": "驾车",
+      "modeSelectorLabel": "本次计算方式",
+      "modeScoringNote": "当前 L2 参考评分仍只读取公共交通结果；步行、骑行和驾车结果仅用于展示与比较。",
+      "anchorSelectorLabel": "本次通勤锚点（最多 3 个）",
+      "anchorSelectorDescription": "为控制单次服务调用，本次最多选择 3 个锚点。已有更多锚点不会被删除；页面默认选择本地列表中的前 3 个，你可以在这里调整。",
+      "selectedAnchorCountPrefix": "本次已选择 ",
+      "selectedAnchorCountSuffix": " 个锚点",
+      "anchorSelectionLimit": "本次最多选择 3 个通勤锚点；请先取消一个已选地点。",
+      "selectAtLeastOneAnchor": "请至少选择一个本次需要计算的通勤锚点。",
       "meter": "米",
       "kilometer": "公里",
       "calculateTransitButton": "计算公共交通参考通勤",
+      "calculateButtonPrefix": "计算",
+      "calculateButtonSuffix": "参考通勤",
       "calculating": "正在计算参考通勤……",
       "calculateSucceeded": "参考通勤结果已保存到本地。",
       "calculatePartiallySucceeded": "部分参考通勤结果已保存到本地，少数锚点可能暂时无法计算。",
@@ -352,7 +372,26 @@ export const zhCN = {
       "missingListingAddressDescription": "当前房源没有可用于地理编码的地址线索，因此暂时不能计算通勤。请先补充小区、地铁站、商圈或街道级地址。",
       "anchorCountPrefix": "当前本地通勤锚点：",
       "anchorCountSuffix": " 个",
-      "referenceOnly": "通勤结果基于高德路径规划计算，仅作辅助比较；实际通勤受等车、换乘、拥堵、天气等因素影响。"
+      "resolvedLocations": {
+        "title": "本次地址识别结果",
+        "listing": "候选房源",
+        "anchor": "通勤锚点",
+        "precision": "识别层级",
+        "heuristicConfidence": "HouseFolio 匹配把握估算",
+        "lowConfidenceWarning": "这个结果的匹配把握较低，建议返回位置输入处选择更明确的 POI 候选后再计算。",
+        "mockNotice": "这是本地模拟识别结果，不代表真实高德地址。",
+        "precisionLabels": {
+          "city": "城市",
+          "district": "区县",
+          "business_area": "商圈 / 乡镇",
+          "poi": "道路 / 兴趣点",
+          "school_area": "学校周边",
+          "community": "小区周边",
+          "exact": "门牌级",
+          "unknown": "未知"
+        }
+      },
+      "referenceOnly": "通勤结果基于高德路径规划计算，仅作辅助比较；实际通勤受等车、换乘、拥堵、天气等因素影响。地址匹配把握为 HouseFolio 的启发式估算，并非高德官方置信度。"
     },
     "l2": {
       "title": "L2 参考评分",
@@ -626,7 +665,7 @@ export const zhCN = {
   },
   "workLocationSettingsPanel": {
     "title": "工作/学习地点（通勤锚点）",
-    "description": "工作/学习地点是 L1 LBS 通勤分析的输入。它可以是本人公司、伴侣公司、学校、孩子学校或其他高频目的地。通勤锚点保存在浏览器本地；当你在房源详情页主动点击计算时，系统会通过服务端调用高德完成地理编码和公共交通参考通勤计算。",
+    "description": "工作/学习地点是 L1 LBS 通勤分析的输入。通勤锚点只持久化在浏览器本地；输入位置候选时，查询词会经本站服务端发送给高德。你在房源详情页主动点击计算后，系统还会通过服务端调用高德完成地理编码和所选方式的参考通勤计算。",
     "form": {
       "name": {
         "label": "地点名称 *",
@@ -658,7 +697,7 @@ export const zhCN = {
     "boundary": "请优先使用地铁站、商圈、写字楼、学校附近等模糊位置，不要填写精确门牌号。对于多人共同居住场景，建议添加 2–3 个通勤锚点，便于后续比较不同房源对每个人的通勤影响。"
   },
   "settings": {
-    "eyebrow": "HouseFolio · 作品集预览版K",
+    "eyebrow": "HouseFolio · 设置与本地数据",
     "title": "设置与本地数据",
     "description": "导出或清除当前浏览器中保存的 HouseFolio 本地数据。这个页面用于管理本机数据权利，不会触发云端同步。"
   },
@@ -788,7 +827,7 @@ export const zhCN = {
 } as const;
 
 export const contractReviewCopy = {
-  badge: "Phase 9M-R · 签约前检查",
+  badge: "签约前检查",
   title: "先在本机脱敏合同，再确认是否发送",
   description:
     "粘贴租房合同文本后，HouseFolio 会先在当前页面会话中完成条款切分、本地规则扫描与自动脱敏。只有在你查看完整脱敏预览并主动确认后，系统才会发送脱敏后的合同条款用于 AI 辅助审查。",
@@ -913,7 +952,7 @@ export const contractReviewCopy = {
 } as const;
 
 export const compareRouteCopy = {
-  badge: "Phase 4G-2｜横向比较",
+  badge: "横向比较",
   title: "房源横向比较",
   subtitle: "基于本机候选房源与 URL 中的临时选择结果，展示结构化横向比较、参考评分拆解与辅助说明。",
   noSelectionTitle: "当前还没有选择要比较的房源",

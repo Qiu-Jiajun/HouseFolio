@@ -7,8 +7,11 @@ import type {
   LbsCoordinate,
   LbsProvider,
   LbsTravelMode,
+  LocationSuggestion,
   SearchNearbyPoiInput,
   SearchNearbyPoiResult,
+  SuggestLocationsInput,
+  SuggestLocationsResult,
 } from "./provider";
 
 interface AmapGeocodeItem {
@@ -39,6 +42,22 @@ interface AmapGeocodeResponse {
   info?: string;
   infocode?: string;
   geocodes?: AmapGeocodeItem[];
+}
+
+interface AmapInputTip {
+  id?: string | string[];
+  name?: string | string[];
+  district?: string | string[];
+  address?: string | string[];
+  location?: string | string[];
+}
+
+interface AmapInputTipsResponse {
+  status?: string;
+  count?: string;
+  info?: string;
+  infocode?: string;
+  tips?: AmapInputTip[];
 }
 
 interface AmapTransitPlan {
@@ -168,6 +187,14 @@ function formatCoordinate(coordinate: LbsCoordinate): string {
   return `${coordinate.longitude},${coordinate.latitude}`;
 }
 
+function normalizeAmapText(value: string | string[] | undefined): string {
+  if (Array.isArray(value)) {
+    return value.find((item) => item.trim().length > 0)?.trim() ?? "";
+  }
+
+  return value?.trim() ?? "";
+}
+
 function parsePositiveNumber(value: number | string | undefined): number | null {
   if (value === undefined || value === null || value === "") {
     return null;
@@ -253,14 +280,34 @@ function createGeocodeUrl(input: GeocodeAddressInput): string {
   return url.toString();
 }
 
+function createInputTipsUrl(input: SuggestLocationsInput): string {
+  const url = new URL("https://restapi.amap.com/v3/assistant/inputtips");
+
+  url.searchParams.set("key", getAmapApiKey());
+  url.searchParams.set("keywords", input.keywords.trim());
+  url.searchParams.set("datatype", "poi");
+  url.searchParams.set("output", "JSON");
+
+  if (input.city?.trim()) {
+    url.searchParams.set("city", input.city.trim());
+    url.searchParams.set(
+      "citylimit",
+      input.cityLimit === false ? "false" : "true",
+    );
+  }
+
+  return url.toString();
+}
+
 function createTransitCommuteUrl(input: CalculateCommuteInput): string {
   const url = new URL("https://restapi.amap.com/v3/direction/transit/integrated");
+  const city = input.city?.trim() || "北京";
 
   url.searchParams.set("key", getAmapApiKey());
   url.searchParams.set("origin", formatCoordinate(input.origin));
   url.searchParams.set("destination", formatCoordinate(input.destination));
-  url.searchParams.set("city", "北京");
-  url.searchParams.set("cityd", "北京");
+  url.searchParams.set("city", city);
+  url.searchParams.set("cityd", input.destinationCity?.trim() || city);
   url.searchParams.set("extensions", "base");
   url.searchParams.set("strategy", "0");
   url.searchParams.set("output", "JSON");
@@ -307,6 +354,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     method: "GET",
     cache: "no-store",
+    signal: AbortSignal.timeout(8_000),
   });
 
   if (!response.ok) {
@@ -364,6 +412,52 @@ export const amapLbsProvider: LbsProvider = {
       precision: inferPrecision(firstCandidate.level, input.precision),
       coordinate,
       confidence: calculateConfidence(firstCandidate),
+    };
+  },
+
+  async suggestLocations(input: SuggestLocationsInput): Promise<SuggestLocationsResult> {
+    const data = await fetchJson<AmapInputTipsResponse>(createInputTipsUrl(input));
+
+    if (data.status !== "1") {
+      throw new AmapProviderError(
+        `Amap input tips request failed: ${data.info ?? "unknown error"}.`,
+      );
+    }
+
+    const requestedMaxResults =
+      typeof input.maxResults === "number" &&
+      Number.isFinite(input.maxResults)
+        ? Math.trunc(input.maxResults)
+        : 8;
+    const maxResults = Math.min(Math.max(requestedMaxResults, 1), 10);
+    const suggestions: LocationSuggestion[] = [];
+    const seenIds = new Set<string>();
+
+    for (const tip of data.tips ?? []) {
+      const id = normalizeAmapText(tip.id);
+      const name = normalizeAmapText(tip.name);
+
+      if (!id || !name || seenIds.has(id)) {
+        continue;
+      }
+
+      seenIds.add(id);
+      suggestions.push({
+        id,
+        name,
+        district: normalizeAmapText(tip.district),
+        address: normalizeAmapText(tip.address),
+      });
+
+      if (suggestions.length >= maxResults) {
+        break;
+      }
+    }
+
+    return {
+      provider: "amap",
+      isMock: false,
+      suggestions,
     };
   },
 
@@ -509,6 +603,7 @@ export const amapLbsProvider: LbsProvider = {
   },
 
   async searchNearbyPoi(_input: SearchNearbyPoiInput): Promise<SearchNearbyPoiResult> {
+    void _input;
     throw new AmapProviderNotImplementedError("searchNearbyPoi");
   },
 };
