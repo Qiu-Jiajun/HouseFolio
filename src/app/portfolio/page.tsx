@@ -6,7 +6,7 @@ import { zhCN } from "@/content/zh-cn";
 
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
+    <main className="hf-warm-scope min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
       <section className="mx-auto max-w-7xl">
         <AppNav />
 

@@ -78,7 +78,7 @@ body {
 
 .hf-warm-scope .text-slate-600,
 .hf-warm-scope .text-neutral-400 {
-  color: #958b7d;
+  color: #6f665a;
 }
 
 .hf-warm-scope .bg-white.text-slate-950,
@@ -133,11 +133,106 @@ body {
 
 .hf-warm-scope input::placeholder,
 .hf-warm-scope textarea::placeholder {
-  color: #9a907f;
+  color: #7a6f5c;
 }
 
 .hf-warm-scope .shadow-2xl,
 .hf-warm-scope .shadow-xl,
 .hf-warm-scope .shadow-sm {
   box-shadow: 0 18px 55px rgba(117, 92, 58, 0.12);
+}
+
+/* ---- stopgap: map remaining legacy dark-theme classes ---- */
+
+/* focus / hover states of legacy slate inputs & buttons */
+.hf-warm-scope .focus\:border-slate-400:focus {
+  border-color: #8a8f55;
+}
+
+.hf-warm-scope .hover\:bg-slate-800:hover,
+.hf-warm-scope .hover\:bg-slate-900:hover {
+  background-color: #f4f0e7;
+}
+
+.hf-warm-scope label.hover\:bg-slate-200:hover {
+  background-color: #f4f0e7;
+}
+
+.hf-warm-scope .hover\:border-slate-500:hover {
+  border-color: #a7ab78;
+}
+
+.hf-warm-scope .hover\:text-white:hover {
+  color: #282417;
+}
+
+.hf-warm-scope .decoration-slate-600 {
+  text-decoration-color: #c9bda9;
+}
+
+/* disabled state of white primary buttons (would otherwise look enabled) */
+.hf-warm-scope button.bg-white:disabled,
+.hf-warm-scope a.bg-white:disabled {
+  background-color: #c9c4b4;
+  color: #f7f3e8;
+}
+
+/* success banners: dark emerald -> light warm green */
+.hf-warm-scope .bg-emerald-950 {
+  background-color: #eef3e2;
+}
+
+.hf-warm-scope .border-emerald-900 {
+  border-color: #ccd8b2;
+}
+
+.hf-warm-scope .text-emerald-200 {
+  color: #4c5c33;
+}
+
+.hf-warm-scope .text-emerald-300 {
+  color: #5b6b3d;
+}
+
+/* warning banners: dark amber -> light warm amber */
+.hf-warm-scope .bg-amber-950,
+.hf-warm-scope .bg-amber-950\/40,
+.hf-warm-scope .bg-amber-950\/50 {
+  background-color: #f8eeda;
+}
+
+.hf-warm-scope .border-amber-900,
+.hf-warm-scope .border-amber-800\/80 {
+  border-color: #e2cda3;
+}
+
+.hf-warm-scope .text-amber-100,
+.hf-warm-scope .text-amber-200 {
+  color: #6b5526;
+}
+
+.hf-warm-scope .text-amber-300 {
+  color: #8a6a2f;
+}
+
+/* error banners: dark red -> light warm red (button.border-red-900 already handled above) */
+.hf-warm-scope .bg-red-950 {
+  background-color: #fbeee9;
+}
+
+.hf-warm-scope .hover\:bg-red-950:hover {
+  background-color: #f5e0d8;
+}
+
+.hf-warm-scope .text-red-200 {
+  color: #7b2d24;
+}
+
+.hf-warm-scope div.border-red-900,
+.hf-warm-scope p.border-red-900 {
+  border-color: #d8b4ae;
+}
+
+.hf-warm-scope .border-red-300\/20 {
+  border-color: #e0b3ab;
 }
