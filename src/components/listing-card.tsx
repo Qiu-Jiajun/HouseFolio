@@ -57,7 +57,7 @@ export function ListingCard({
 
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <p className="mb-2 text-xs text-[#81786a]">
+          <p className="mb-2 text-xs text-[#6f665a]">
             {listing.district} / {listing.addressHint}
           </p>
           <h2 className="text-xl font-semibold leading-7 text-[#272318]">
@@ -96,20 +96,20 @@ export function ListingCard({
 
       <div className="mb-5 grid gap-3 md:grid-cols-[1.2fr_1fr_1fr]">
         <div className="rounded-2xl bg-[#f4f0e7] p-4 text-[#272318]">
-          <p className="text-xs font-medium text-[#82786a]">
+          <p className="text-xs font-medium text-[#6f665a]">
             {zhCN.listingCard.fields.rent}
           </p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">
             {zhCN.common.currencyCny}
             {listing.rent}
           </p>
-          <p className="mt-1 text-xs text-[#82786a]">
+          <p className="mt-1 text-xs text-[#6f665a]">
             /{zhCN.common.month}
           </p>
         </div>
 
         <div className="rounded-2xl border border-[#e4dbcd] bg-white p-4">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.commute}
           </p>
           <p className="mt-2 text-xl font-semibold text-[#272318]">
@@ -118,14 +118,14 @@ export function ListingCard({
               : zhCN.common.pending}
           </p>
           {commuteSourceText ? (
-            <p className="mt-1 text-xs text-[#82786a]">
+            <p className="mt-1 text-xs text-[#6f665a]">
               {commuteSourceText}
             </p>
           ) : null}
         </div>
 
         <div className="rounded-2xl border border-[#e4dbcd] bg-white p-4">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.referenceScore}
           </p>
           <p className="mt-2 text-xl font-semibold text-[#272318]">
@@ -136,7 +136,7 @@ export function ListingCard({
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.area}
           </p>
           <p className="mt-1 font-medium text-[#343025]">
@@ -146,14 +146,14 @@ export function ListingCard({
         </div>
 
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.layout}
           </p>
           <p className="mt-1 font-medium text-[#343025]">{listing.layout}</p>
         </div>
 
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.lifeCircle}
           </p>
           <p className="mt-1 font-medium text-[#343025]">
