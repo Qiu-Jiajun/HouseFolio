@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { LocationMapPicker } from "@/components/location-map-picker";
 import {
   formatSuggestionValue,
@@ -30,6 +31,8 @@ export function WorkLocationSettingsPanel() {
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [locationPendingDeletion, setLocationPendingDeletion] =
+    useState<WorkLocation | null>(null);
   const [isLocationMapPickerOpen, setIsLocationMapPickerOpen] =
     useState(false);
   const locationMapTriggerRef = useRef<HTMLButtonElement>(null);
@@ -83,16 +86,13 @@ export function WorkLocationSettingsPanel() {
     setMessage(zhCN.workLocationSettingsPanel.savedMessage);
   }
 
-  function handleDelete(workLocationId: string) {
-    const confirmed = window.confirm(
-      zhCN.workLocationSettingsPanel.deleteConfirm
-    );
-
-    if (!confirmed) {
+  function confirmDelete() {
+    if (!locationPendingDeletion) {
       return;
     }
 
-    deleteWorkLocation(workLocationId);
+    deleteWorkLocation(locationPendingDeletion.id);
+    setLocationPendingDeletion(null);
     refreshWorkLocations();
   }
 
@@ -123,7 +123,10 @@ export function WorkLocationSettingsPanel() {
       ) : null}
 
       {error ? (
-        <div className="mb-5 rounded-xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200">
+        <div
+          className="mb-5 rounded-xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200"
+          role="alert"
+        >
           {error}
         </div>
       ) : null}
@@ -228,7 +231,7 @@ export function WorkLocationSettingsPanel() {
 
                   <button
                     type="button"
-                    onClick={() => handleDelete(workLocation.id)}
+                    onClick={() => setLocationPendingDeletion(workLocation)}
                     className="rounded-full border border-red-900 px-4 py-2 text-sm font-medium text-red-200 hover:bg-red-950"
                   >
                     {zhCN.workLocationSettingsPanel.cards.delete}
@@ -248,13 +251,27 @@ export function WorkLocationSettingsPanel() {
 
                 <p className="mt-4 text-xs text-slate-600">
                   {zhCN.workLocationSettingsPanel.cards.createdAt}:{" "}
-                  {new Date(workLocation.createdAt).toLocaleString()}
+                  {new Date(workLocation.createdAt).toLocaleString("zh-CN")}
                 </p>
               </article>
             ))}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={locationPendingDeletion !== null}
+        title={zhCN.workLocationSettingsPanel.deleteDialog.title}
+        description={
+          locationPendingDeletion
+            ? `${zhCN.workLocationSettingsPanel.deleteConfirm}（${locationPendingDeletion.name}）`
+            : zhCN.workLocationSettingsPanel.deleteConfirm
+        }
+        confirmLabel={zhCN.workLocationSettingsPanel.deleteDialog.confirm}
+        cancelLabel={zhCN.workLocationSettingsPanel.deleteDialog.cancel}
+        onCancel={() => setLocationPendingDeletion(null)}
+        onConfirm={confirmDelete}
+      />
     </section>
   );
 }
