@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { zhCN } from "@/content/zh-cn";
 import {
   clearAllListingPhotos,
@@ -26,6 +27,7 @@ export function SettingsPhotoDataPanel() {
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,15 +49,7 @@ export function SettingsPhotoDataPanel() {
     void refreshPhotoSummary();
   }, []);
 
-  async function handleClearAllPhotos() {
-    const confirmed = window.confirm(
-      zhCN.settingsPhotoDataPanel.messages.clearConfirm,
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+  async function confirmClearAllPhotos() {
     setIsClearing(true);
     setStatusMessage("");
     setErrorMessage("");
@@ -64,6 +58,7 @@ export function SettingsPhotoDataPanel() {
       await clearAllListingPhotos();
       await refreshPhotoSummary();
       setStatusMessage(zhCN.settingsPhotoDataPanel.messages.cleared);
+      setIsClearDialogOpen(false);
     } catch {
       setErrorMessage(zhCN.settingsPhotoDataPanel.states.clearFailed);
     } finally {
@@ -99,9 +94,7 @@ export function SettingsPhotoDataPanel() {
 
           <button
             type="button"
-            onClick={() => {
-              void handleClearAllPhotos();
-            }}
+            onClick={() => setIsClearDialogOpen(true)}
             disabled={isClearing}
             className="rounded-full border border-red-900 px-5 py-3 text-sm font-medium text-red-200 hover:bg-red-950 disabled:cursor-not-allowed disabled:text-red-900"
           >
@@ -113,13 +106,19 @@ export function SettingsPhotoDataPanel() {
       </div>
 
       {statusMessage ? (
-        <div className="mt-5 rounded-xl border border-emerald-900 bg-emerald-950 px-4 py-3 text-sm text-emerald-200">
+        <div
+          className="mt-5 rounded-xl border border-emerald-900 bg-emerald-950 px-4 py-3 text-sm text-emerald-200"
+          role="status"
+        >
           {statusMessage}
         </div>
       ) : null}
 
       {errorMessage ? (
-        <div className="mt-5 rounded-xl border border-amber-900 bg-amber-950 px-4 py-3 text-sm text-amber-200">
+        <div
+          className="mt-5 rounded-xl border border-amber-900 bg-amber-950 px-4 py-3 text-sm text-amber-200"
+          role="alert"
+        >
           {errorMessage}
         </div>
       ) : null}
@@ -165,6 +164,20 @@ export function SettingsPhotoDataPanel() {
           <li>{zhCN.settingsPhotoDataPanel.notices.clearScope}</li>
         </ul>
       </div>
+
+      <ConfirmDialog
+        isOpen={isClearDialogOpen}
+        isPending={isClearing}
+        title={zhCN.settingsPhotoDataPanel.messages.clearDialogTitle}
+        description={zhCN.settingsPhotoDataPanel.messages.clearConfirm}
+        confirmLabel={zhCN.settingsPhotoDataPanel.messages.clearDialogConfirm}
+        cancelLabel={zhCN.settingsPhotoDataPanel.messages.clearDialogCancel}
+        pendingLabel={zhCN.settingsPhotoDataPanel.actions.clearing}
+        onCancel={() => setIsClearDialogOpen(false)}
+        onConfirm={() => {
+          void confirmClearAllPhotos();
+        }}
+      />
     </section>
   );
 }

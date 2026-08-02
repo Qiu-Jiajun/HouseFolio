@@ -57,7 +57,7 @@ export function ListingCard({
 
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <p className="mb-2 text-xs text-[#81786a]">
+          <p className="mb-2 text-xs text-[#6f665a]">
             {listing.district} / {listing.addressHint}
           </p>
           <h2 className="text-xl font-semibold leading-7 text-[#272318]">
@@ -79,7 +79,7 @@ export function ListingCard({
               className={[
                 "rounded-full border px-3 py-1 text-xs transition",
                 selected
-                  ? "border-[#727a3f] bg-[#727a3f] text-white"
+                  ? "border-[#727a3f] bg-[#727a3f] text-[#ffffff]"
                   : "border-[#d8cfbd] bg-white text-[#5f6240] hover:border-[#a7ab78]",
                 selectionDisabled
                   ? "cursor-not-allowed opacity-40 hover:border-[#d8cfbd]"
@@ -96,20 +96,20 @@ export function ListingCard({
 
       <div className="mb-5 grid gap-3 md:grid-cols-[1.2fr_1fr_1fr]">
         <div className="rounded-2xl bg-[#f4f0e7] p-4 text-[#272318]">
-          <p className="text-xs font-medium text-[#82786a]">
+          <p className="text-xs font-medium text-[#6f665a]">
             {zhCN.listingCard.fields.rent}
           </p>
           <p className="mt-2 text-2xl font-semibold tracking-tight">
             {zhCN.common.currencyCny}
             {listing.rent}
           </p>
-          <p className="mt-1 text-xs text-[#82786a]">
+          <p className="mt-1 text-xs text-[#6f665a]">
             /{zhCN.common.month}
           </p>
         </div>
 
         <div className="rounded-2xl border border-[#e4dbcd] bg-white p-4">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.commute}
           </p>
           <p className="mt-2 text-xl font-semibold text-[#272318]">
@@ -118,14 +118,14 @@ export function ListingCard({
               : zhCN.common.pending}
           </p>
           {commuteSourceText ? (
-            <p className="mt-1 text-xs text-[#82786a]">
+            <p className="mt-1 text-xs text-[#6f665a]">
               {commuteSourceText}
             </p>
           ) : null}
         </div>
 
         <div className="rounded-2xl border border-[#e4dbcd] bg-white p-4">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.referenceScore}
           </p>
           <p className="mt-2 text-xl font-semibold text-[#272318]">
@@ -136,7 +136,7 @@ export function ListingCard({
 
       <div className="mb-5 grid grid-cols-3 gap-3 text-sm">
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.area}
           </p>
           <p className="mt-1 font-medium text-[#343025]">
@@ -146,14 +146,14 @@ export function ListingCard({
         </div>
 
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.layout}
           </p>
           <p className="mt-1 font-medium text-[#343025]">{listing.layout}</p>
         </div>
 
         <div className="rounded-2xl bg-[#faf6ee] p-3">
-          <p className="text-xs text-[#82786a]">
+          <p className="text-xs text-[#6f665a]">
             {zhCN.listingCard.fields.lifeCircle}
           </p>
           <p className="mt-1 font-medium text-[#343025]">
@@ -171,7 +171,7 @@ export function ListingCard({
       <div className="flex flex-wrap gap-3">
         <a
           href={`/portfolio/${listing.id}`}
-          className="inline-flex rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8a8f55]"
+          className="inline-flex rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8a8f55]"
         >
           {zhCN.listingCard.actions.viewDetails}
         </a>
@@ -181,7 +181,7 @@ export function ListingCard({
             type="button"
             onClick={() => onDelete(listing.id)}
             disabled={deleteDisabled}
-            className="inline-flex rounded-full border border-[#8f1f1b] bg-transparent px-4 py-2 text-sm font-medium text-[#8f1f1b] transition hover:bg-[#8f1f1b] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:border-[#b58a86] disabled:text-[#9b706c] disabled:hover:bg-transparent disabled:hover:text-[#9b706c]"
+            className="inline-flex rounded-full border border-[#8f1f1b] bg-transparent px-4 py-2 text-sm font-medium text-[#8f1f1b] transition hover:bg-[#8f1f1b] hover:text-[#ffffff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:border-[#b58a86] disabled:text-[#9b706c] disabled:hover:bg-transparent disabled:hover:text-[#9b706c]"
           >
             {zhCN.listingCard.actions.deleteListing}
           </button>

@@ -278,7 +278,7 @@ function StarRatingControl({
         <button
           type="button"
           onClick={() => onChange(undefined)}
-          className="text-xs text-[#82786a] underline decoration-[#c8bca9] underline-offset-2 hover:text-[#4f5131]"
+          className="text-xs text-[#6f665a] underline decoration-[#c8bca9] underline-offset-2 hover:text-[#4f5131]"
         >
           {copy.card.clearRating}
         </button>
@@ -356,7 +356,7 @@ function ViewingTimeControl({
         className="block w-full rounded-2xl border border-[#d9cdb9] bg-white/80 px-5 py-4 text-left text-sm text-[#5f5a50] transition hover:border-[#b7346d] hover:bg-white"
         aria-expanded={isOpen}
       >
-        <span className="block text-xs text-[#82786a]">{label}</span>
+        <span className="block text-xs text-[#6f665a]">{label}</span>
         <span className="mt-1 block">{formatDateTime(value, emptyLabel)}</span>
       </button>
 
@@ -389,7 +389,7 @@ function ViewingTimeControl({
             <button
               type="button"
               onClick={applyPickerValue}
-              className="rounded-full bg-[#727a3f] px-4 py-2 text-xs font-medium text-white"
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-xs font-medium text-[#ffffff]"
             >
               {copy.card.applyViewedAt}
             </button>
@@ -435,7 +435,7 @@ function ViewingStatusPicker({
       >
         {copy.groupLabels[group]}
       </button>
-      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.65rem] text-white">
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.65rem] text-[#ffffff]">
         v
       </span>
 
@@ -499,7 +499,7 @@ function CardMemoControl({
   return (
     <div className="block rounded-2xl border border-[#eadfcd] bg-white/85 p-4 transition focus-within:border-[#d8cdbc]">
       <div className="flex items-center justify-between gap-3">
-        <span className="text-xs text-[#82786a]">{copy.card.recordSummary}</span>
+        <span className="text-xs text-[#6f665a]">{copy.card.recordSummary}</span>
         <button
           type="button"
           onClick={() => setIsExpanded((current) => !current)}
@@ -814,7 +814,7 @@ export function ViewingLogWorkbench() {
 
           <Link
             href="/portfolio/new"
-            className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#606936]"
+            className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] shadow-sm transition hover:bg-[#606936]"
           >
             {copy.actions.addListing}
           </Link>
@@ -865,7 +865,7 @@ export function ViewingLogWorkbench() {
             key={group.value}
             className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm"
           >
-            <p className="text-sm text-[#80786a]">{group.label}</p>
+            <p className="text-sm text-[#6f665a]">{group.label}</p>
             <p className="mt-2 text-3xl font-semibold text-[#282417]">
               {groupCounts[group.value as ViewingGroup]}
             </p>
@@ -980,7 +980,7 @@ export function ViewingLogWorkbench() {
                         <h2 className="mt-3 text-2xl font-semibold leading-8 text-[#272318]">
                           {listing.title}
                         </h2>
-                        <p className="mt-1 text-sm text-[#81786a]">
+                        <p className="mt-1 text-sm text-[#6f665a]">
                           {listing.district} / {listing.addressHint}
                         </p>
 
@@ -994,7 +994,7 @@ export function ViewingLogWorkbench() {
                           />
                           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
                             <div className="rounded-2xl border border-[#eadfcd] bg-white/75 px-4 py-3">
-                              <p className="text-xs text-[#82786a]">
+                              <p className="text-xs text-[#6f665a]">
                                 {copy.card.rent}
                               </p>
                               <p className="mt-1 text-base font-semibold leading-6 text-[#272318]">
@@ -1003,7 +1003,7 @@ export function ViewingLogWorkbench() {
                               </p>
                             </div>
                             <div className="rounded-2xl border border-[#eadfcd] bg-white/75 px-4 py-3">
-                              <p className="text-xs text-[#82786a]">
+                              <p className="text-xs text-[#6f665a]">
                                 {copy.card.commute}
                               </p>
                               <p className="mt-1 text-base font-semibold leading-6 text-[#272318]">
@@ -1018,7 +1018,7 @@ export function ViewingLogWorkbench() {
                         <button
                           type="button"
                           onClick={() => openDrawer(listing)}
-                          className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936]"
+                          className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
                         >
                           {copy.actions.editRecord}
                         </button>
@@ -1176,7 +1176,7 @@ export function ViewingLogWorkbench() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="submit"
-                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#606936]"
+                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
                 >
                   {copy.drawer.saveButton}
                 </button>

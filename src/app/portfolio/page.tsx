@@ -6,7 +6,7 @@ import { zhCN } from "@/content/zh-cn";
 
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
+    <main className="hf-warm-scope min-h-screen bg-[#f8f4ec] px-4 py-6 text-[#242114] sm:px-6 lg:px-8">
       <section className="mx-auto max-w-7xl">
         <AppNav />
 
@@ -39,7 +39,7 @@ export default function PortfolioPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href="/portfolio/new"
-                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#606936]"
+                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] shadow-sm transition hover:bg-[#606936]"
                 >
                   {zhCN.portfolio.actions.addListing}
                 </a>

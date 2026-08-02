@@ -183,7 +183,7 @@ export function PortfolioList() {
     <>
       <div className="mb-6 grid gap-3 md:grid-cols-3">
         <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
-          <p className="text-sm text-[#80786a]">
+          <p className="text-sm text-[#6f665a]">
             {zhCN.portfolioList.stats.totalListings}
           </p>
           <p className="mt-2 text-3xl font-semibold text-[#282417]">
@@ -192,7 +192,7 @@ export function PortfolioList() {
         </div>
 
         <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
-          <p className="text-sm text-[#80786a]">
+          <p className="text-sm text-[#6f665a]">
             {zhCN.portfolioList.stats.currentlyVisible}
           </p>
           <p className="mt-2 text-3xl font-semibold text-[#282417]">
@@ -201,7 +201,7 @@ export function PortfolioList() {
         </div>
 
         <div className="rounded-2xl border border-[#e5dccd] bg-white/78 p-5 shadow-sm">
-          <p className="text-sm text-[#80786a]">
+          <p className="text-sm text-[#6f665a]">
             {zhCN.portfolioList.stats.averageVisibleRent}
           </p>
           <p className="mt-2 text-3xl font-semibold text-[#282417]">
@@ -268,13 +268,13 @@ export function PortfolioList() {
         </div>
 
         {statusFilter !== "all" ? (
-          <p className="mt-4 text-sm text-[#82786a]">
+          <p className="mt-4 text-sm text-[#6f665a]">
             {zhCN.portfolioList.controls.showingStatusPrefix}
             “{statusText[statusFilter]}”
             {zhCN.portfolioList.controls.showingStatusSuffix}
           </p>
         ) : (
-          <p className="mt-4 text-sm text-[#82786a]">
+          <p className="mt-4 text-sm text-[#6f665a]">
             {zhCN.portfolioList.controls.showingAll}
           </p>
         )}
@@ -311,7 +311,7 @@ export function PortfolioList() {
               type="button"
               onClick={goToCompare}
               disabled={!canCompare}
-              className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {portfolioCompareSelectionCopy.compareAction}
             </button>
@@ -319,7 +319,7 @@ export function PortfolioList() {
         </div>
 
         <p className="mt-4 text-sm leading-6 text-[#697048]">{compareHint}</p>
-        <p className="mt-2 text-xs leading-5 text-[#838962]">
+        <p className="mt-2 text-xs leading-5 text-[#5f6538]">
           {portfolioCompareSelectionCopy.referenceNote}
         </p>
       </div>
@@ -340,7 +340,7 @@ export function PortfolioList() {
           </p>
           <a
             href="/portfolio/new"
-            className="mt-6 inline-flex rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#606936]"
+            className="mt-6 inline-flex rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
           >
             {zhCN.portfolioList.empty.action}
           </a>

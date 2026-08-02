@@ -22,7 +22,15 @@ type LocationSuggestionInputProps = {
 
 type SuggestionStatus = "idle" | "loading" | "empty" | "error";
 
-function formatSuggestionValue(suggestion: LocationSuggestion): string {
+export type LocationSelection = {
+  name: string;
+  district: string;
+  address: string;
+};
+
+export function formatSuggestionValue(
+  suggestion: LocationSelection,
+): string {
   return Array.from(
     new Set(
       [suggestion.name, suggestion.district].filter(

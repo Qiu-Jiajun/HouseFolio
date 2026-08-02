@@ -48,9 +48,16 @@ function ScoreRow({
         <p className="text-base font-semibold text-white">{score.toFixed(1)}</p>
       </div>
 
-      <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
+      <div
+        className="h-2.5 overflow-hidden rounded-full bg-slate-800"
+        role="progressbar"
+        aria-valuenow={Math.round(Math.max(0, Math.min(10, score)) * 10)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={label}
+      >
         <div
-          className="h-full rounded-full bg-white"
+          className="h-full rounded-full bg-[#727a3f]"
           style={{ width: `${Math.max(0, Math.min(100, score * 10))}%` }}
         />
       </div>
@@ -352,7 +359,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
               setDeleteDialogOpen(true);
             }}
             disabled={isDeleting}
-            className="mt-6 rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
+            className="mt-6 rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-[#ffffff] transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
           >
             {isDeleting
               ? zhCN.listingDeleteDialog.deleting

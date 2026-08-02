@@ -84,7 +84,7 @@ export const zhCN = {
       {
         "level": "L3",
         "title": "AI 解释层",
-        "description": "处理总结、建议与解释，把结构化数据转化为更容易理解的人话化决策辅助。"
+        "description": "处理总结、建议与解释，把结构化数据转化为通俗易懂的决策辅助。"
       }
     ],
     "currentPhase": {
@@ -367,7 +367,7 @@ export const zhCN = {
       "calculatePartiallySucceeded": "部分参考通勤结果已保存到本地，少数锚点可能暂时无法计算。",
       "calculateFailed": "参考通勤计算失败，请稍后重试。你也可以检查房源地址线索或通勤锚点是否足够清楚。",
       "noWorkLocations": "请先到设置添加工作/学习地点（通勤锚点）。",
-      "noWorkLocationsDescription": "当前还没有可用于计算的工作/学习地点。请先到 Settings 添加至少一个通勤锚点，例如公司、学校或伴侣公司附近。",
+      "noWorkLocationsDescription": "当前还没有可用于计算的工作/学习地点。请先到设置页添加至少一个通勤锚点，例如公司、学校或伴侣公司附近。",
       "missingListingAddress": "当前房源缺少可用于计算的地址线索。",
       "missingListingAddressDescription": "当前房源没有可用于地理编码的地址线索，因此暂时不能计算通勤。请先补充小区、地铁站、商圈或街道级地址。",
       "anchorCountPrefix": "当前本地通勤锚点：",
@@ -409,7 +409,7 @@ export const zhCN = {
     },
     "l3": {
       "title": "L3 AI 决策建议",
-      "description": "后续在用户明确确认并完成数据脱敏后，这里会基于基础信息、L1/L2 输出、笔记、评分和状态生成 checklist、风险解释和决策建议。",
+      "description": "后续在用户明确确认并完成数据脱敏后，这里会基于基础信息、L1/L2 输出、笔记、评分和状态生成检查清单、风险解释和决策建议。",
       "disabledButton": "AI 分析尚未接入"
     },
     "basicInfo": {
@@ -694,6 +694,11 @@ export const zhCN = {
       "delete": "删除"
     },
     "deleteConfirm": "确认删除这个工作/学习地点吗？",
+    "deleteDialog": {
+      "title": "确认删除这个工作/学习地点？",
+      "confirm": "确认删除",
+      "cancel": "取消"
+    },
     "boundary": "请优先使用地铁站、商圈、写字楼、学校附近等模糊位置，不要填写精确门牌号。对于多人共同居住场景，建议添加 2–3 个通勤锚点，便于后续比较不同房源对每个人的通勤影响。"
   },
   "settings": {
@@ -705,6 +710,9 @@ export const zhCN = {
     "messages": {
       "exportStarted": "本地 HouseFolio 数据导出已开始。",
       "clearConfirm": "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？这会移除当前设备保存的房源、笔记、评分、看房记录、通勤结果和本地状态标记。",
+      "clearDialogTitle": "确认清除本机数据？",
+      "clearDialogConfirm": "确认清除",
+      "clearDialogCancel": "取消",
       "cleared": "当前浏览器中的 HouseFolio 本地数据已清除。",
       "importStarted": "本地 HouseFolio JSON 导入已开始。"
     },
@@ -750,6 +758,9 @@ export const zhCN = {
       "action": "导入 HouseFolio JSON",
       "importing": "正在导入…",
       "confirmMessage": "导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、看房计划、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？",
+      "confirmDialogTitle": "确认导入并覆盖本机数据？",
+      "confirmDialogAction": "确认导入",
+      "confirmDialogCancel": "取消",
       "recognizedKeys": "识别到的可导入数据项",
       "ignoredKeys": "将被忽略的未知数据项",
       "importedKeys": "已导入数据项",
@@ -788,6 +799,12 @@ export const zhCN = {
       "loadFailed": "本机照片读取失败，请稍后重试。",
       "saveFailed": "照片保存失败，请稍后重试。",
       "deleteFailed": "照片删除失败，请稍后重试。"
+    },
+    "deleteDialog": {
+      "title": "确认删除这张看房照片？",
+      "body": "照片文件将从本机删除，且无法恢复。房源、笔记、评分和通勤结果不受影响。",
+      "confirm": "确认删除",
+      "cancel": "取消"
     }
   },
   "settingsPhotoDataPanel": {
@@ -812,11 +829,14 @@ export const zhCN = {
       "noCloudSync": "当前未开启云端同步，照片不会默认上传云端。",
       "noAi": "当前不会将照片发送给 AI，也不会进行 AI 照片分析。",
       "browserDataWarning": "更换设备、清除网站数据或使用无痕模式，可能导致本机照片不可见。",
-      "backupLater": "后续将通过 Portfolio 备份包支持照片导出与导入；当前 JSON 导出暂不包含照片文件本体。",
+      "backupLater": "后续将通过候选房源备份包支持照片导出与导入；当前 JSON 导出暂不包含照片文件本体。",
       "clearScope": "清除全部本机照片只会删除照片文件本体，不会删除房源、笔记、评分、状态、通勤锚点或通勤结果。"
     },
     "messages": {
       "clearConfirm": "确认清除当前浏览器与设备中保存的全部看房照片吗？该操作不会删除房源、笔记、评分或通勤结果，但照片文件本体将从本机删除，且当前阶段无法恢复。",
+      "clearDialogTitle": "确认清除全部本机照片？",
+      "clearDialogConfirm": "确认清除",
+      "clearDialogCancel": "取消",
       "cleared": "本机照片已清除。"
     },
     "states": {
@@ -956,23 +976,23 @@ export const compareRouteCopy = {
   title: "房源横向比较",
   subtitle: "基于本机候选房源与 URL 中的临时选择结果，展示结构化横向比较、参考评分拆解与辅助说明。",
   noSelectionTitle: "当前还没有选择要比较的房源",
-  noSelectionBody: "请先回到 Portfolio，选择 2–4 套候选房源后再进入横向比较。本次选择只用于当前比较流程，不会保存为本地记录。",
+  noSelectionBody: "请先回到候选房源页，选择 2–4 套候选房源后再进入横向比较。本次选择只用于当前比较流程，不会保存为本地记录。",
   tooFewTitle: "至少需要选择 2 套房源",
-  tooFewBody: "横向比较需要至少 2 套候选房源。当前有效选择不足，请回到 Portfolio 重新选择 2–4 套候选房源。",
-  tooManyTitle: "第一版最多支持比较 4 套房源",
-  tooManyBody: "为了保持比较结果清晰，第一版 Compare UI 最多同时比较 4 套房源。请回到 Portfolio 减少选择数量后再进入。",
+  tooFewBody: "横向比较需要至少 2 套候选房源。当前有效选择不足，请回到候选房源页重新选择 2–4 套候选房源。",
+  tooManyTitle: "最多支持同时比较 4 套房源",
+  tooManyBody: "为了保持比较结果清晰，最多同时比较 4 套房源。请回到候选房源页减少选择数量后再进入。",
   readyTitle: "已收到待比较房源",
   readyBody: "当前页面已识别 URL 中的临时选择结果，并会基于本机候选房源生成结构化横向比较。",
   selectedCountPrefix: "当前待比较数量",
   selectedCountSuffix: "套",
   routeOnlyNote: "当前比较只使用本机已有候选房源与临时 URL 选择，不新增本地持久化；AI 辅助解释需要用户确认后才会触发。",
-  returnToPortfolio: "返回 Portfolio 重新选择",
+  returnToPortfolio: "返回候选房源重新选择",
   referenceNote: "比较结果后续仍将定位为辅助比较，不代表最终推荐。",
 } as const;
 
 export const portfolioCompareSelectionCopy = {
   title: "横向比较",
-  description: "选择 2–4 套候选房源，进入 Compare 页面做结构化横向比较。当前选择只作为本次临时操作，不会保存到本地数据中。",
+  description: "选择 2–4 套候选房源，进入辅助比较页面做结构化横向比较。当前选择只作为本次临时操作，不会保存到本地数据中。",
   selectedPrefix: "已选择 ",
   selectedSuffix: " / 4 套",
   compareAction: "比较已选房源",
@@ -983,17 +1003,17 @@ export const portfolioCompareSelectionCopy = {
   hints: {
     none: "请先选择 2–4 套候选房源。",
     tooFew: "还需要再选择 1 套房源才能开始比较。",
-    ready: "已达到比较条件，可以进入 Compare 页面。",
-    maxReached: "已达到第一版最多比较 4 套的上限。你可以取消某套后重新选择。",
+    ready: "已达到比较条件，可以进入辅助比较页面。",
+    maxReached: "已达到最多比较 4 套的上限。你可以取消某套后重新选择。",
   },
 } as const;
 
 export const compareSelectedListingsCopy = {
-  badge: "Phase 4B-8｜Selected listings preview",
+  badge: "已选房源预览",
   title: "结构化比较预览",
-  description: "当前页面已根据 URL 中的房源 ID 读取本机房源数据，并生成 ComparisonModel 预览。完整横向表将在后续阶段评审。",
+  description: "当前页面已根据链接中的房源 ID 读取本机房源数据，生成结构化比较预览，可配合下方横向对比表一起查看。",
   loading: "正在读取本机房源数据…",
-  returnToPortfolio: "返回 Portfolio 重新选择",
+  returnToPortfolio: "返回候选房源重新选择",
   foundPrefix: "已找到 ",
   foundSuffix: " 套有效房源。",
   missingPrefix: " 另有 ",
@@ -1011,18 +1031,18 @@ export const compareSelectedListingsCopy = {
   },
   empty: {
     noIdsTitle: "当前还没有选择要比较的房源",
-    noIdsBody: "请先回到 Portfolio，选择 2–4 套候选房源。",
-    tooManyTitle: "第一版最多支持比较 4 套房源",
-    tooManyBody: "请减少选择数量后，再回到 Compare 页面查看结构化预览。",
+    noIdsBody: "请先回到候选房源页，选择 2–4 套候选房源。",
+    tooManyTitle: "最多支持同时比较 4 套房源",
+    tooManyBody: "请减少选择数量后，再回到辅助比较页面查看结构化预览。",
     notEnoughFoundTitle: "有效房源不足 2 套",
-    notEnoughFoundBody: "这些房源可能已被删除，或当前浏览器没有对应本机数据。请回到 Portfolio 重新选择。",
+    notEnoughFoundBody: "这些房源可能已被删除，或当前浏览器没有对应本机数据。请回到候选房源页重新选择。",
     noMissingFields: "当前未标记缺失字段。",
     noRiskFlags: "当前未标记风险信号。",
   },
 } as const;
 
 export const compareTableCopy = {
-  badge: "Phase 4B-11｜Compare table",
+  badge: "横向对比",
   title: "横向对比表",
   description: "把 2–4 套候选房源按同一组字段横向展开，帮助你从基础信息、通勤、参考评分、用户补充资料和风险信号中做维度拆解。",
   dimensionColumn: "比较维度",
@@ -1076,7 +1096,7 @@ export const compareTableCopy = {
 
 
 export const compareExplanationCopy = {
-  badge: "Phase 4C-2｜静态辅助解释",
+  badge: "辅助解读",
   title: "辅助解释｜基于当前对比信息",
   description:
     "以下说明基于当前已选房源的结构化比较信息，用于帮助你理解取舍，不代表最终推荐。本面板不调用 AI，也不保存解释结果；AI 辅助解释需在下方确认后单独触发。",
@@ -1113,7 +1133,7 @@ export const compareExplanationCopy = {
     "该说明仅用于辅助比较，不构成房源推荐、真实性判断或租赁建议。请自行核实房源、合同和交易信息。",
 } as const;
 export const compareMockAiExplanationCopy = {
-  badge: "Phase 4E-2｜AI 辅助解释确认",
+  badge: "AI 辅助解读",
   title: "AI 辅助解释",
   description:
     "点击后会先展示发送确认说明。确认后，系统会把当前比较结果转换为已脱敏的结构化输入，请求 AI 生成辅助解释；解释结果仍只保留在本次页面会话中。",
@@ -1128,7 +1148,7 @@ export const compareMockAiExplanationCopy = {
   confirmation: {
     title: "发送给 AI 前请确认",
     body:
-      "本次 AI 辅助解释会将已选房源的脱敏结构化摘要发送给第三方大模型服务商，用于生成对比说明、取舍提示和看房 checklist。",
+      "本次 AI 辅助解释会将已选房源的脱敏结构化摘要发送给第三方大模型服务商，用于生成对比说明、取舍提示和看房检查清单。",
     sentDataTitle: "可能发送的信息",
     sentDataItems: [
       "租金、面积、户型",
@@ -1159,6 +1179,27 @@ export const compareMockAiExplanationCopy = {
     commuteNotes: "通勤提示",
     riskExplanations: "风险信号解释",
     missingFieldNotes: "待补充字段",
-    checklist: "下一步 checklist",
+    checklist: "下一步检查清单",
   },
+} as const;
+
+export const locationMapPickerCopy = {
+  triggerLabel: "在地图上选择",
+  dialogTitle: "在地图上选择地标",
+  searchLabel: "搜索地标",
+  searchPlaceholder: "搜索地标，例如望京 SOHO",
+  confirmLabel: "确认使用该地点",
+  manualInputLabel: "使用手动输入",
+  loadingLabel: "正在加载高德地图……",
+  loadErrorTitle: "地图暂时无法加载",
+  loadErrorBody:
+    "地图脚本加载失败或当前域名未获授权。你仍可返回原有文本输入继续填写。",
+  selectedPrefix: "已选：",
+  selectionHint: "搜索并选择一个地标；选中后也可以拖动标记微调位置。",
+  closeLabel: "关闭地图选点",
+} as const;
+
+export const locationMapPrivacyCopy = {
+  workLocation:
+    "地图定位仅用于辅助选择地标，保存的是地标名称与区域，不保存精确坐标。",
 } as const;

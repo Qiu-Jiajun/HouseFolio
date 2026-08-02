@@ -1,14 +1,28 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { zhCN } from "@/content/zh-cn";
-import { LocationSuggestionInput } from "@/components/location-suggestion-input";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { LocationMapPicker } from "@/components/location-map-picker";
+import {
+  formatSuggestionValue,
+  LocationSuggestionInput,
+  type LocationSelection,
+} from "@/components/location-suggestion-input";
+import {
+  locationMapPickerCopy,
+  locationMapPrivacyCopy,
+  zhCN,
+} from "@/content/zh-cn";
 import {
   addWorkLocation,
   deleteWorkLocation,
   loadWorkLocations,
 } from "@/lib/local-store/work-locations";
 import type { WorkLocation } from "@/types/work-location";
+
+const hasAmapJsApiKey = Boolean(
+  process.env.NEXT_PUBLIC_AMAP_JS_API_KEY?.trim(),
+);
 
 export function WorkLocationSettingsPanel() {
   const [workLocations, setWorkLocations] = useState<WorkLocation[]>([]);
@@ -17,6 +31,22 @@ export function WorkLocationSettingsPanel() {
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [locationPendingDeletion, setLocationPendingDeletion] =
+    useState<WorkLocation | null>(null);
+  const [isLocationMapPickerOpen, setIsLocationMapPickerOpen] =
+    useState(false);
+  const locationMapTriggerRef = useRef<HTMLButtonElement>(null);
+
+  function handleLocationSelect(suggestion: LocationSelection) {
+    setAddressHint(formatSuggestionValue(suggestion));
+  }
+
+  function handleLocationMapPickerClose() {
+    setIsLocationMapPickerOpen(false);
+    window.requestAnimationFrame(() => {
+      locationMapTriggerRef.current?.focus();
+    });
+  }
 
   function refreshWorkLocations() {
     setWorkLocations(loadWorkLocations());
@@ -56,16 +86,13 @@ export function WorkLocationSettingsPanel() {
     setMessage(zhCN.workLocationSettingsPanel.savedMessage);
   }
 
-  function handleDelete(workLocationId: string) {
-    const confirmed = window.confirm(
-      zhCN.workLocationSettingsPanel.deleteConfirm
-    );
-
-    if (!confirmed) {
+  function confirmDelete() {
+    if (!locationPendingDeletion) {
       return;
     }
 
-    deleteWorkLocation(workLocationId);
+    deleteWorkLocation(locationPendingDeletion.id);
+    setLocationPendingDeletion(null);
     refreshWorkLocations();
   }
 
@@ -84,6 +111,9 @@ export function WorkLocationSettingsPanel() {
         <p className="text-sm leading-6 text-amber-100">
           {zhCN.workLocationSettingsPanel.boundary}
         </p>
+        <p className="mt-2 text-sm leading-6 text-amber-100">
+          {locationMapPrivacyCopy.workLocation}
+        </p>
       </div>
 
       {message ? (
@@ -93,7 +123,10 @@ export function WorkLocationSettingsPanel() {
       ) : null}
 
       {error ? (
-        <div className="mb-5 rounded-xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200">
+        <div
+          className="mb-5 rounded-xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200"
+          role="alert"
+        >
           {error}
         </div>
       ) : null}
@@ -122,10 +155,21 @@ export function WorkLocationSettingsPanel() {
             id="work-location-address-hint"
             value={addressHint}
             onValueChange={setAddressHint}
+            onSuggestionSelect={handleLocationSelect}
             placeholder={
               zhCN.workLocationSettingsPanel.form.addressHint.placeholder
             }
           />
+          {hasAmapJsApiKey ? (
+            <button
+              ref={locationMapTriggerRef}
+              type="button"
+              onClick={() => setIsLocationMapPickerOpen(true)}
+              className="mt-2 rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800"
+            >
+              {locationMapPickerCopy.triggerLabel}
+            </button>
+          ) : null}
         </div>
 
         <label className="block md:col-span-2">
@@ -150,6 +194,15 @@ export function WorkLocationSettingsPanel() {
           </button>
         </div>
       </form>
+
+      {hasAmapJsApiKey ? (
+        <LocationMapPicker
+          isOpen={isLocationMapPickerOpen}
+          initialKeyword={addressHint}
+          onSelect={handleLocationSelect}
+          onClose={handleLocationMapPickerClose}
+        />
+      ) : null}
 
       <div className="mt-8">
         {workLocations.length === 0 ? (
@@ -178,7 +231,7 @@ export function WorkLocationSettingsPanel() {
 
                   <button
                     type="button"
-                    onClick={() => handleDelete(workLocation.id)}
+                    onClick={() => setLocationPendingDeletion(workLocation)}
                     className="rounded-full border border-red-900 px-4 py-2 text-sm font-medium text-red-200 hover:bg-red-950"
                   >
                     {zhCN.workLocationSettingsPanel.cards.delete}
@@ -198,13 +251,27 @@ export function WorkLocationSettingsPanel() {
 
                 <p className="mt-4 text-xs text-slate-600">
                   {zhCN.workLocationSettingsPanel.cards.createdAt}:{" "}
-                  {new Date(workLocation.createdAt).toLocaleString()}
+                  {new Date(workLocation.createdAt).toLocaleString("zh-CN")}
                 </p>
               </article>
             ))}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={locationPendingDeletion !== null}
+        title={zhCN.workLocationSettingsPanel.deleteDialog.title}
+        description={
+          locationPendingDeletion
+            ? `${zhCN.workLocationSettingsPanel.deleteConfirm}（${locationPendingDeletion.name}）`
+            : zhCN.workLocationSettingsPanel.deleteConfirm
+        }
+        confirmLabel={zhCN.workLocationSettingsPanel.deleteDialog.confirm}
+        cancelLabel={zhCN.workLocationSettingsPanel.deleteDialog.cancel}
+        onCancel={() => setLocationPendingDeletion(null)}
+        onConfirm={confirmDelete}
+      />
     </section>
   );
 }
