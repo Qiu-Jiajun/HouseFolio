@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { zhCN } from "@/content/zh-cn";
 import {
   deleteListingPhoto,
@@ -43,6 +44,8 @@ export function ListingPhotoPanel({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const [photoPendingDeletion, setPhotoPendingDeletion] =
+    useState<ListingPhoto | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const objectUrlsRef = useRef<string[]>([]);
@@ -179,6 +182,16 @@ export function ListingPhotoPanel({
     }
   }
 
+  function confirmDeletePhoto() {
+    if (!photoPendingDeletion) {
+      return;
+    }
+
+    const photoId = photoPendingDeletion.id;
+    setPhotoPendingDeletion(null);
+    void handleDeletePhoto(photoId);
+  }
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -220,7 +233,9 @@ export function ListingPhotoPanel({
       ) : null}
 
       {errorMessage ? (
-        <p className="mt-4 text-sm text-amber-300">{errorMessage}</p>
+        <p className="mt-4 text-sm text-amber-300" role="alert">
+          {errorMessage}
+        </p>
       ) : null}
 
       {!isLoaded ? (
@@ -250,9 +265,7 @@ export function ListingPhotoPanel({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    void handleDeletePhoto(photo.id);
-                  }}
+                  onClick={() => setPhotoPendingDeletion(photo)}
                   disabled={deletingPhotoId === photo.id}
                   className="rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-slate-500 hover:text-white disabled:cursor-not-allowed disabled:text-slate-600"
                 >
@@ -274,6 +287,16 @@ export function ListingPhotoPanel({
           </p>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={photoPendingDeletion !== null}
+        title={zhCN.listingPhotoPanel.deleteDialog.title}
+        description={zhCN.listingPhotoPanel.deleteDialog.body}
+        confirmLabel={zhCN.listingPhotoPanel.deleteDialog.confirm}
+        cancelLabel={zhCN.listingPhotoPanel.deleteDialog.cancel}
+        onCancel={() => setPhotoPendingDeletion(null)}
+        onConfirm={confirmDeletePhoto}
+      />
     </div>
   );
 }

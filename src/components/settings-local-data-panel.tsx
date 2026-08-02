@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { zhCN } from "@/content/zh-cn";
 import {
   clearLocalHouseFolioData,
@@ -24,6 +25,12 @@ const localDataLabels: Record<string, string> = {
 
 type MessageTone = "success" | "error";
 
+type PendingImportConfirmation = {
+  payload: Parameters<typeof applyHouseFolioLocalDataImportPayload>[0];
+  importableCount: number;
+  ignoredCount: number;
+};
+
 export function SettingsLocalDataPanel() {
   const [snapshot, setSnapshot] = useState<LocalHouseFolioDataExport | null>(
     null
@@ -34,6 +41,9 @@ export function SettingsLocalDataPanel() {
     null
   );
   const [isImporting, setIsImporting] = useState(false);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [pendingImportConfirmation, setPendingImportConfirmation] =
+    useState<PendingImportConfirmation | null>(null);
   const importFileInputRef = useRef<HTMLInputElement | null>(null);
 
   function refreshSnapshot() {
@@ -48,7 +58,6 @@ export function SettingsLocalDataPanel() {
   function showError(nextMessage: string) {
     setMessageTone("error");
     setMessage(nextMessage);
-    window.alert(nextMessage);
   }
 
   useEffect(() => {
@@ -60,17 +69,10 @@ export function SettingsLocalDataPanel() {
     showSuccess(zhCN.settingsLocalDataPanel.messages.exportStarted);
   }
 
-  function handleClear() {
-    const confirmed = window.confirm(
-      zhCN.settingsLocalDataPanel.messages.clearConfirm
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+  function confirmClear() {
     clearLocalHouseFolioData();
     refreshSnapshot();
+    setIsClearDialogOpen(false);
     showSuccess(zhCN.settingsLocalDataPanel.messages.cleared);
   }
 
@@ -97,21 +99,26 @@ export function SettingsLocalDataPanel() {
         return;
       }
 
-      const confirmed = window.confirm(
-        [
-          zhCN.settingsLocalDataPanel.importJson.confirmMessage,
-          "",
-          `${zhCN.settingsLocalDataPanel.importJson.recognizedKeys}: ${parseResult.importableKeys.length}`,
-          `${zhCN.settingsLocalDataPanel.importJson.ignoredKeys}: ${parseResult.ignoredKeys.length}`,
-        ].join("\n")
-      );
+      setPendingImportConfirmation({
+        payload: parseResult.payload,
+        importableCount: parseResult.importableKeys.length,
+        ignoredCount: parseResult.ignoredKeys.length,
+      });
+    } catch {
+      showError(zhCN.settingsLocalDataPanel.importJson.errors.importFailed);
+    } finally {
+      setIsImporting(false);
+    }
+  }
 
-      if (!confirmed) {
-        return;
-      }
+  function confirmImport() {
+    if (!pendingImportConfirmation) {
+      return;
+    }
 
+    try {
       const applyResult = applyHouseFolioLocalDataImportPayload(
-        parseResult.payload
+        pendingImportConfirmation.payload
       );
 
       refreshSnapshot();
@@ -127,7 +134,7 @@ export function SettingsLocalDataPanel() {
     } catch {
       showError(zhCN.settingsLocalDataPanel.importJson.errors.importFailed);
     } finally {
-      setIsImporting(false);
+      setPendingImportConfirmation(null);
     }
   }
 
@@ -138,7 +145,14 @@ export function SettingsLocalDataPanel() {
 
   return (
     <div className="space-y-6">
-      {message ? <div className={messageClassName}>{message}</div> : null}
+      {message ? (
+        <div
+          className={messageClassName}
+          role={messageTone === "error" ? "alert" : "status"}
+        >
+          {message}
+        </div>
+      ) : null}
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="text-2xl font-semibold text-white">
@@ -160,7 +174,7 @@ export function SettingsLocalDataPanel() {
 
           <button
             type="button"
-            onClick={handleClear}
+            onClick={() => setIsClearDialogOpen(true)}
             className="rounded-full border border-red-900 px-5 py-3 text-sm font-medium text-red-200 hover:bg-red-950"
           >
             {zhCN.settingsLocalDataPanel.controls.clearLocalData}
@@ -268,6 +282,39 @@ export function SettingsLocalDataPanel() {
           ))}
         </ul>
       </section>
+
+      <ConfirmDialog
+        isOpen={isClearDialogOpen}
+        title={zhCN.settingsLocalDataPanel.messages.clearDialogTitle}
+        description={zhCN.settingsLocalDataPanel.messages.clearConfirm}
+        confirmLabel={zhCN.settingsLocalDataPanel.messages.clearDialogConfirm}
+        cancelLabel={zhCN.settingsLocalDataPanel.messages.clearDialogCancel}
+        onCancel={() => setIsClearDialogOpen(false)}
+        onConfirm={confirmClear}
+      />
+
+      <ConfirmDialog
+        isOpen={pendingImportConfirmation !== null}
+        title={zhCN.settingsLocalDataPanel.importJson.confirmDialogTitle}
+        description={
+          <>
+            <span className="block">
+              {zhCN.settingsLocalDataPanel.importJson.confirmMessage}
+            </span>
+            {pendingImportConfirmation ? (
+              <span className="mt-3 block rounded-xl bg-[#f4f0e7] px-4 py-3 text-xs leading-6 text-[#5f5a50]">
+                {`${zhCN.settingsLocalDataPanel.importJson.recognizedKeys}: ${pendingImportConfirmation.importableCount}`}
+                <br />
+                {`${zhCN.settingsLocalDataPanel.importJson.ignoredKeys}: ${pendingImportConfirmation.ignoredCount}`}
+              </span>
+            ) : null}
+          </>
+        }
+        confirmLabel={zhCN.settingsLocalDataPanel.importJson.confirmDialogAction}
+        cancelLabel={zhCN.settingsLocalDataPanel.importJson.confirmDialogCancel}
+        onCancel={() => setPendingImportConfirmation(null)}
+        onConfirm={confirmImport}
+      />
     </div>
   );
 }

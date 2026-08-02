@@ -694,6 +694,11 @@ export const zhCN = {
       "delete": "删除"
     },
     "deleteConfirm": "确认删除这个工作/学习地点吗？",
+    "deleteDialog": {
+      "title": "确认删除这个工作/学习地点？",
+      "confirm": "确认删除",
+      "cancel": "取消"
+    },
     "boundary": "请优先使用地铁站、商圈、写字楼、学校附近等模糊位置，不要填写精确门牌号。对于多人共同居住场景，建议添加 2–3 个通勤锚点，便于后续比较不同房源对每个人的通勤影响。"
   },
   "settings": {
@@ -705,6 +710,9 @@ export const zhCN = {
     "messages": {
       "exportStarted": "本地 HouseFolio 数据导出已开始。",
       "clearConfirm": "确认清除当前浏览器中的所有 HouseFolio 本地数据吗？这会移除当前设备保存的房源、笔记、评分、看房记录、通勤结果和本地状态标记。",
+      "clearDialogTitle": "确认清除本机数据？",
+      "clearDialogConfirm": "确认清除",
+      "clearDialogCancel": "取消",
       "cleared": "当前浏览器中的 HouseFolio 本地数据已清除。",
       "importStarted": "本地 HouseFolio JSON 导入已开始。"
     },
@@ -750,6 +758,9 @@ export const zhCN = {
       "action": "导入 HouseFolio JSON",
       "importing": "正在导入…",
       "confirmMessage": "导入这个 JSON 文件会覆盖当前本机保存的 HouseFolio 结构化数据，包括房源、笔记、评分、状态、看房计划、通勤锚点和通勤结果。此操作不会恢复或导入本机照片。建议你先导出当前数据作为备份。是否继续？",
+      "confirmDialogTitle": "确认导入并覆盖本机数据？",
+      "confirmDialogAction": "确认导入",
+      "confirmDialogCancel": "取消",
       "recognizedKeys": "识别到的可导入数据项",
       "ignoredKeys": "将被忽略的未知数据项",
       "importedKeys": "已导入数据项",
@@ -788,6 +799,12 @@ export const zhCN = {
       "loadFailed": "本机照片读取失败，请稍后重试。",
       "saveFailed": "照片保存失败，请稍后重试。",
       "deleteFailed": "照片删除失败，请稍后重试。"
+    },
+    "deleteDialog": {
+      "title": "确认删除这张看房照片？",
+      "body": "照片文件将从本机删除，且无法恢复。房源、笔记、评分和通勤结果不受影响。",
+      "confirm": "确认删除",
+      "cancel": "取消"
     }
   },
   "settingsPhotoDataPanel": {
@@ -817,6 +834,9 @@ export const zhCN = {
     },
     "messages": {
       "clearConfirm": "确认清除当前浏览器与设备中保存的全部看房照片吗？该操作不会删除房源、笔记、评分或通勤结果，但照片文件本体将从本机删除，且当前阶段无法恢复。",
+      "clearDialogTitle": "确认清除全部本机照片？",
+      "clearDialogConfirm": "确认清除",
+      "clearDialogCancel": "取消",
       "cleared": "本机照片已清除。"
     },
     "states": {
