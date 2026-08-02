@@ -389,7 +389,7 @@ function ViewingTimeControl({
             <button
               type="button"
               onClick={applyPickerValue}
-              className="rounded-full bg-[#727a3f] px-4 py-2 text-xs font-medium text-white"
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-xs font-medium text-[#ffffff]"
             >
               {copy.card.applyViewedAt}
             </button>
@@ -435,7 +435,7 @@ function ViewingStatusPicker({
       >
         {copy.groupLabels[group]}
       </button>
-      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.65rem] text-white">
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.65rem] text-[#ffffff]">
         v
       </span>
 
@@ -814,7 +814,7 @@ export function ViewingLogWorkbench() {
 
           <Link
             href="/portfolio/new"
-            className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#606936]"
+            className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] shadow-sm transition hover:bg-[#606936]"
           >
             {copy.actions.addListing}
           </Link>
@@ -1018,7 +1018,7 @@ export function ViewingLogWorkbench() {
                         <button
                           type="button"
                           onClick={() => openDrawer(listing)}
-                          className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936]"
+                          className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
                         >
                           {copy.actions.editRecord}
                         </button>
@@ -1176,7 +1176,7 @@ export function ViewingLogWorkbench() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="submit"
-                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#606936]"
+                  className="rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
                 >
                   {copy.drawer.saveButton}
                 </button>

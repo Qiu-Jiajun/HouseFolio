@@ -83,7 +83,7 @@ export function ListingDeleteConfirmationDialog({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
+            className="shrink-0 whitespace-nowrap rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-[#ffffff] transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
           >
             {isDeleting
               ? zhCN.listingDeleteDialog.deleting

@@ -359,7 +359,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
               setDeleteDialogOpen(true);
             }}
             disabled={isDeleting}
-            className="mt-6 rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
+            className="mt-6 rounded-full bg-[#8f1f1b] px-5 py-3 text-sm font-semibold text-[#ffffff] transition hover:bg-[#741713] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b63b31] disabled:cursor-not-allowed disabled:bg-[#6d3935]"
           >
             {isDeleting
               ? zhCN.listingDeleteDialog.deleting

@@ -311,7 +311,7 @@ export function PortfolioList() {
               type="button"
               onClick={goToCompare}
               disabled={!canCompare}
-              className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#606936] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full bg-[#727a3f] px-4 py-2 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {portfolioCompareSelectionCopy.compareAction}
             </button>
@@ -340,7 +340,7 @@ export function PortfolioList() {
           </p>
           <a
             href="/portfolio/new"
-            className="mt-6 inline-flex rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#606936]"
+            className="mt-6 inline-flex rounded-full bg-[#727a3f] px-5 py-3 text-sm font-medium text-[#ffffff] transition hover:bg-[#606936]"
           >
             {zhCN.portfolioList.empty.action}
           </a>
