@@ -44,3 +44,6 @@ graphify-out/
 
 # workbuddy agent memory
 .workbuddy/
+
+# local git worktrees
+.worktrees/
